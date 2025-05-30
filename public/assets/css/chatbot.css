@@ -1,0 +1,194 @@
+.chatbox-btn {
+    position: fixed;
+    bottom: 60px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 20px;
+    z-index: 9999;
+    opacity: 50%;
+}
+
+.chatbox-btn:hover {
+    transform: scale(1.2);
+    opacity: 100%;
+    transition: transform 0.3s ease-out;
+    cursor: pointer;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-width: 200px;
+    max-width: 100%;
+    background-color: var(--light);
+    border-radius: 3px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.input-container input {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--text-300);
+    background: var(--text-300);
+    box-shadow: rgba(25, 25, 50, 0.25) 0px 8px 10px -12px inset,
+        rgba(0, 0, 0, 0.3) 15px 20px 10px -18px inset;
+    padding: 0.625rem 70px 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    color: var(--dark);
+    outline: none;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-container input:focus {
+    border: 1px solid var(--info);
+}
+
+.send-btn {
+    position: absolute;
+    width: 65px;
+    right: 4px;
+    top: 4px;
+    bottom: 4px;
+    z-index: 10;
+    border-radius: 8px;
+    background-color: var(--success);
+    color: #fff;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+    transition: 0.6s ease;
+}
+
+.send-btn:hover {
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.input-container input:placeholder-shown ~ .send-btn {
+    pointer-events: none;
+    background-color: var(--text);
+    opacity: 0.5;
+}
+
+.user-chat {
+    float: right !important;
+    margin-right: 30px;
+    text-align: right;
+    width: 70% !important;
+    background-color: var(--info);
+    color: var(--white);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    position: relative;
+    animation-name: chat-pop-up;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+}
+
+.user-chat:hover {
+    transform: scale(1.03);
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.user-chat::after {
+    content: "";
+    position: absolute;
+    top: 70%;
+    right: -10px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid var(--info);
+    transform: translateY(-50%);
+}
+
+.scale {
+    transition: transform 0.3s;
+}
+
+.scale:hover {
+    transform: scale(1.2);
+}
+
+.chatbot {
+    width: 70%;
+    margin-left: 30px;
+    background-color: var(--secondary);
+    float: left;
+    color: var(--light);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    position: relative;
+    animation-name: chat-pop-up;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+}
+
+.chatbot:hover {
+    transform: scale(1.03);
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.chatbot::after {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: -10px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 15px solid var(--secondary);
+    transform: translateY(-50%);
+}
+
+@keyframes chat-pop-up {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.dialogue {
+    width: 100%;
+    max-height: 350px;
+    min-height: 350px;
+    border-radius: 30px;
+    background: var(--text-300);
+    box-shadow: rgba(45, 45, 48, 0.25) 0px 30px 50px -12px inset,
+        rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column-reverse;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Hide scrollbar */
+.dialogue::-webkit-scrollbar {
+    display: none;
+}

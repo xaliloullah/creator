@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - DevStudio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --sidebar-width: 250px;
+            --header-height: 64px;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            min-height: 100vh;
+            padding-top: var(--header-height);
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding-left: var(--sidebar-width);
+            }
+        }
+
+        /* Table Styles */
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table-view .table {
+            margin-bottom: 0;
+        }
+
+        .table-view .table tr {
+            transition: background-color var(--transition-speed);
+        }
+
+        .table-view .table tr:hover {
+            background-color: rgba(13, 110, 253, 0.04);
+        }
+
+        /* Grid View */
+        .grid-view .user-card {
+            height: 100%;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .grid-view .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        /* List View */
+        .list-view .list-group-item {
+            transition: background-color var(--transition-speed);
+        }
+
+        .list-view .list-group-item:hover {
+            background-color: rgba(13, 110, 253, 0.04);
+        }
+
+        /* View Toggle Buttons */
+        .view-toggle .btn {
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+
+        .view-toggle .btn.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            max-width: 400px;
+        }
+
+        .search-bar .form-control {
+            padding-left: 2.5rem;
+            border-radius: 8px;
+        }
+
+        .search-bar .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        /* Column Controls */
+        .column-controls {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.5em 0.8em;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background-color: #198754;
+        }
+
+        .badge-inactive {
+            background-color: #dc3545;
+        }
+
+        .badge-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        /* Resizable Columns */
+        .resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            cursor: col-resize;
+            user-select: none;
+            background: transparent;
+            transition: background-color var(--transition-speed);
+        }
+
+        .resize-handle:hover,
+        .resize-handle.active {
+            background-color: #0d6efd;
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            margin: 0 0.125rem;
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #dee2e6;
+            border-top-color: #0d6efd;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Checkbox Styles */
+        .form-check-input {
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 767.98px) {
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .table-responsive {
+                margin-bottom: 1rem;
+            }
+
+            .grid-view .col-sm-6 {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Page Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <h1 class="h3 mb-0">Users</h1>
+                <span class="badge bg-primary rounded-pill" id="totalUsers">Loading...</span>
+            </div>
+            <div class="d-flex gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-columns-gap me-2"></i>Columns
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end p-3 column-controls" style="min-width: 200px;">
+                        <h6 class="dropdown-header px-0 mb-2">Show/Hide Columns</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="col-name" checked>
+                            <label class="form-check-label" for="col-name">Name</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="col-email" checked>
+                            <label class="form-check-label" for="col-email">Email</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="col-role" checked>
+                            <label class="form-check-label" for="col-role">Role</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="col-status" checked>
+                            <label class="form-check-label" for="col-status">Status</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="col-created" checked>
+                            <label class="form-check-label" for="col-created">Created Date</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="col-actions" checked>
+                            <label class="form-check-label" for="col-actions">Actions</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group view-toggle">
+                    <button type="button" class="btn btn-outline-secondary active" data-view="table">
+                        <i class="bi bi-table"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-view="grid">
+                        <i class="bi bi-grid"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-view="list">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="position-relative search-bar">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="search" class="form-control" placeholder="Search users..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-auto">
+                <select class="form-select" id="roleFilter">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                    <option value="editor">Editor</option>
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Content Views -->
+        <div class="position-relative mb-4">
+            <!-- Loading Overlay -->
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Table View -->
+            <div class="table-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                        </div>
+                                    </th>
+                                    <th data-sort="name">Name <i class="bi bi-arrow-down-up ms-1"></i></th>
+                                    <th data-sort="email">Email <i class="bi bi-arrow-down-up ms-1"></i></th>
+                                    <th data-sort="role">Role <i class="bi bi-arrow-down-up ms-1"></i></th>
+                                    <th data-sort="status">Status <i class="bi bi-arrow-down-up ms-1"></i></th>
+                                    <th data-sort="created">Created Date <i class="bi bi-arrow-down-up ms-1"></i></th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- Table content will be dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid View -->
+            <div class="grid-view d-none">
+                <div class="row g-3" id="userGridView">
+                    <!-- Grid content will be dynamically populated -->
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div class="list-view d-none">
+                <div class="list-group" id="userListView">
+                    <!-- List content will be dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm w-auto" id="itemsPerPage">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                </select>
+                <span class="text-muted" id="itemsShowing">Showing 0 of 0 items</span>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item disabled">
+                        <button class="page-link" id="prevPage">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </li>
+                    <li class="page-item active"><button class="page-link">1</button></li>
+                    <li class="page-item"><button class="page-link">2</button></li>
+                    <li class="page-item"><button class="page-link">3</button></li>
+                    <li class="page-item">
+                        <button class="page-link" id="nextPage">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample user data
+        const users = Array.from({ length: 50 }, (_, i) => ({
+            id: i + 1,
+            name: `User ${i + 1}`,
+            email: `user${i + 1}@example.com`,
+            role: ['Admin', 'User', 'Editor'][Math.floor(Math.random() * 3)],
+            status: ['active', 'inactive', 'pending'][Math.floor(Math.random() * 3)],
+            created: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+            avatar: `https://i.pravatar.cc/150?img=${i + 1}`
+        }));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentView = 'table';
+            let currentPage = 1;
+            let itemsPerPage = 10;
+            let sortField = 'name';
+            let sortDirection = 'asc';
+            let filteredUsers = [...users];
+            
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            const searchInput = document.getElementById('searchInput');
+            const roleFilter = document.getElementById('roleFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const itemsPerPageSelect = document.getElementById('itemsPerPage');
+            const totalUsersElement = document.getElementById('totalUsers');
+            const itemsShowingElement = document.getElementById('itemsShowing');
+
+            // View Toggle
+            document.querySelectorAll('.view-toggle .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const view = this.dataset.view;
+                    if (view === currentView) return;
+
+                    document.querySelectorAll('.view-toggle .btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    document.querySelector(`.${currentView}-view`).classList.add('d-none');
+                    document.querySelector(`.${view}-view`).classList.remove('d-none');
+                    
+                    currentView = view;
+                    renderUsers();
+                });
+            });
+
+            // Column Visibility
+            document.querySelectorAll('.column-controls .form-check-input').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const column = this.id.replace('col-', '');
+                    const cells = document.querySelectorAll(`[data-column="${column}"]`);
+                    cells.forEach(cell => {
+                        cell.style.display = this.checked ? '' : 'none';
+                    });
+                    
+                    // Save preferences
+                    localStorage.setItem(`column_${column}`, this.checked);
+                });
+
+                // Load saved preferences
+                const saved = localStorage.getItem(`column_${checkbox.id.replace('col-', '')}`);
+                if (saved !== null) {
+                    checkbox.checked = saved === 'true';
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Search and Filters
+            searchInput.addEventListener('input', filterUsers);
+            roleFilter.addEventListener('change', filterUsers);
+            statusFilter.addEventListener('change', filterUsers);
+            itemsPerPageSelect.addEventListener('change', function() {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1;
+                renderUsers();
+            });
+
+            // Sorting
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', function() {
+                    const field = this.dataset.sort;
+                    if (sortField === field) {
+                        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortField = field;
+                        sortDirection = 'asc';
+                    }
+                    renderUsers();
+                });
+            });
+
+            // Select All Functionality
+            document.getElementById('selectAll').addEventListener('change', function() {
+                document.querySelectorAll('.user-select').forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            function filterUsers() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const roleValue = roleFilter.value.toLowerCase();
+                const statusValue = statusFilter.value.toLowerCase();
+
+                filteredUsers = users.filter(user => {
+                    const matchesSearch = user.name.toLowerCase().includes(searchTerm) ||
+                                       user.email.toLowerCase().includes(searchTerm);
+                    const matchesRole = !roleValue || user.role.toLowerCase() === roleValue;
+                    const matchesStatus = !statusValue || user.status === statusValue;
+                    
+                    return matchesSearch && matchesRole && matchesStatus;
+                });
+
+                currentPage = 1;
+                renderUsers();
+            }
+
+            function renderUsers() {
+                showLoading();
+
+                // Sort users
+                filteredUsers.sort((a, b) => {
+                    let comparison = 0;
+                    if (a[sortField] < b[sortField]) comparison = -1;
+                    if (a[sortField] > b[sortField]) comparison = 1;
+                    return sortDirection === 'asc' ? comparison : -comparison;
+                });
+
+                // Pagination
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedUsers = filteredUsers.slice(start, end);
+
+                // Update counters
+                totalUsersElement.textContent = filteredUsers.length;
+                itemsShowingElement.textContent = `Showing ${start + 1} to ${Math.min(end, filteredUsers.length)} of ${filteredUsers.length} items`;
+
+                // Render appropriate view
+                if (currentView === 'table') {
+                    renderTableView(paginatedUsers);
+                } else if (currentView === 'grid') {
+                    renderGridView(paginatedUsers);
+                } else {
+                    renderListView(paginatedUsers);
+                }
+
+                hideLoading();
+            }
+
+            function renderTableView(users) {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input user-select" type="checkbox" value="${user.id}">
+                            </div>
+                        </td>
+                        <td data-column="name">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="${user.avatar}" alt="" class="rounded-circle" width="32" height="32">
+                                ${user.name}
+                            </div>
+                        </td>
+                        <td data-column="email">${user.email}</td>
+                        <td data-column="role">
+                            <span class="badge bg-secondary">${user.role}</span>
+                        </td>
+                        <td data-column="status">
+                            <span class="badge badge-${user.status}">${user.status}</span>
+                        </td>
+                        <td data-column="created">${new Date(user.created).toLocaleDateString()}</td>
+                        <td data-column="actions">
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderGridView(users) {
+                const grid = document.getElementById('userGridView');
+                grid.innerHTML = users.map(user => `
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card user-card">
+                            <div class="card-body text-center">
+                                <img src="${user.avatar}" alt="" class="rounded-circle mb-3" width="64" height="64">
+                                <h5 class="card-title mb-1">${user.name}</h5>
+                                <p class="text-muted small mb-2">${user.email}</p>
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <span class="badge bg-secondary">${user.role}</span>
+                                    <span class="badge badge-${user.status}">${user.status}</span>
+                                </div>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function renderListView(users) {
+                const list = document.getElementById('userListView');
+                list.innerHTML = users.map(user => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${user.avatar}" alt="" class="rounded-circle" width="48" height="48">
+                                <div>
+                                    <h6 class="mb-0">${user.name}</h6>
+                                    <small class="text-muted">${user.email}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge bg-secondary">${user.role}</span>
+                                <span class="badge badge-${user.status}">${user.status}</span>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function showLoading() {
+                loadingOverlay.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+
+            // Initial render
+            renderUsers();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Images</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .image-container:hover .image-overlay {
+            opacity: 1;
+        }
+        .btn-floating {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-5">Gestion des Images</h1>
+
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                <div class="input-group">
+                    <input type="file" class="form-control" id="imageUpload" accept="image/*" multiple>
+                    <button class="btn btn-primary" type="button" id="uploadBtn">
+                        <i class="bi bi-cloud-upload"></i> Télécharger
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="imageGallery">
+            <!-- Les images seront ajoutées ici dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Modal de prévisualisation -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Prévisualisation de l'image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="/placeholder.svg" id="previewImage" class="img-fluid" alt="Prévisualisation">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageUpload = document.getElementById('imageUpload');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const imageGallery = document.getElementById('imageGallery');
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            const previewImage = document.getElementById('previewImage');
+
+            uploadBtn.addEventListener('click', function() {
+                imageUpload.click();
+            });
+
+            imageUpload.addEventListener('change', function(e) {
+                const files = e.target.files;
+                for (let file of files) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addImageToGallery(e.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function addImageToGallery(src) {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 col-lg-3 mb-4';
+                col.innerHTML = `
+                    <div class="image-container">
+                        <img src="${src}" class="img-fluid" alt="Image">
+                        <div class="image-overlay">
+                            <button class="btn btn-light btn-floating preview-btn" data-src="${src}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-floating edit-btn">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-floating delete-btn">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                imageGallery.appendChild(col);
+
+                col.querySelector('.preview-btn').addEventListener('click', function() {
+                    previewImage.src = this.dataset.src;
+                    previewModal.show();
+                });
+
+                col.querySelector('.edit-btn').addEventListener('click', function() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = function(e) {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            col.querySelector('img').src = e.target.result;
+                            col.querySelector('.preview-btn').dataset.src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                    input.click();
+                });
+
+                col.querySelector('.delete-btn').addEventListener('click', function() {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+                        col.remove();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

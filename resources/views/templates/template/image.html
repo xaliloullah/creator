@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gestion d'Image</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+        />
+        <style>
+            .image-container {
+                position: relative;
+                overflow: hidden;
+                border-radius: 8px;
+                width: 300px;
+                height: 300px;
+                margin: 0 auto;
+            }
+            .image-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .image-container:hover .image-overlay {
+                opacity: 1;
+            }
+            .btn-floating {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 5px;
+            }
+            .upload-container {
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+            }
+            .upload-container input[type="file"] {
+                position: absolute;
+                font-size: 100px;
+                right: 0;
+                top: 0;
+                opacity: 0;
+                cursor: pointer;
+            }
+            .upload-image {
+                width: 300px;
+                height: 300px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+        </style>
+    </head>
+    <body class="bg-light">
+        <div class="container py-5">
+            <h1 class="text-center mb-5">Gestion d'Image</h1>
+
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <div class="image-container" id="imageContainer">
+                        <img
+                            src="/placeholder.svg?height=300&width=300"
+                            alt="Image"
+                            class="upload-image"
+                            id="uploadImage"
+                        />
+                        <div
+                            class="image-overlay"
+                            id="imageOverlay"
+                            style="display: none"
+                        >
+                            <button
+                                class="btn btn-light btn-floating preview-btn"
+                                id="previewBtn"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button
+                                class="btn btn-primary btn-floating edit-btn"
+                                id="editBtn"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button
+                                class="btn btn-danger btn-floating delete-btn"
+                                id="deleteBtn"
+                            >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/*"
+                        style="display: none"
+                    />
+                    <p class="mt-2" id="uploadText">
+                        Cliquez sur l'image pour télécharger
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de prévisualisation -->
+        <div
+            class="modal fade"
+            id="previewModal"
+            tabindex="-1"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Prévisualisation de l'image</h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img
+                            src="/placeholder.svg"
+                            id="previewImage"
+                            class="img-fluid"
+                            alt="Prévisualisation"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const imageUpload = document.getElementById("imageUpload");
+                const uploadImage = document.getElementById("uploadImage");
+                const imageOverlay = document.getElementById("imageOverlay");
+                const previewBtn = document.getElementById("previewBtn");
+                const editBtn = document.getElementById("editBtn");
+                const deleteBtn = document.getElementById("deleteBtn");
+                const uploadText = document.getElementById("uploadText");
+                const previewModal = new bootstrap.Modal(
+                    document.getElementById("previewModal")
+                );
+                const previewImage = document.getElementById("previewImage");
+
+                let hasImage = false;
+
+                uploadImage.addEventListener("click", function () {
+                    if (!hasImage) {
+                        imageUpload.click();
+                    }
+                });
+
+                imageUpload.addEventListener("change", function (e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            uploadImage.src = e.target.result;
+                            hasImage = true;
+                            imageOverlay.style.display = "flex";
+                            uploadText.textContent = "Image téléchargée";
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                previewBtn.addEventListener("click", function () {
+                    previewImage.src = uploadImage.src;
+                    previewModal.show();
+                });
+
+                editBtn.addEventListener("click", function () {
+                    imageUpload.click();
+                });
+
+                deleteBtn.addEventListener("click", function () {
+                    if (
+                        confirm(
+                            "Êtes-vous sûr de vouloir supprimer cette image ?"
+                        )
+                    ) {
+                        uploadImage.src =
+                            "/placeholder.svg?height=300&width=300";
+                        hasImage = false;
+                        imageOverlay.style.display = "none";
+                        uploadText.textContent =
+                            "Cliquez sur l'image pour télécharger";
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
