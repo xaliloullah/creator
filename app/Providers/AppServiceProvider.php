@@ -39,12 +39,18 @@ class AppServiceProvider extends ServiceProvider
         View::share('icons', Icon::all());
         View::share('colors', Color::all());
 
-        foreach (Role::all() as $role) {
-            Blade::if($role->name, function () use ($role) {
-                /** @var User $user */
-                $user = Auth::user();
-                return $user && ($user->hasRole($role->name));
-            });
+        try {
+
+
+            foreach (Role::all() as $role) {
+                Blade::if($role->name, function () use ($role) {
+                    /** @var User $user */
+                    $user = Auth::user();
+                    return $user && ($user->hasRole($role->name));
+                });
+            }
+        } catch (\Exception $e) {
+            // Handle the exception if needed, e.g., log it or display a message;
         }
     }
 }

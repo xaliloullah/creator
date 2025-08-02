@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            // $table->foreignUuid('business_id')->constrained('businesses')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignUuid('categorie_id')->nullable()->constrained('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->string('image')->nullable();
             $table->string('designation')->unique();
