@@ -7,7 +7,7 @@
         <div class="card border-0 shadow">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-code-slash fs-1 text-primary"></i>
+                    <img class="img-fluid img-sm" src="{{ asset('assets/images/logo.png') }}" alt="">
                     <h1 class="h3 mb-3">Créer un compte</h1>
                     <p class="text-muted">Rejoignez notre communauté dès aujourd'hui</p>
                 </div>
@@ -51,6 +51,15 @@
                                 <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
                                     <i class="bi bi-eye"></i>
                                 </button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="conditions" name="remember" required>
+                                <label class="form-check-label fs-8 mb-3" for="conditions">J'accepte les conditions
+                                    d'utilisation et
+                                    la
+                                    politique de confidentialité de {{ config('app.name') }}.</label>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 mt-5 mb-3">S'inscrire</button>

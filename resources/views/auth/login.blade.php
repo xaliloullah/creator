@@ -4,8 +4,8 @@
     <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
         <div class="card border-0 shadow">
             <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <i class="bi bi-code-slash fs-1 text-primary"></i>
+                <div class="text-center mb-4"> 
+                    <img class="img-fluid img-sm" src="{{ asset('assets/images/logo.png') }}" alt="">
                     <h1 class="h3 mb-3">Content de vous revoir !</h1>
                     <p class="text-muted">Connectez-vous à votre compte</p>
                 </div>
@@ -35,11 +35,6 @@
                         @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}" class="text-decoration-none">Mot de passe oublié ?</a>
                         @endif
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="conditions" name="remember" required>
-                        <label class="form-check-label fs-8 mb-3" for="conditions">J'accepte les conditions d'utilisation et la
-                            politique de confidentialité de {{ config('app.name') }}.</label>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 mb-3">Se connecter</button>
                     <p class="text-center mb-0">

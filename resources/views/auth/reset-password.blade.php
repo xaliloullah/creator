@@ -5,7 +5,7 @@
         <div class="card border-0 shadow">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-code-slash fs-1 text-primary"></i>
+                    <img class="img-fluid img-sm" src="{{ asset('assets/images/logo.png') }}" alt="">
                     <h1 class="h3 mb-3">Réinitialiser le mot de passe</h1>
                     {{-- <p class="text-muted">Connectez-vous à votre compte</p> --}}
                 </div>
