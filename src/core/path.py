@@ -112,7 +112,7 @@ class Path:
     def databases(path:str=None, sqlite=False):
         if sqlite and not path.endswith(".db"):
             path += ".db"
-        return Path("databases").join(path) 
+        return Path("databases").join(path)  
 
     @staticmethod
     def docs(path=None):
@@ -207,15 +207,21 @@ class Path:
 
     @staticmethod
     def commands(path=None):
+        if path and not path.endswith(".py"):
+            path += ".py"
         return Path.app("commands").join(path)
 
     @staticmethod
     def migrations(path=None):
+        if path and not path.endswith(".py"):
+            path += ".py"
         return Path.databases("migrations").join(path)
 
     @staticmethod
     def seeds(path=None):
-        return Path.databases("seeds").join(path)
+        if path and not path.endswith(".py"):
+            path += ".py"
+        return Path.databases("seeds").join(path) 
 
     @staticmethod
     def architecture():

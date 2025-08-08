@@ -33,6 +33,10 @@ class Build:
         return Template("migration").render(name=name) 
     
     @staticmethod
+    def seed(name: str):
+        return Template("seed").render(name=name) 
+    
+    @staticmethod
     def middleware(name: str, table: str):
         return Template("middleware").render(name=name, table=table)  
     

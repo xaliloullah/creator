@@ -10,102 +10,51 @@ try:
 except:
     pass
 
-class Hash:
-    def __init__(self, rounds=12):
-        """
-        Initialise la classe Hash.
-        :param rounds: Nombre de tours de salage (facteur de coût), par défaut 12.
-        """
-        self.rounds = rounds
-
-    def make(self, password: str) -> str:
-        """
-        Hache un mot de passe en utilisant bcrypt avec un sel unique.
-        :param password: Mot de passe à hacher.
-        :return: Mot de passe haché (en format string).
-        """
-        # Convertir le mot de passe en bytes (bcrypt attend des bytes)
-        password_bytes = password.encode('utf-8')
-
-        # Générer un sel avec le facteur de coût spécifié
-        salt = bcrypt.gensalt(rounds=self.rounds)
-
-        # Hacher le mot de passe avec le sel
-        hashed_password = bcrypt.hashpw(password_bytes, salt)
-
-        # Retourner le mot de passe haché
+class Hash: 
+    
+    @staticmethod
+    def make(password: str, rounds=12) -> str:  
+        password_bytes = password.encode('utf-8') 
+        salt = bcrypt.gensalt(rounds=rounds) 
+        hashed_password = bcrypt.hashpw(password_bytes, salt) 
         return hashed_password.decode('utf-8')
-
-    def check(self, password: str, hashed_password: str) -> bool:
-        """
-        Vérifie si un mot de passe donné correspond à un mot de passe haché.
-        :param password: Le mot de passe à vérifier.
-        :param hashed_password: Le mot de passe haché à comparer.
-        :return: True si le mot de passe correspond, False sinon.
-        """
-        # Convertir le mot de passe et le haché en bytes
+    
+    @staticmethod
+    def check(password: str, hashed_password: str) -> bool:  
         password_bytes = password.encode('utf-8')
-        hashed_password_bytes = hashed_password.encode('utf-8')
-
-        # Vérifier si le mot de passe correspond au haché
+        hashed_password_bytes = hashed_password.encode('utf-8') 
         return bcrypt.checkpw(password_bytes, hashed_password_bytes)
-
-    def get_salt(self, hashed_password: str) -> str:
-        """
-        Récupère le sel d'un mot de passe haché bcrypt.
-        :param hashed_password: Le mot de passe haché.
-        :return: Le sel utilisé dans le hachage.
-        """
-        # Extraire le sel du mot de passe haché (il est encodé dans la première partie)
-        return hashed_password[:29]  # Les 29 premiers caractères représentent le sel
-
-    def generate_secure_random_password(self, length=16) -> str:
-        """
-        Génère un mot de passe aléatoire sécurisé.
-        :param length: La longueur du mot de passe à générer.
-        :return: Un mot de passe aléatoire sécurisé.
-        """ 
+    
+    @staticmethod
+    def get_salt(hashed_password: str) -> str: 
+        return hashed_password[:29] 
+    
+    @staticmethod
+    def generate_random_password(length=16) -> str: 
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'
-        password = ''.join(secrets.token_bytes(1).decode('latin-1') for _ in range(length))
-        return password
-
-    def hash_with_custom_salt(self, password: str, salt: str) -> str:
-        """
-        Hache un mot de passe avec un sel personnalisé.
-        :param password: Mot de passe à hacher.
-        :param salt: Sel personnalisé.
-        :return: Mot de passe haché (en format string).
-        """
-        # Convertir le mot de passe et le sel en bytes
+        return ''.join(secrets.choice(characters) for _ in range(length))
+    
+    @staticmethod
+    def hash_with_custom_salt(password: str, salt: str) -> str: 
         password_bytes = password.encode('utf-8')
-        salt_bytes = salt.encode('utf-8')
-
-        # Hacher le mot de passe avec le sel fourni
+        salt_bytes = salt.encode('utf-8') 
         hashed_password = bcrypt.hashpw(password_bytes, salt_bytes)
 
         # Retourner le mot de passe haché
         return hashed_password.decode('utf-8')
-
-    def compare_hashes(self, hash1: str, hash2: str) -> bool:
-        """
-        Compare deux hachages pour savoir s'ils sont identiques.
-        :param hash1: Premier hachage à comparer.
-        :param hash2: Deuxième hachage à comparer.
-        :return: True si les hachages sont identiques, False sinon.
-        """
+    
+    @staticmethod
+    def compare_hashes(hash1: str, hash2: str) -> bool: 
         return hash1 == hash2
-
-    def decode_salt(self, hashed_password: str) -> str:
-        """
-        Décoder le sel (base64) d'un mot de passe haché bcrypt.
-        :param hashed_password: Le mot de passe haché.
-        :return: Sel décodé en base64.
-        """
-        salt = self.get_salt(hashed_password)
+    
+    @staticmethod
+    def decode_salt(hashed_password: str) -> str: 
+        salt = Hash.get_salt(hashed_password)
         return base64.b64encode(salt.encode('utf-8')).decode('utf-8')
 
  
-class Hash2:
+class Hash2:    
+    @staticmethod
     def __init__(self, algorithm="sha3_256"):
         """
         Initialise une instance avec un algorithme de hachage.
@@ -115,11 +64,13 @@ class Hash2:
     def method(self):
         """Retourne la méthode de hachage associée à l'algorithme."""
         return getattr(hashlib, self.algorithm, None)
-
-    def generate_salt(self, length=16):
+    
+    @staticmethod
+    def generate_salt(length=16):
         """Génère un sel cryptographique."""
         return secrets.token_bytes(length)
-
+    
+    @staticmethod
     def hash(self, password):
         """
         Hache un mot de passe avec un sel.
@@ -137,7 +88,8 @@ class Hash2:
             return f"{salt.hex()}:{hash_object.hexdigest()}"
         else:
             raise ValueError(f"Algorithm '{self.algorithm}' not supported.")
-
+    
+    @staticmethod
     def verify(self, password, stored_hash):
         """
         Vérifie si un mot de passe correspond au hachage stocké.

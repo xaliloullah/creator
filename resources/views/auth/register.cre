@@ -6,8 +6,8 @@ from main import Creator
 def render():
     Creator.terminal.input(Creator.lang.get("confirm.continue"), type="confirm", value="yes", reject_action=Creator.view.back)
 
-    Creator.request.name = Creator.terminal.input(type="text", placehoder ='name')
-    Creator.request.email = Creator.terminal.input(placehoder ='email', type = "email") 
-    Creator.request.password = Creator.terminal.input(placehoder ='password', type="password") 
+    Creator.request.name = Creator.terminal.input(placeholder ='name', type="text")
+    Creator.request.email = Creator.terminal.input(placeholder ='email', type = "email") 
+    Creator.request.password = Creator.terminal.input(placeholder ='password', type="password") 
 
     Creator.route("register.store")

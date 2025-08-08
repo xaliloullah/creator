@@ -22,6 +22,7 @@ class MakeCommand(Command):
         parser.add_argument('--service', help="Create a new service")
         parser.add_argument('--view', help="Create a new view")
         parser.add_argument('--command', help="Create a new CREATOR command")
+        parser.add_argument('--seeder', help="Create a new CREATOR seeder")
         parser.add_argument('-m', '--migrate', action='store_true', help="Create a migration for the model")
         parser.add_argument('-r', '--resource', action='store_true', help="Create a resource for the controller")
         
@@ -99,12 +100,22 @@ class MakeCommand(Command):
         elif args.command:
             name = str(args.command).replace(" ", "_") 
             try:
-                path = "app/commands/"
-                filename = path + name + ".py"
+                filename = Creator.path.commands(name)
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"command '{args.command}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.command(Creator.file(name).name)) 
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"command '{args.command}'"))
+            except Exception:
+                Creator.terminal.error(f"{traceback.format_exc()}") 
+
+        elif args.seeder:
+            name = str(args.seeder).replace(" ", "_") 
+            try: 
+                filename = Creator.path.seeds(name)
+                if Creator.file(filename).exists():
+                    return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"seed '{args.seeder}'"))
+                Creator.file(filename).ensure_exists().save(Creator.build.seed(Creator.file(name).name)) 
+                Creator.terminal.success(Creator.lang.get("success.create", resource=f"seed '{args.seeder}'"))
             except Exception:
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 

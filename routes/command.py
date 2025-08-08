@@ -7,6 +7,7 @@ from src.commands.uninstall import UninstallCommand
 from src.commands.migrate import MigrateCommand
 from src.commands.venv import VenvCommand
 from src.commands.lang import LangCommand
+from src.commands.seed import SeedCommand
 
 Command.add(MakeCommand)
 Command.add(DeleteCommand)
@@ -15,3 +16,4 @@ Command.add(UninstallCommand)
 Command.add(MigrateCommand)
 Command.add(VenvCommand)
 Command.add(LangCommand)
+Command.add(SeedCommand)

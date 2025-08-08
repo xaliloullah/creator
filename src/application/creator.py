@@ -31,7 +31,7 @@ class Creator:
     task = Task
     date = Date
     crypt = Crypt
-    hash = Hash()
+    hash = Hash
     build = Build  
     storage = Storage 
     collection = Collection 

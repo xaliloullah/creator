@@ -19,6 +19,15 @@ class MigrateCommand(Command):
     @staticmethod
     def handle(args):
         from src.databases.migration import Migration
+        if not any([
+            args.run,
+            args.rollback,
+            args.check,
+            args.list,
+            args.fresh,
+            args.drop
+        ]):
+            args.run = True
         """Execute migration actions.""" 
         
         if args.run:
@@ -47,8 +56,7 @@ class MigrateCommand(Command):
         elif args.drop:
             Creator.terminal.info(Creator.lang.get("info.drop", resource="migration"))
             Migration().down()  
-        else: 
-            Creator.terminal.info(Creator.lang.get("info.run", resource="migration"))
-            Migration().migrate()
+        else:  
+            Creator.terminal.error("Unknown migration action.")
  
           

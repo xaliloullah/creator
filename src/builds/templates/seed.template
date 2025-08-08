@@ -1,0 +1,5 @@
+# Up function for {name} seeder
+def up(): 
+    # 
+    pass
+ 
