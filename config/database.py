@@ -7,7 +7,7 @@ connections =  {
     # SQLite Config 
     'sqlite': {
         'driver': 'sqlite',
-        'path': f"{env('DB_PATH', 'databases')}/{env('DB_DATABASE', f"{env('APP_NAME', 'creator')}.db")}"
+        'path': f"{env('DB_PATH', 'databases')}/{env('DB_DATABASE', f"{env('APP_NAME')}")}.db", 
     },
 
     # MySQL Config 

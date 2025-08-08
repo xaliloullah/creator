@@ -1,19 +1,19 @@
 class Injector:
     def __init__(self):
-        self._dependencies = {}
+        self.dependencies = {}
         
     def __str__(self):
-        return str(self._dependencies)
+        return str(self.dependencies)
 
     def register(self, cls, instance=None): 
-        self._dependencies[cls] = instance if instance else cls
+        self.dependencies[cls] = instance if instance else cls
 
     def update(self, cls, instance):
-        self._dependencies[cls] = instance
+        self.dependencies[cls] = instance
 
     def inject(self, annotation): 
-        if annotation in self._dependencies: 
-            dependency = self._dependencies[annotation] 
+        if annotation in self.dependencies: 
+            dependency = self.dependencies[annotation] 
             if isinstance(dependency, type):
                 return dependency()
             return dependency
@@ -33,7 +33,4 @@ class Injector:
         self.args = args
         self.kwargs = kwargs  
         return self.func(*self.args, **self.kwargs)
-         
-    
-    # def dispatch(self):
-    #     self.func(*self.args, **self.kwargs)
+          

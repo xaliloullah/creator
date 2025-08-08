@@ -249,24 +249,6 @@ class Terminal:
     def margin(cls, text, top=0, right=0, bottom=0, left=0, **kwargs):
         color = kwargs.get("color", None)
         styles = kwargs.get("style", None)
-
-        # if isinstance(text, str):
-        #     lines = text.splitlines()
-        # else:
-        #     lines = list(text)
-
-        # # Applique styles si demandés
-        # def format_line(line):
-        #     styled = line
-        #     if styles:
-        #         if not isinstance(styles, list):
-        #             styled = cls.style(line, styles, color) if color else cls.style(line, styles)
-        #         else:
-        #             styled = cls.style(line, *styles, color) if color else cls.style(line, *styles)
-        #     elif color:
-        #         styled = cls.style(line, color)
-        #     return styled
-
         content = ""
         for _ in range(top):
              content+="\n"
@@ -449,27 +431,15 @@ class Terminal:
         return output
 
     @classmethod      
-    def password(cls, placehoder="password : ", **kwargs):
-        cls.echo(placehoder, end='', flush=True)
-        password = '' 
-        while True:
-            event = keyboard.read_event(suppress=True)
-            if event.event_type == 'down': 
-                char = event.name
-                if char == 'enter':
-                    cls.echo() 
-                    break
-                elif char == 'backspace':
-                    if len(password) > 0:
-                        password = password[:-1]
-                        cls.echo('\b \b', end='', flush=True)
-                elif len(char) == 1:
-                    password += char
-                    cls.echo('*', end='', flush=True)
-        return password
+    def password(cls, prompt="password : ", **kwargs):
+        import getpass
+        try:
+            return getpass.getpass(prompt)
+        except (KeyboardInterrupt, EOFError): 
+            return None 
     
     @classmethod 
-    def input(cls, placehoder="", **kwargs):  
+    def input(cls, placeholder="", **kwargs):  
 
         value = kwargs.get('value', "")     
         options:dict = kwargs.get('options', {})     
@@ -532,35 +502,35 @@ class Terminal:
         if options: 
             choices = f" ({cls.list(options, inline=True, separator="/")})"
 
-        result = action(f"{cls.style(f"{icon} {placehoder}{choices}{default}{prompt}", Color.light)}") or value  
+        result = action(f"{cls.style(f"{icon} {placeholder}{choices}{default}{prompt}", Color.light)}") or value  
 
         if required:
             while not result:
                 cls.warning("This field is required.")
-                return cls.input(placehoder, **kwargs)
+                return cls.input(placeholder, **kwargs)
 
         if max_len:
             if len(str(result)) > max_len:
                 cls.warning(f"Input exceeds maximum length of {max_len} characters.")
-                return cls.input(placehoder, **kwargs)
+                return cls.input(placeholder, **kwargs)
         if min_len:
             if len(str(result)) < min_len:
                 cls.warning(f"Input is below the minimum length of {min_len} characters.")
-                return cls.input(placehoder, **kwargs) 
+                return cls.input(placeholder, **kwargs) 
             
         if min:
             if float(result) < float(min):
                 cls.warning(f"Input is below the minimum value of {min}.")
-                return cls.input(placehoder, **kwargs)
+                return cls.input(placeholder, **kwargs)
         if max:
             if float(result) > float(max):
                 cls.warning(f"Input exceeds the maximum value of {max}.")
-                return cls.input(placehoder, **kwargs)   
+                return cls.input(placeholder, **kwargs)   
 
         if options:
             if result not in options:
                 cls.warning(f"Invalid input. Please enter one of the following options: {', '.join(options)}.")
-                return cls.input(placehoder, **kwargs) 
+                return cls.input(placeholder, **kwargs) 
             if result.lower() == accept.lower():
                 if accept_action:
                     accept_action()

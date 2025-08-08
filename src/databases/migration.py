@@ -25,15 +25,7 @@ class Migration:
     def run(self, name, action='up'): 
         try:
             path = self.file.path.join(name)
-            Task.run(path, action)
-            # with open(path, 'r') as file:
-            #     code = compile(file.read(), path, 'exec')
-            #     namespace = {}
-            #     exec(code, namespace)
-            #     if action in namespace:
-            #         namespace[action]()
-            #     else:
-            #         raise AttributeError(f"{action.capitalize()} function not found in {name}") 
+            Task.run(path, action) 
         except Exception as e:
             Terminal.error(f"{e}") 
             exit()
@@ -45,10 +37,7 @@ class Migration:
         except Exception as e: 
             Terminal.error(f"{e}") 
             exit()
-        
-    # def get_name(self):
-    #     return [File.strip_extension(migration)[0] for migration in self.get()]
-        
+         
     def get_last_batch(self): 
         from src.databases.query import DB
         result = DB().select(self.table, 'batch').last().fetchone()

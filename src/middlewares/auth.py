@@ -1,9 +1,12 @@
 from src.application.contexts import Session
+from src.middlewares import Middleware
 from main import Creator
 
-class AuthMiddleware: 
 
-    def handle(self, request, next, **kwargs):
+class AuthMiddleware(Middleware): 
+
+    @staticmethod
+    def handle(request, next, params=None):
         if not Session().has("user") or not Session().is_active():
             return Creator.route('login')
-        return next(request, **kwargs)
+        return next()

@@ -8,6 +8,6 @@ def render():
 
     Creator.request.name = Creator.terminal.input(type="text", placehoder ='name')
     Creator.request.email = Creator.terminal.input(placehoder ='email', type = "email") 
-    Creator.request.password = Creator.terminal.input(placehoder ='password', type="text") 
+    Creator.request.password = Creator.terminal.input(placehoder ='password', type="password") 
 
     Creator.route("register.store")

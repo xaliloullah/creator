@@ -4,10 +4,14 @@ class Auth:
 
     @staticmethod
     def authenticate(user:User):
-        Session().set('user_id', user['id'])
+        if user:
+            return Session().set('user_id', user['id'])
+        return False    
 
     @staticmethod
     def regenerate(user:User):
-        Session().create(user['id'])
+        if user:
+            return Session().create(user['id'])
+        return False
 
     

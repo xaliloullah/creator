@@ -1,4 +1,5 @@
 ├── .env
+├── .gitignore
 ├── app
 │   ├── commands
 │   ├── controllers
@@ -22,15 +23,20 @@
 │       │   │   └── world.py
 │       │   ├── cwar.py
 │       │   └── devine.py
-│       └── tools
-│           ├── calculator.py
-│           └── devise.py
+│       ├── tools
+│       │   ├── calculator.py
+│       │   └── devise.py
+│       └── user.py
 ├── config
 │   ├── app.py
 │   ├── database.py
 │   ├── log.py
 │   └── session.py
 ├── creator
+├── databases
+│   ├── creator.db
+│   └── migrations
+│       └── 2025_08_08_create_users_table.py
 ├── docs
 │   └── ARCHITECTURE.md
 ├── lang
@@ -51,6 +57,9 @@
 │   │   └── web
 │   └── views
 │       ├── app.cre
+│       ├── auth
+│       │   ├── login.cre
+│       │   └── register.cre
 │       ├── components
 │       │   └── alert.cre
 │       ├── includes
@@ -79,7 +88,9 @@
 │               ├── calculator.cre
 │               └── devise.cre
 ├── routes
+│   ├── auth.py
 │   ├── command.py
+│   ├── middleware.py
 │   └── route.py
 ├── src
 │   ├── application
@@ -194,10 +205,12 @@
 │   ├── environment
 │   │   └── __init__.py
 │   ├── middlewares
+│   │   ├── auth.py
 │   │   ├── middleware.py
 │   │   └── __init__.py
 │   ├── models
 │   │   ├── array.py
+│   │   ├── auth.py
 │   │   ├── collections.py
 │   │   ├── list.py
 │   │   └── __init__.py

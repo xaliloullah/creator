@@ -12,19 +12,10 @@ class View:
             view = self.path(path)
             if args:
                 args
-            self.show(view)
             self.set_history(view)
+            self.show(view)
         except Exception as e:
-            raise Exception(e)
-        # title: str = "",
-        # width: int = 800,
-        # height: int = 600,
-        # template: str = None,
-        # context: dict = None,
-        # layout: str = None,
-        # visible: bool = True,
-        # style: dict = None,
-        # events: dict = None 
+            raise Exception(e) 
             
     @staticmethod
     def include(view:str, *args): 

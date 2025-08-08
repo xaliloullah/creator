@@ -55,7 +55,10 @@ class Route:
 
     
     @classmethod
-    def dispatch(cls, name: str, injector, **kwargs): 
+    def dispatch(cls, name: str,injector, **kwargs): 
+        # from src.core import Injector 
+        # injector:Injector
+
         route:dict = cls.get(name)
         if not route: 
             raise ValueError(f"Route '{name}' not found")
@@ -64,16 +67,16 @@ class Route:
         controller = route.get("controller")
         middlewares = route.get("middleware", []) 
  
-        def handler():
+        def handler(request):
             if callable(action):
-                return injector.resolve(action, **kwargs)
+                return injector.resolve(action, **request)
             elif controller and hasattr(controller, action):
-                return injector.resolve(getattr(controller, action), **kwargs)
+                return injector.resolve(getattr(controller, action), **request)
             else:
-                raise ValueError(f"Aucune action valide pour la route '{name}'")
+                raise ValueError(f"invalide action for route '{name}'")
             
         from src.middlewares.middleware import Middleware 
-        return Middleware.run(middlewares, handler) 
+        return Middleware.run(middlewares, handler, kwargs) 
         
     @classmethod
     def clear(cls):

@@ -33,9 +33,9 @@ class RegisterController:
                 email = request['email'],
                 password = Creator.hash.make(request['password'])
             ) 
-            Auth.regenerate(user)
-            Creator.request.session.success(Creator.lang.get('auth.succeeded'))
-            return Creator.route('dashboard')
+            if Auth.regenerate(user):
+                Creator.request.session.success(Creator.lang.get('auth.succeeded'))
+                return Creator.route('dashboard')
         return Creator.view.back()
 
     @staticmethod

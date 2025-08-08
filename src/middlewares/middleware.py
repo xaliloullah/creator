@@ -1,5 +1,5 @@
 class Middleware:
-    middlewares = {}
+    data = {}
 
     @classmethod
     def setup(cls):
@@ -10,36 +10,37 @@ class Middleware:
 
     @classmethod
     def register(cls, name: str, middleware): 
-        cls.middlewares[name] = middleware
+        cls.data[name] = middleware
+
+    @classmethod
+    def get(cls, name:str):  
+        return cls.data.get(name)  
+    
+    @classmethod
+    def list(cls):
+        return list(cls.data.keys())
 
     @staticmethod
     def handle(args):
-        raise NotImplementedError("Each command must implement 'handle'.")
+        raise NotImplementedError("Middleware must implement the handle method.")
 
     @classmethod
-    def run(cls, middlewares, handler, *args, **kwargs):
-        # cls.setup()
+    def run(cls, middlewares, handler, request):   
+        cls.setup()
+        def execute(index=0):
+            if index == len(middlewares):
+                return handler(request)
+ 
+            name = middlewares[index]
+            params = None
+            if ":" in name:
+                name, params = name.split(":", 1)
+                params = params.split(",") 
 
-        # def run_next(index):
-        #     if index < len(middlewares):
-        #         mw = middlewares[index]
-        #         # middleware peut être une classe ou un nom enregistré
-        #         if isinstance(mw, str):
-        #             mw_cls = cls.middlewares.get(mw)
-        #             if not mw_cls:
-        #                 raise ValueError(f"Middleware '{mw}' is not registered.")
-        #         else:
-        #             mw_cls = mw
+            middleware:Middleware = cls.get(name)
+            if not middleware:
+                return f"Middleware {name} not found" 
 
-        #         # Instanciation du middleware
-        #         mw_instance = mw_cls()
+            return middleware.handle(request, lambda: execute(index + 1), params)
 
-        #         # Appel de la méthode handle avec les arguments + next
-        #         return mw_instance.handle(*args, next=lambda *a, **kw: run_next(index + 1), **kwargs)
-        #     else:
-        #         # Tous les middlewares exécutés => appel du handler final
-        #         return handler(*args, **kwargs)
-
-        # return run_next(0)
-
-        handler()
+        return execute()

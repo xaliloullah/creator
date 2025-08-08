@@ -30,7 +30,7 @@ class LoginController:
             else:
                 request.session.error(Creator.lang.get('auth.failed'))  
         
-        return Creator.view.back()
+            return Creator.view.back()
     
     @staticmethod
     def edit(id):

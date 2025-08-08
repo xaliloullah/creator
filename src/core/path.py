@@ -109,8 +109,8 @@ class Path:
         return Path("config").join(path)
 
     @staticmethod
-    def databases(path:str=None):
-        if not path.endswith(".db"):
+    def databases(path:str=None, sqlite=False):
+        if sqlite and not path.endswith(".db"):
             path += ".db"
         return Path("databases").join(path) 
 
@@ -257,9 +257,9 @@ class Path:
     def settings(path="settings.json"):
         return Path.creator("configs").join(path)
 
-    # @staticmethod
-    # def cache():
-    #     return Path.src(Path.app(), "cache")
+    @staticmethod
+    def cache(path):
+        return Path.app("cache").join(path)
 
     @staticmethod
     def logs():
