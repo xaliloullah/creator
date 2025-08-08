@@ -1,0 +1,15 @@
+from main import Creator   
+
+
+# @Creator.view.extend("main")
+# @Creator.view.section("title", "layouts.games.cwar - show")
+# @Creator.view.section("content")
+def render():
+    # 
+    #   TODO: Implement the logic to show a layouts.games.cwar
+    # 
+    pass
+
+def handle():
+    #   Creator.route("layouts.games.cwar.index")
+    pass

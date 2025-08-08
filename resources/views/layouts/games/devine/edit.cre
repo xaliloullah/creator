@@ -1,0 +1,14 @@
+from main import Creator    
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "layouts/games/devine - edit")
+# @Creator.view.section("content")
+def render():
+    # 
+    #   TODO: Implement the logic to edite layouts/games/devine
+    # 
+    pass
+
+def handle():
+    #   Creator.route("layouts/games/devine.update", id="#")
+    pass

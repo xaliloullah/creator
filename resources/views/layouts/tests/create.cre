@@ -1,0 +1,14 @@
+from main import Creator 
+
+# @Creator.view.extend("layouts.main")
+# @Creator.view.section("title", "test")
+# @Creator.view.section("content")
+def render():
+    # 
+    Creator.request.name = input("name : ")
+    Creator.request.age = input("age : ")
+    Creator.request.debug = input("debug : ")
+     
+
+def handle():
+    Creator.route("tests.store")

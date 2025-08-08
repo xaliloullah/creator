@@ -1,0 +1,7 @@
+src.middlewares import Middleware
+
+class {name}(Middleware):
+    def __init__(self):
+        self.table = '{table}'
+        super().__init__(self.table)
+        # 

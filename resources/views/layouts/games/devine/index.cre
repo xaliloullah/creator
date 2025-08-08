@@ -1,0 +1,25 @@
+from main import Creator 
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "Devine - Game")
+@Creator.view.section("content")
+def render():
+    print("🎯 Bienvenue dans 'Devine le Nombre ++' !")
+    print("Modes de jeu :")
+    print("1 - Solo contre l'ordinateur")
+    print("2 - Duel entre deux joueurs")
+    print("3 - Quitter le jeu")
+
+    choix = input_int("Choisis un mode (1-3) : ", 1, 3)
+
+    if choix == 1:
+        jeu_solo()
+    elif choix == 2:
+        jeu_duel()
+    else:
+        print("À la prochaine 👋")
+        time.sleep(1)
+
+def handle():
+    #   Creator.route("layouts/games/devine.update", id="#")
+    pass

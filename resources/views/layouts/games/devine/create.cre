@@ -1,0 +1,14 @@
+from main import Creator
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "layouts/games/devine - create")
+# @Creator.view.section("content")
+def render():
+    # 
+    # TODO: Implement the logic to create a new layouts/games/devine
+    # 
+    pass
+
+def handle():
+    # Creator.route("layouts/games/devine.store")
+    pass

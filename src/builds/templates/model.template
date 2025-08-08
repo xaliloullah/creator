@@ -1,0 +1,7 @@
+from src.models import Model
+
+class {name}(Model):
+    def __init__(self):
+        self.table = '{table}'
+        super().__init__(self.table)
+        # 

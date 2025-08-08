@@ -1,0 +1,27 @@
+from main import Creator
+
+
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "Creator")
+@Creator.view.section("content")
+def render():
+    # 
+    Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app="Creator"))
+
+def handle(): 
+    option = Creator.terminal.input("option", options={"1":Creator.lang.get("actions.login"), "2":Creator.lang.get("actions.signup"), "3":Creator.lang.get("sections.settings"), "4":"Calculator", "0":Creator.lang.get("actions.exit")})
+
+    if option == "1":
+        Creator.route("login") 
+    elif option == "2":
+        Creator.route("register") 
+    elif option == "3":
+        Creator.route("register") 
+    elif option == "4":
+        Creator.route("tools.calculator") 
+    elif option == "0":
+        Creator.terminal.clear()
+        if Creator.terminal.input(Creator.lang.get("confirm.exit"), type="confirm", value="yes"):
+            Creator.terminal.comment(Creator.lang.get("messages.goodbye"))
+            exit()

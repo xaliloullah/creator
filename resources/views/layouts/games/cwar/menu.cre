@@ -1,0 +1,12 @@
+from main import Creator 
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "CWAR - MENU")
+@Creator.view.section("content")
+def render():
+    # 
+    option = Creator.terminal.input('option', options={"1":"Nouveau", "2":"Continuer", "3":"Parametre", "0":" Quitter"})
+    #  
+def handle():
+    #   Creator.route("layouts.games.cwar.update", id="#")
+    pass

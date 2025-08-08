@@ -1,0 +1,11 @@
+from main import Creator
+from app.models.games.cwar import CWAR
+# @Creator.view.extend("main")
+# @Creator.view.section("title", "layouts.games.cwar - create")
+# @Creator.view.section("content")
+def render():
+    Creator.terminal.label()
+
+def handle():
+    # Creator.route("layouts.games.cwar.store")
+    pass

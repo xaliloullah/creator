@@ -1,0 +1,14 @@
+from main import Creator    
+
+# @Creator.view.extend("main")
+# @Creator.view.section("title", "layouts.games.cwar - edit")
+# @Creator.view.section("content")
+def render():
+    # 
+    #   TODO: Implement the logic to edite layouts.games.cwar
+    # 
+    pass
+
+def handle():
+    #   Creator.route("layouts.games.cwar.update", id="#")
+    pass

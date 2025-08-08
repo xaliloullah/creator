@@ -1,0 +1,29 @@
+from main import Creator
+from app.models.tools.calculator import Calculator
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "Creator Calculator")
+@Creator.view.section("content")
+def render(): 
+    Creator.terminal.comment(f"Tapez 'help' pour obtenir de l'aide.")
+
+def handle():
+    calc:Calculator = Creator.view.get("calculator")
+
+    while True:
+        qwery:str = Creator.terminal.input(type="text")
+
+        if qwery.lower() in ['exit', 'quit']:
+            Creator.terminal.info("Fermeture de la calculatrice.")
+            break
+        elif qwery.lower() in ['help', 'info']: 
+            Creator.terminal.box(Creator.terminal.list(calc.help()))
+        elif qwery.lower() == 'history':
+            Creator.terminal.list(calc.history(), display=True)
+        elif qwery.lower() in ['clear', 'clean', 'cls']:
+            calc.clear() 
+            Creator.terminal.info("Historique et variables effacés.")
+        elif not qwery:
+            continue
+        else:
+            Creator.terminal.highlight(calc.calculate(qwery))

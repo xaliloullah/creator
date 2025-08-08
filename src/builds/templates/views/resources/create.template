@@ -1,0 +1,14 @@
+from main import Creator
+
+# @Creator.view.extend("main")
+# @Creator.view.section("title", "{name} - create")
+# @Creator.view.section("content")
+def render():
+    # 
+    # TODO: Implement the logic to create a new {name}
+    # 
+    pass
+
+def handle():
+    # Creator.route("{name}.store")
+    pass

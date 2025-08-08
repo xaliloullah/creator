@@ -1,0 +1,22 @@
+from main import Creator
+
+from app.models.tools.devise import Devise
+
+
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "devise")
+@Creator.view.section("content")
+def render():
+    # 
+    # TODO: Implement the logic layouts/tools/devise
+    # 
+    pass
+
+def handle():
+    while True:
+        dev = Devise(value=10000, rate='EUR')
+        # dev.update()
+        dev.convert('XOF')
+        print(f"{dev} {dev.get_current().symbol}")
+        print(dev.rate.symbol)

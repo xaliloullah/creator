@@ -1,0 +1,15 @@
+from main import Creator   
+
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "layouts/games/devine - show")
+# @Creator.view.section("content")
+def render():
+    # 
+    #   TODO: Implement the logic to show a layouts/games/devine
+    # 
+    pass
+
+def handle():
+    #   Creator.route("layouts/games/devine.index")
+    pass

@@ -1,0 +1,5 @@
+APP_NAME={name}  
+APP_LANG={lang}  
+APP_URL=http://localhost  
+APP_DEBUG={debug} 
+APP_KEY={key}

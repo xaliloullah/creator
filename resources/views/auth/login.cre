@@ -1,0 +1,13 @@
+from main import Creator 
+@Creator.view.extend("app")
+@Creator.view.section("title", "LOGIN") 
+@Creator.view.section("content")
+
+def render():
+    Creator.terminal.input(Creator.lang.get("confirm.continue"), type="confirm", value="yes", reject_action=Creator.view.back)
+
+    Creator.request.name = Creator.terminal.input(type="", placehoder = 'name')
+    # email = Creator.terminal.input(placehoder ='email :', type = "email") 
+    Creator.request.password = Creator.terminal.input(placehoder ='password', type="text") 
+
+    Creator.route("login.store")

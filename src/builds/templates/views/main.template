@@ -1,0 +1,29 @@
+from main import Creator
+
+Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app=Creator.name))
+
+option = Creator.terminal.input("option", options={"1":"Connection", "2":"Inscription", "0":" Quitter"})
+if option == "1":
+    Creator.route("login") 
+elif option == "2":
+    Creator.route("register") 
+elif option == "0":
+    Creator.terminal.clear()
+    Creator.terminal.comment(Creator.lang.get("messages.goodbye"))
+    exit()
+
+
+from main import Creator
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "{name} - create")
+# @Creator.view.section("content")
+def render():
+    # 
+    # TODO: Implement the logic to create a new {name}
+    # 
+    pass
+
+def handle():
+    # Creator.route("{name}.store")
+    pass

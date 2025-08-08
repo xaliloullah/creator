@@ -1,0 +1,14 @@
+from main import Creator
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "{name}")
+# @Creator.view.section("content")
+def render():
+    # 
+    # TODO: Implement the logic {name}
+    # 
+    pass
+
+def handle():
+    # Creator.route("{name}")
+    pass
