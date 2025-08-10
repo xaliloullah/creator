@@ -13,9 +13,6 @@ class RegisterController:
         return
 
     @staticmethod
-    @Creator.view.extend("app")
-    @Creator.view.section("title", "REGISTER") 
-    @Creator.view.section("content")
     def create():
         #
         return Creator.view("auth.register")
@@ -31,12 +28,13 @@ class RegisterController:
             user.create(
                 name = request['name'],
                 email = request['email'],
-                password = Creator.hash.make(request['password'])
+                password = request['password']
+                # password = Creator.hash.make(request['password'])
             ) 
-            if Auth.regenerate(user):
-                Creator.request.session.success(Creator.lang.get('auth.succeeded'))
-                return Creator.route('dashboard')
-        return Creator.view.back()
+            Creator.request.session.success(Creator.lang.get('auth.succeeded'))
+        #     if Auth.regenerate(user):
+        #         return Creator.route('dashboard')
+        # return Creator.view.back()
 
     @staticmethod
     def edit(id):

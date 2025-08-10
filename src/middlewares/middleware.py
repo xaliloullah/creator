@@ -4,12 +4,12 @@ class Middleware:
     @classmethod
     def setup(cls):
         try:
-            from routes import middleware
+            from config import middleware
         except ImportError:
             raise ImportError("middleware module not found. Please ensure that the middleware are properly defined and imported.")
 
     @classmethod
-    def register(cls, name: str, middleware): 
+    def register(cls, name:str, middleware): 
         cls.data[name] = middleware
 
     @classmethod

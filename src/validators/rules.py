@@ -1,8 +1,7 @@
 class Rule:  
 
-    def __init__(self, field=None):
-        self.rules = []
-        self.field = field
+    def __init__(self):
+        self.rules = [] 
         
     def required(self):
         self.rules.append("required") 

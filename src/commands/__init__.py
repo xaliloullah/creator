@@ -8,7 +8,7 @@ class Command(argparse.ArgumentParser):
     @classmethod
     def setup(cls):
         try:
-            from routes import command
+            from config import command
         except ImportError:
             raise ImportError("Commands module not found. Please ensure that the commands are properly defined and imported.")
 
@@ -40,8 +40,10 @@ class Command(argparse.ArgumentParser):
         for command in cls.commands:
             command.config(subparsers)
 
-        args = parser.parse_args()
-        if args.author:
+        args = parser.parse_args() 
+        if hasattr(args, 'func'):
+            args.func(args) 
+        elif args.author:
             Creator.terminal.highlight(Creator.author)
         elif args.description: 
             Creator.terminal.quote(Creator.description, Creator.author)
@@ -54,9 +56,6 @@ class Command(argparse.ArgumentParser):
         elif args.update:
             Creator.update() 
         elif args.run:
-            Creator.run()
-            pass
-        elif hasattr(args, 'func'):
-            args.func(args) 
+            Creator.run()  
         else:
             parser.print_help()

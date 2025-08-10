@@ -6,12 +6,11 @@ class Seeder:
     def __init__(self, name=None):
         self.name = name
         self.path = Path.seeds()
-        self.file = File(self.path) 
-        # self.table = database.seeds['name']
+        self.file = File(self.path)  
 
     def create(self):
         try: 
-            self.file.path.join(f"{self.name}.py")
+            self.file.path.seeds(self.name)
             self.file.save(Build.seed(self.name))
             Terminal.success(f"Seed {self.file.name} created successfully.")
         except Exception as e:
@@ -21,14 +20,14 @@ class Seeder:
     def get(self):
         try:
             seeds = self.file.list(endswith=".py")       
-            return sorted(seeds)
+            return sorted(seeds) 
         except Exception as e: 
             Terminal.error(f"{e}") 
             exit()
 
     def run(self, name, action='up'): 
         try:
-            path = self.file.path.join(name)
+            path = self.file.path.seeds(name)
             Task.run(path, action) 
         except Exception as e:
             Terminal.error(f"{e}") 
@@ -39,10 +38,11 @@ class Seeder:
         try:
             if run == 'up': 
                 seeds = self.get() 
-                for seed in seeds: 
-                    self.run(seed, "up")  
-                    Terminal.success(f"Applying seed '{seed}'.")  
-                    alert = {'info': 'seeds applied successfully.'}
+                if seeds:
+                    for seed in seeds: 
+                        Terminal.info(f"Applying seed '{seed}'.")  
+                        self.run(seed, "up")  
+                    alert = {'success': 'seeds applied successfully.'}
                 else:
                     alert = {'warning': 'Nothing to seed...'} 
             if alert:

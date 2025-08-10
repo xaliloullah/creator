@@ -102,7 +102,7 @@ class DictCollection(BaseCollection):
             d = d[key]
         d[keys[-1]] = value
 
-    def dict_to_list(self):
+    def to_list(self):
         return list(self.data.items())
 
 

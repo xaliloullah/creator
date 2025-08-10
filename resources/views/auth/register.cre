@@ -2,12 +2,11 @@ from main import Creator
 @Creator.view.extend("app")
 @Creator.view.section("title", "REGISTER") 
 @Creator.view.section("content")
-
 def render():
     Creator.terminal.input(Creator.lang.get("confirm.continue"), type="confirm", value="yes", reject_action=Creator.view.back)
 
     Creator.request.name = Creator.terminal.input(placeholder ='name', type="text")
     Creator.request.email = Creator.terminal.input(placeholder ='email', type = "email") 
-    Creator.request.password = Creator.terminal.input(placeholder ='password', type="password") 
+    Creator.request.password = Creator.terminal.input(placeholder='password', type="text") 
 
     Creator.route("register.store")

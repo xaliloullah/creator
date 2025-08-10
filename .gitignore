@@ -1,11 +1,9 @@
 # Environments
-.env
-.envrc
+.env 
 .venv
 env/
-venv/
-ENV/
-databases/creator.db
+venv/ 
+databases/*.db
 .vscode
 python
 __pycache__

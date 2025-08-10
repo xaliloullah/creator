@@ -1,7 +1,6 @@
 ├── .env
 ├── .gitignore
 ├── app
-│   ├── commands
 │   ├── controllers
 │   │   ├── games
 │   │   │   ├── CwarController.py
@@ -29,14 +28,19 @@
 │       └── user.py
 ├── config
 │   ├── app.py
+│   ├── command.py
 │   ├── database.py
 │   ├── log.py
+│   ├── middleware.py
 │   └── session.py
 ├── creator
 ├── databases
 │   ├── creator.db
-│   └── migrations
-│       └── 2025_08_08_create_users_table.py
+│   ├── migrations
+│   │   └── 2025_08_08_create_users_table.py
+│   └── seeds
+│       ├── test.py
+│       └── users.py
 ├── docs
 │   └── ARCHITECTURE.md
 ├── lang
@@ -47,7 +51,7 @@
 │       ├── settings.json
 │       └── validation.json
 ├── main.py
-├── README
+├── README.md
 ├── requirements.json
 ├── resources
 │   ├── assets
@@ -89,8 +93,6 @@
 │               └── devise.cre
 ├── routes
 │   ├── auth.py
-│   ├── command.py
-│   ├── middleware.py
 │   └── route.py
 ├── src
 │   ├── application
@@ -127,6 +129,7 @@
 │   │   │   ├── middleware.template
 │   │   │   ├── migration.template
 │   │   │   ├── model.template
+│   │   │   ├── seed.template
 │   │   │   ├── trash
 │   │   │   │   ├── routes.py
 │   │   │   │   └── views.py
@@ -149,6 +152,7 @@
 │   │   ├── make.py
 │   │   ├── migrate.py
 │   │   ├── publish.py
+│   │   ├── seed.py
 │   │   ├── server.py
 │   │   ├── Setting.py
 │   │   ├── uninstall.py
@@ -198,10 +202,11 @@
 │   │   ├── migration.py
 │   │   ├── query.py
 │   │   ├── relation.py
-│   │   └── schema
-│   │       ├── column.py
-│   │       ├── table.py
-│   │       └── __init__.py
+│   │   ├── schema
+│   │   │   ├── column.py
+│   │   │   ├── table.py
+│   │   │   └── __init__.py
+│   │   └── seeder.py
 │   ├── environment
 │   │   └── __init__.py
 │   ├── middlewares
@@ -209,10 +214,16 @@
 │   │   ├── middleware.py
 │   │   └── __init__.py
 │   ├── models
-│   │   ├── array.py
 │   │   ├── auth.py
-│   │   ├── collections.py
-│   │   ├── list.py
+│   │   ├── collections
+│   │   │   ├── array.py
+│   │   │   ├── collections.py
+│   │   │   └── list.py
+│   │   ├── drivers
+│   │   │   ├── database.py
+│   │   │   ├── file.py
+│   │   │   └── __init__.py
+│   │   ├── model.py
 │   │   └── __init__.py
 │   └── validators
 │       ├── password.py
@@ -234,10 +245,12 @@
     ├── data.py
     ├── devine.py
     ├── devise.py
+    ├── hash.py
     ├── injector.py
     ├── route.py
     ├── session.py
     ├── storage.py
     ├── terminal.py
+    ├── validation.py
     ├── views.py
     └── __init__.py

@@ -3,26 +3,26 @@ from src.databases.database import Database
 
 class DB:
     def __init__(self): 
-        self.DB = Database() 
+        self.database = Database() 
         self.sql = ""
         self.values = ()
         self.conditions = ""
         self.attributes = "" 
-        self.placeholder = self.DB.Connection.get_placeholder()
+        self.placeholder = self.database.Connection.get_placeholder()
         # self.collection = Collection
         
         
     def execute(self):
-        self.DB.execute(self.sql, self.values)
+        self.database.execute(self.sql, self.values)
         
     def get(self):
-        return self.DB.fetchall(self.sql, self.values)
+        return self.database.fetchall(self.sql, self.values)
     
     def fetchall(self):
-        return self.DB.fetchall(self.sql, self.values)
+        return self.database.fetchall(self.sql, self.values)
     
     def fetchone(self):
-        return self.DB.fetchone(self.sql, self.values)
+        return self.database.fetchone(self.sql, self.values)
     
     def create(self, table, columns):  
         self.values = ()
@@ -206,7 +206,7 @@ class DB:
         return self.sql
     
     def __call__(self):
-        return self.DB.fetchall(self.sql, self.values)
+        return self.database.fetchall(self.sql, self.values)
 
 #   
 # table = Query()
@@ -218,18 +218,18 @@ class DB:
 #     # def has_one(self, related_table, foreign_key, foreign_id,pk='id'):
 #     #     conditions = {f"{foreign_key}":f"{foreign_id}"}
 #     #     self.Query.select(related_table).where(conditions) 
-#     #     self.attributes = self.DB.fetchone(self.Query.sql,self.Query.values)
+#     #     self.attributes = self.database.fetchone(self.Query.sql,self.Query.values)
 #     #     return self
 
 #     # def has_many(self,related_table, foreign_key, foreign_id, pk='id'): 
 #     #     conditions = {f"{foreign_key}":f"{foreign_id}"}
 #     #     self.Query.select(related_table).where(conditions) 
-#     #     self.attributes = self.DB.fetchall(self.Query.sql, self.Query.values)
+#     #     self.attributes = self.database.fetchall(self.Query.sql, self.Query.values)
 #     #     return self
 
 
 #     # def belongs_to(self, related_table,table, foreign_key=None, foreign_id=None):
 #     #     query = f"""SELECT * FROM {related_table} WHERE id = (SELECT {foreign_key} FROM {table} WHERE id = ?)"""
-#     #     self.attributes = self.DB.fetchall(query, (foreign_id,))    
+#     #     self.attributes = self.database.fetchall(query, (foreign_id,))    
 #     #     return self
  

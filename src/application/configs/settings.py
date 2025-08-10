@@ -34,7 +34,7 @@ class Settings:
     @classmethod 
     def update(cls):
         try:     
-            # cls.update_requirements()
+            cls.update_requirements()
             cls.settings["python"] = f"{sys.version.split()[0]}"
             cls.settings["packages"] = File(Path.requirements()).load(format="json")
             cls.settings["updated_at"]=f"{Date.now()}" 
@@ -138,7 +138,7 @@ class Settings:
         try:
             if not File(path).exists(): 
                 File(path).ensure_exists()
-                Task.execute("venv", path)
+                Task.execute("venv", path.get())
                 print(f"Virtual environment created at {path}")
         except Exception as e:
             raise Exception(e) 
@@ -146,9 +146,9 @@ class Settings:
     @staticmethod
     def activate_venv(path=Path.environment("python")): 
         if os.name == 'nt':
-            script = Path(path).join("Scripts", "Activate.ps1")
+            script = Path(path).join("Scripts/Activate.ps1")
         else:
-            script = Path(path).join("bin", "activate")
+            script = Path(path).join("bin/activate")
             
         if File(script).exists():
             script = File(script).path.absolute()

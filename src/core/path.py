@@ -17,9 +17,10 @@ class Path:
         self.path = path.rstrip("/\\").replace("\\","/") if isinstance(path, str) else path
 
     def get(self) -> str: 
-        return self.path
+        return str(self.path)
 
-    def join(self, *path):
+    def join(self, *paths):  
+        path = [path for path in paths if path is not None]
         self.set(os.path.join(self.path, *path))
         return self
 
@@ -82,11 +83,14 @@ class Path:
         return os.path.splitext(self.basename())[0] 
     
     def make(self): 
-        dir, file = self.split() 
-        if dir:
-            os.makedirs(dir, exist_ok=True)
-        if file:
-            open(self.path, "a").close() 
+        if self.is_file():
+            dir, file = self.split() 
+            if dir:
+                os.makedirs(dir, exist_ok=True)
+            if file:
+                open(self.path, "a").close() 
+        else :
+            os.makedirs(self.path, exist_ok=True)
         return self
     
     def remove(self):
