@@ -34,6 +34,7 @@ class Command(argparse.ArgumentParser):
         parser.add_argument("--python", action="store_true", help="Show the programming language used in the creator tool.") 
         parser.add_argument("--packages", action="store_true", help="Show the packages used in the creator tool.")
         parser.add_argument("--key", action="store_true", help="Show the key used in the creator tool.") 
+        parser.add_argument("--clean", action="store_true", help="Clean the creator tool.") 
         parser.add_argument("--update", action="store_true", help="Update the creator tool.")
         parser.add_argument("--run", "--start", action="store_true", help="Start or run the creator tool.")
 
@@ -53,6 +54,8 @@ class Command(argparse.ArgumentParser):
             Creator.terminal.info(Creator.packages)
         elif args.key:
             Creator.terminal.info(Creator.key) 
+        elif args.clean:
+            Creator.clean() 
         elif args.update:
             Creator.update() 
         elif args.run:

@@ -11,9 +11,7 @@ class Settings:
         try:  
             cls.settings = cls.load()
             cls.settings["name"] = "creator"
-            cls.settings["version"] = "1.0.0"
-            cls.settings["author"] = "Ibrahima Khaliloullah Thiam"
-            cls.settings["description"] = "Creator is a versatile Python framework designed to streamline the development process by providing a comprehensive set of tools and libraries. It supports various databases including MySQL, PostgreSQL, and MongoDB, and offers functionalities for encryption, argument parsing, keyboard interactions, markdown processing, YAML parsing, PDF manipulation, and image processing. The framework is built to be compatible with Python 3.12.4 and includes a wide range of packages to facilitate rapid application development." 
+            cls.settings["version"] = "1.0.0" 
             cls.settings["langs"] = ['en']
             cls.settings["supported_database"] = {
                 "sqlite": "SQLite",
@@ -34,6 +32,7 @@ class Settings:
     @classmethod 
     def update(cls):
         try:     
+            # cls.install_packages()
             cls.update_requirements()
             cls.settings["python"] = f"{sys.version.split()[0]}"
             cls.settings["packages"] = File(Path.requirements()).load(format="json")
@@ -75,19 +74,6 @@ class Settings:
     def install_packages(cls): 
         for package, version in cls.settings["packages"].items(): 
             Task.install(package, version=version)
-    
-    @staticmethod
-    def vscode(path = Path.vscode()):
-        try:  
-            settings = File(path).ensure_exists().load(format="json")
-            
-            settings["files.associations"] = {
-                "*.cre": "python",
-                "creator": "python"
-            }
-            File(path).save(settings, format="json", indent=2)
-        except Exception as e:
-            raise Exception(e)
         
     @staticmethod
     def install_requirements(path=Path.requirements()):
@@ -170,3 +156,17 @@ class Settings:
         
         os.system(script)
         print("Virtual environment deactivated")
+
+
+    @staticmethod
+    def vscode(path = Path.vscode()):
+        try:  
+            settings = File(path).ensure_exists().load(format="json")
+            
+            settings["files.associations"] = {
+                "*.cre": "python",
+                "creator": "python"
+            }
+            File(path).save(settings, format="json", indent=2)
+        except Exception as e:
+            raise Exception(e)

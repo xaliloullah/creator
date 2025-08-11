@@ -28,9 +28,6 @@ class Injector:
                 if dependency is not None:
                     kwargs[name] = dependency
                 else:
-                    raise Exception()   
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs  
-        return self.func(*self.args, **self.kwargs)
+                    raise Exception()     
+        return func(*args, **kwargs)
           

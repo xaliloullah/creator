@@ -40,11 +40,6 @@ class Task:
                 version = version_line.split(":")[1].strip()
               
             requirements = File(Path.requirements().ensure_exists()).load(format="json")
-            
-            # requirements[package] = {
-            #     "package": package, 
-            #     "version": version
-            # }
             requirements[package] = version
             
             File(Path.requirements()).save(requirements, format="json", indent=2) 

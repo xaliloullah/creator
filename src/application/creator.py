@@ -100,6 +100,12 @@ class Creator:
         cls.settings.make_architecture(all=True) 
 
     @classmethod
+    def clean(cls): 
+        cls.terminal.progress_bar(10, 100) 
+        cls.terminal.highlight(cls.build.creator())  
+        cls.file(".").clean() 
+
+    @classmethod
     def update(cls): 
         cls.terminal.progress_bar(10, 100) 
         cls.terminal.highlight(cls.build.creator())  

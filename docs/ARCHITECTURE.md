@@ -1,6 +1,7 @@
 ├── .env
 ├── .gitignore
 ├── app
+│   ├── commands
 │   ├── controllers
 │   │   ├── games
 │   │   │   ├── CwarController.py
@@ -42,16 +43,22 @@
 │       ├── test.py
 │       └── users.py
 ├── docs
-│   └── ARCHITECTURE.md
+│   ├── ARCHITECTURE.md
+│   └── README.md
 ├── lang
-│   └── en
+│   ├── en
+│   │   ├── alert.json
+│   │   ├── app.json
+│   │   ├── password.json
+│   │   ├── settings.json
+│   │   └── validation.json
+│   └── fr
 │       ├── alert.json
 │       ├── app.json
 │       ├── password.json
 │       ├── settings.json
 │       └── validation.json
 ├── main.py
-├── README.md
 ├── requirements.json
 ├── resources
 │   ├── assets
@@ -148,13 +155,12 @@
 │   ├── commands
 │   │   ├── delete.py
 │   │   ├── install.py
-│   │   ├── lang.py
 │   │   ├── make.py
 │   │   ├── migrate.py
 │   │   ├── publish.py
 │   │   ├── seed.py
 │   │   ├── server.py
-│   │   ├── Setting.py
+│   │   ├── settings.py
 │   │   ├── uninstall.py
 │   │   ├── venv.py
 │   │   └── __init__.py

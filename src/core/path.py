@@ -82,15 +82,15 @@ class Path:
     def name(self):
         return os.path.splitext(self.basename())[0] 
     
-    def make(self): 
-        if self.is_file():
-            dir, file = self.split() 
-            if dir:
-                os.makedirs(dir, exist_ok=True)
-            if file:
-                open(self.path, "a").close() 
-        else :
-            os.makedirs(self.path, exist_ok=True)
+    def make(self):  
+        dir, file = self.split() 
+        if dir: 
+            os.makedirs(dir, exist_ok=True)
+        if file:
+            open(self.path, "a").close() 
+        # if self.is_file():
+        # else : 
+        #     os.makedirs(self.path, exist_ok=True)
         return self
     
     def remove(self):

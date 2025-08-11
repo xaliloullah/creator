@@ -28,8 +28,7 @@ class RegisterController:
             user.create(
                 name = request['name'],
                 email = request['email'],
-                password = request['password']
-                # password = Creator.hash.make(request['password'])
+                password = Creator.hash.make(request['password'])
             ) 
             Creator.request.session.success(Creator.lang.get('auth.succeeded'))
         #     if Auth.regenerate(user):
