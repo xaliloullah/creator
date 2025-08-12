@@ -1,4 +1,4 @@
-from src.application.contexts import Session
+from src.contexts.sessions import Session
 from src.middlewares import Middleware
 from main import Creator
 

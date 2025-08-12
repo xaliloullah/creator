@@ -5,6 +5,8 @@ from app.controllers.tools.CalculatorController import CalculatorController
 
 
 Route.register("main", "main", controller=RouteController)
+Route.register("dashboard", "dashboard", controller=RouteController)
+
 Route.controller(CalculatorController, lambda :(
     Route.register("tools.calculator", "calculator"),
     Route.register("tools.calculator.calculate", "calculate"),

@@ -1,0 +1,16 @@
+from main import Creator
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "dashboard")
+@Creator.view.section("content")
+def render():
+    print("welcome !!!")
+    input()
+    # 
+    # TODO: Implement the logic dashboard
+    # 
+    pass
+
+def handle():
+    # Creator.route("dashboard")
+    pass

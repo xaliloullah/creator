@@ -1,10 +1,7 @@
 from main import Creator  
 
-def render():
-    # Creator.request.name = input("name : ")
-    # Creator.request.age = input("age : ")
-    # Creator.request.debug = input("debug : ") 
-
+def render(): 
+    
     Creator.terminal.clear()  
 
     Creator.view.include('includes.header') 

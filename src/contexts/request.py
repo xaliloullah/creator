@@ -1,12 +1,13 @@
-from src.application.contexts import Session
-from src.application.contexts import Response
-from src.validators import Validator
+
 
 class Request:
     data = {}  
     protected = ['data', 'session', 'validator']
 
     def __init__(self, data:dict={}, **kwargs):
+        from src.contexts.sessions import Session
+        from src.contexts.responses import Response
+        from src.validators import Validator
         self.data = data 
         self.session:Session = kwargs.get("session", None)
         self.validator:Validator = kwargs.get("validator", None)  

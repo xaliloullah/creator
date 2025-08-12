@@ -9,6 +9,11 @@ from src.application.configs import Settings, Version
  
 from config import app
 
+
+from src.validators.validator import Validator
+from src.contexts.sessions import Session 
+from src.contexts.request import Request 
+
 class Creator:
     
     settings = Settings
@@ -39,18 +44,19 @@ class Creator:
     http = Http 
     view = View 
     routes = Route 
-    # http = Http
+    http = Http
     # interface =Interface
+
+    session = Session
+    validator = Validator
         
     @classmethod
     def configure(cls, **kwargs):
         try:
             retry = kwargs.get("retry", True)
-            cls.main = kwargs.get("main", "main") 
-            from src.application.contexts import Session, Request 
-            from src.validators.validator import Validator
+            cls.main = kwargs.get("main", "main")   
 
-            cls.request = Request(session = Session(), validator = Validator()) 
+            cls.request = Request(session = cls.session(), validator = cls.validator()) 
             cls.injector.register(Request, cls.request)
             cls.injector.register(Session, cls.request.session)
 

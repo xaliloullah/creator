@@ -1,10 +1,9 @@
-from src.application import Creator 
-
 class Validator:
     def __init__(self) -> None:   
         self.errors = [] 
     
     def validate(self, validate: dict, data: dict): 
+        from src.application import Creator 
         for field, rules in validate.items():
             value = data.get(field)
             for rule in rules:

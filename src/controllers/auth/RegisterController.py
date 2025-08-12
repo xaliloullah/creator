@@ -4,7 +4,7 @@ from src.models.auth import Auth
 from app.models.user import User
 
 class RegisterController:
-    from src.application.contexts import Request
+    from src.contexts.request import Request
 
     
     @staticmethod

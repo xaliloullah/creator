@@ -4,7 +4,7 @@ from app.models.user import User
 from src.validators import Rule
 
 class LoginController:
-    from src.application.contexts import Request
+    from src.contexts.request import Request
 
     @staticmethod
     def index():
@@ -24,7 +24,8 @@ class LoginController:
                 'password': Rule().required().string()
             }):    
             user = User().where(name=request['name']).first() 
-            if Auth.authenticate(user):
+            if user and Creator.hash.check(request['password'], user['password']):
+                Auth.authenticate(user)
                 request.session.success(Creator.lang.get('auth.succeeded'))
                 return Creator.route('dashboard')
             else:
