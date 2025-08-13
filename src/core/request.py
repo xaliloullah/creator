@@ -5,8 +5,7 @@ class Request:
     protected = ['data', 'session', 'validator']
 
     def __init__(self, data:dict={}, **kwargs):
-        from src.contexts.sessions import Session
-        from src.contexts.responses import Response
+        from src.core import Session, Response
         from src.validators import Validator
         self.data = data 
         self.session:Session = kwargs.get("session", None)

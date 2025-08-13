@@ -4,7 +4,7 @@ from app.models.user import User
 from src.validators import Rule
 
 class LoginController:
-    from src.contexts.request import Request
+    from src.core import Request
 
     @staticmethod
     def index():

@@ -3,7 +3,7 @@ from main import Creator
 
 
 class DevineController:
-    from src.application.contexts import Request
+    from src.core import Request
 
 
     @classmethod

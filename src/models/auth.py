@@ -8,6 +8,10 @@ class Auth:
 
 
     @classmethod
+    def login(cls, user:User):
+        pass
+    
+    @classmethod
     def authenticate(cls, user:User):
         if user and cls.session.is_active():
             cls.user = user

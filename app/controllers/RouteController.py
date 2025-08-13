@@ -2,7 +2,7 @@ from main import Creator
 
 
 class RouteController:
-    from src.contexts.request import Request
+    from src.core import Request
 
 
     def main():

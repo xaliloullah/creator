@@ -130,13 +130,8 @@ class MakeCommand(Command):
 
             
         elif args.backup:
-            try: 
-                source = args.source
-                if not source:
-                    source = "/"
-                else:
-                    source = Creator.path("/").join(source)
-                source = source.absolute() 
+            try:  
+                source = Creator.path(".").join(args.source).absolute() 
                 
                 destination = args.destination
                 if not destination:
@@ -147,7 +142,7 @@ class MakeCommand(Command):
                 all = args.all
                 ignore = ["backups", "__pycache__"]
                 if not all: 
-                    ignore.append("utils") 
+                    ignore.append("src") 
                      
                 Creator.file(source).save(destination, format="zip", ignore=ignore) 
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"Backup '{destination}'"))  

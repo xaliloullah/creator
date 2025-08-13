@@ -21,10 +21,6 @@ class Translator:
         cls.source = kwargs.get("source", "auto")
         cls.target = target
         return [cls.translator.translate(text) for text in texts]
-    
-    # @classmethod
-    # def detect_language(cls, text: str):
-    #     return cls.translator.translate_batch(text)
 
     @classmethod
     def supported_languages(cls):

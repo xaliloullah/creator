@@ -4,7 +4,7 @@ from src.models.auth import Auth
 from app.models.user import User
 
 class RegisterController:
-    from src.contexts.request import Request
+    from src.core import Request
 
     
     @staticmethod
@@ -13,8 +13,7 @@ class RegisterController:
         return
 
     @staticmethod
-    def create():
-        #
+    def create(): 
         return Creator.view("auth.register")
 
     @staticmethod

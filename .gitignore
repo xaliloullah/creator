@@ -3,6 +3,7 @@
 .venv
 env/
 venv/ 
+storage
 databases/*.db
 .vscode
 python

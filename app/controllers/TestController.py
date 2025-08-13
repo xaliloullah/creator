@@ -1,8 +1,7 @@
 from main import Creator 
 
-
 class TestController:
-    from src.contexts.request import Request    
+    from src.core import Request    
     
     @staticmethod
     def index(): 
