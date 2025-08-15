@@ -77,10 +77,7 @@ class Task:
                 exec(code, namespace)
                 for function in functions:
                     if function in namespace:
-                        namespace[function]()
-                    # else:
-                    #     raise AttributeError(f"{function} function not found in {source}") 
-            # return namespace
+                        namespace[function]() 
         except Exception as e:
             raise Exception(e)
         

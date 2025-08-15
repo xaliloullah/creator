@@ -4,10 +4,9 @@ from app.models.tools.calculator import Calculator
 @Creator.view.extend("app")
 @Creator.view.section("title", "Creator Calculator")
 @Creator.view.section("content")
-def render(): 
+def view(): 
     Creator.terminal.comment(f"Tapez 'help' pour obtenir de l'aide.")
-
-def handle():
+ 
     calc:Calculator = Creator.view.get("calculator")
 
     while True:

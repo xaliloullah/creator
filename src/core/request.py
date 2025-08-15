@@ -2,17 +2,22 @@
 
 class Request:
     data = {}  
-    protected = ['data', 'session', 'validator']
+    protected = ['data', 'session', 'validator', 'user']
 
     def __init__(self, data:dict={}, **kwargs):
         from src.core import Session, Response
+        
         from src.validators import Validator
+
         self.data = data 
+        self.user = None
         self.session:Session = kwargs.get("session", None)
         self.validator:Validator = kwargs.get("validator", None)  
+        self.session:Session = kwargs.get("session", None)
+        self.response = Response(self.data)
 
     def send(self):
-        return self.data
+        return self.response
 
     def get(self, key):
         return self.data.get(key)

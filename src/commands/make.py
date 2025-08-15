@@ -154,12 +154,16 @@ class MakeCommand(Command):
                 resources = ['index', 'create', 'edit', 'view']
                 for resource in resources:
                     path = Creator.path.views(f"{args.view}.{resource}") 
-                    Creator.file(path).save(getattr(Creator.build.View, resource)(args.view))
+                    if Creator.file(path).exists():
+                        return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"view '{path}'"))
+                    Creator.file(path).save(getattr(Creator.build.View, resource)(path.parent().name()))
                   
                     Creator.terminal.success(Creator.lang.get("success.create", resource=f"View '{path}'"))
             else:
                 path = Creator.path.views(args.view)
-                Creator.file(path).save(Creator.build.View.default(args.view), format="py")
+                if Creator.file(path).exists():
+                    return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"view '{path}'"))
+                Creator.file(path).save(Creator.build.View.default(path.name()), format="py")
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"View '{path}'"))
         else:
             Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"model, controller, migration, backup, or view"))

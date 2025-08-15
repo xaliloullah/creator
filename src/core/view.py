@@ -1,12 +1,10 @@
-from src.core import Path, File, Task 
+from src.core import Path, Task 
 
 
 class View:
     data = {}
     history = [] 
     
-
-
     def __init__(self, path:str=None, *args):
         try: 
             view = self.path(path)
@@ -24,7 +22,7 @@ class View:
     
     @staticmethod
     def show(view:str): 
-        return Task.run(View.path(view), "render", "handle")
+        return Task.run(View.path(view), "view")
     
     @staticmethod
     def path(path):

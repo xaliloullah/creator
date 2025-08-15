@@ -5,11 +5,10 @@ from main import Creator
 @Creator.view.extend("app")
 @Creator.view.section("title", "Creator")
 @Creator.view.section("content")
-def render():
+def view():
     # 
     Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app="Creator"))
-
-def handle(): 
+ 
     option = Creator.terminal.input("option", options={"1":Creator.lang.get("actions.login"), "2":Creator.lang.get("actions.signup"), "3":Creator.lang.get("sections.settings"), "4":"Calculator", "0":Creator.lang.get("actions.exit")})
 
     if option == "1":

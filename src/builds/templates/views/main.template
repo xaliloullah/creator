@@ -12,18 +12,4 @@ elif option == "0":
     Creator.terminal.comment(Creator.lang.get("messages.goodbye"))
     exit()
 
-
-from main import Creator
-
-# @Creator.view.extend("app")
-# @Creator.view.section("title", "{name} - create")
-# @Creator.view.section("content")
-def render():
-    # 
-    # TODO: Implement the logic to create a new {name}
-    # 
-    pass
-
-def handle():
-    # Creator.route("{name}.store")
-    pass
+ 

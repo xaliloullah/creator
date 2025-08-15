@@ -3,12 +3,12 @@ from main import Creator
 # @Creator.view.extend("layouts.main")
 # @Creator.view.section("title", "test")
 # @Creator.view.section("content")
-def render():
+def view():
     # 
-    Creator.request.name = input("name : ")
-    Creator.request.age = input("age : ")
-    Creator.request.debug = input("debug : ")
-     
-
-def handle():
+    Creator.form(
+        name = input("name : "),
+        age = input("age : "),
+        debug = input("debug : "), 
+        ) 
     Creator.route("tests.store")
+     

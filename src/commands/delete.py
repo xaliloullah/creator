@@ -13,6 +13,7 @@ class DeleteCommand(Command):
         parser.add_argument('--middleware', help="Delete a middleware")
         parser.add_argument('--command', help="Delete a command")
         parser.add_argument('--view', help="Delete a view")
+        parser.add_argument('-r', '--resource', action='store_true', help="Create a resource for the controller")
         parser.add_argument('--backup', help="Delete a backup")
         parser.set_defaults(func=cls.handle)
 
@@ -78,12 +79,23 @@ class DeleteCommand(Command):
 
 
         elif args.view:
-            folder = f"{Creator.path.resources(args.view)}.cre" 
-            if Creator.file(folder).exists():
-                Creator.file(folder).delete()
-                Creator.terminal.success(Creator.lang.get("success.delete", resource=f"View '{args.view}'"))
+            if args.resource: 
+                resources = ['index', 'create', 'edit', 'view']
+                for resource in resources:
+                    path = Creator.path.views(f"{args.view}.{resource}") 
+                    if Creator.file(path).exists():
+                        Creator.file(path).delete()
+                        Creator.terminal.success(Creator.lang.get("success.delete", resource=f"View '{path}'")) 
+                    else:
+                        Creator.terminal.error(Creator.lang.get("error.delete", resource=f"View '{path}'"))  
             else:
-                Creator.terminal.error(Creator.lang.get("error.delete", resource=f"View '{args.view}'"))  
+                path = Creator.path.views(args.view)
+                if Creator.file(path).exists(): 
+                    Creator.file(path).delete()
+                    Creator.terminal.success(Creator.lang.get("success.delete", resource=f"View '{path}'"))
+                else:
+                    Creator.terminal.error(Creator.lang.get("error.delete", resource=f"View '{args.view}'"))  
+ 
         else:
             Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"model, controller, migration, backup, or view"))
             

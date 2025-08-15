@@ -1,6 +1,6 @@
 from main import Creator  
 
-def render(): 
+def view(): 
     
     Creator.terminal.clear()  
 

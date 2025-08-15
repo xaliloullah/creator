@@ -11,6 +11,7 @@ from config import app
 
 
 from src.validators.validator import Validator  
+from src.models.auth import Auth
 
 class Creator:
     
@@ -44,7 +45,7 @@ class Creator:
     routes = Route 
     http = Http
     # interface =Interface
-
+    auth = Auth
     session = Session
     validator = Validator
         
@@ -54,10 +55,10 @@ class Creator:
             retry = kwargs.get("retry", True)
             cls.main = kwargs.get("main", "main")   
 
-            cls.request = Request(session = cls.session(), validator = cls.validator()) 
+            cls.request = Request(session=cls.session(), validator=cls.validator()) 
+            cls.auth.config(request = cls.request)
             cls.injector.register(Request, cls.request)
             cls.injector.register(Session, cls.request.session)
-
             cls.name = cls.settings.get("name") 
             cls.version = Version(cls.settings.get("version"))   
             if cls.key:
@@ -136,4 +137,8 @@ class Creator:
     @classmethod
     def route(cls, name, **kwargs): 
         from routes.route import Route
-        Route.dispatch(name, cls.injector,**kwargs) 
+        Route.dispatch(name, cls.injector, **kwargs) 
+
+    @classmethod
+    def form(cls, **kwargs):
+        cls.request.update(kwargs)

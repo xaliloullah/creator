@@ -1,0 +1,37 @@
+<p align="center">{logo}</p>
+
+<p align="center">
+{badges}
+</p>
+
+## About {project}
+
+{description}
+
+{features}
+
+{installation}
+
+{quickstart}
+
+{docs}
+
+{learning}
+
+{sponsors}
+
+## Contributing
+
+{contributing}
+
+## Code of Conduct
+
+{coc}
+
+## Security Vulnerabilities
+
+{security}
+
+## License
+
+{license}

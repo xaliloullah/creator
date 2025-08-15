@@ -1,1 +1,2 @@
-# from main import Creator
+from main import Creator  
+Creator.terminal.title(Creator.view.generate("title"))

@@ -1,16 +1,11 @@
 from main import Creator  
-from src.models.auth import Auth
+
 from app.models.user import User
 from src.validators import Rule
 
 class LoginController:
     from src.core import Request
-
-    @staticmethod
-    def index():
-        #
-        return
-
+ 
     @staticmethod
     def create():
         #
@@ -23,33 +18,18 @@ class LoginController:
                 'name': Rule().required().string(),  
                 'password': Rule().required().string()
             }):    
-            user = User().where(name=request['name']).first() 
-            if user and Creator.hash.check(request['password'], user['password']):
-                Auth.authenticate(user)
+            user = User().where(name=request.name).first() 
+            if user and Creator.hash.check(request.password, user['password']): 
+                request.session.create(user['id'])  
                 request.session.success(Creator.lang.get('auth.succeeded'))
+                # Auth.login(user)
                 return Creator.route('dashboard')
             else:
                 request.session.error(Creator.lang.get('auth.failed'))  
-        
-            return Creator.view.back()
-    
-    @staticmethod
-    def edit(id):
-        #
-        return
+                return Creator.view.back() 
 
     @staticmethod
-    def update(request: Request, id):
-        #
-        return
-
-    @staticmethod
-    def show(id):
-        #
-        return
-
-    @staticmethod
-    def destroy(id):
+    def destroy():
         #
         return
     
