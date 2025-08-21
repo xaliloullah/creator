@@ -6,6 +6,7 @@ use App\Models\Facture;
 use App\Models\Client;
 use App\Models\Produit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FactureController extends Controller
 {
@@ -14,7 +15,7 @@ class FactureController extends Controller
      */
     public function index()
     {
-        $factures = Facture::all();
+        $factures = Auth::user()->Factures;
         return view('dashboard.modules.factures.index', compact('factures'));
     }
 

@@ -146,21 +146,5 @@ class TarifController extends Controller
         $path = '/app/public/images/tarifs/';
         $tarif->delete();
         return back()->with('success', 'Suppression effectué avec succès.');
-    }
-
-    public function statut(Request $request)
-    {
-        // $tarif = Tarif::findOrFail($id);
-        // if ($tarif->statut == true) {
-        //     $tarif->statut = false;
-        //     $alert = 'warning';
-        //     $message = 'Payement annuler.';
-        // } else {
-        //     $tarif->statut = true;
-        //     $alert = 'success';
-        //     $message = 'Pyement effectuer avec success.';
-        // }
-        // $tarif->update();
-        // return back()->with($alert, $message);
-    }
+    } 
 }

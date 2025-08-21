@@ -9,11 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
 
-use App\Models\Bases\Statut;
-use App\Models\Bases\Module;
-use App\Models\Bases\Color;
-// use App\Models\Bases\Devise;
-// use App\Enums\Color;
+use App\Models\Bases\Statut; 
+use App\Models\Bases\Color; 
 use App\Enums\Icon;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,8 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Statut::initialize();
-        Module::initialize();
+        Statut::initialize(); 
         Color::initialize();
 
 

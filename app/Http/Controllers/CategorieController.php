@@ -7,6 +7,7 @@ use App\Models\Bases\Statut;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Bases\RessourceController;
+use Illuminate\Support\Facades\Auth;
 
 class CategorieController extends Controller
 {
@@ -16,7 +17,7 @@ class CategorieController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Categorie::all()->where('user_id', $request->user()->id);
+        $categories = Auth::user()->Categories;
         return view('dashboard.modules.categories.index', compact('categories'));
     }
 
@@ -35,11 +36,11 @@ class CategorieController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240",
             'designation' => "required|string|unique:categories|max:255",
             'categorie_id' => "nullable|exists:categories,id",
-            'tag' => "json|max:4294967296",
-            'parametre' => "json|max:4294967296",
+            'tag' => "max:4294967296",
+            'parametre' => "max:4294967296",
             'description' => "max:65535"
         ]);
 
@@ -103,11 +104,11 @@ class CategorieController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240",
             'designation' => "required|string|unique:categories,designation,$id,id|max:255",
             'categorie_id' => "nullable|exists:categories,id",
-            'tag' => "json|max:4294967296",
-            'parametre' => "json|max:4294967296",
+            'tag' => "max:4294967296",
+            'parametre' => "max:4294967296",
             'description' => "max:65535"
         ]);
         $categorie = Categorie::findOrFail($id);

@@ -1,19 +1,19 @@
 @php
-    $modules = App\Models\Bases\Module::all();
+    $modules = App\Models\Module::all()->where('module_id', null);
 @endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-@include('dashboard.includes.head')
+@include('includes.head')
 
 <body>
-    @include('dashboard.includes.header')
+    @include('includes.header')
 
 
     <div class="container-fluid">
         <div class="row">
-            @include('dashboard.includes.sidebar')
+            @include('includes.sidebar')
             @component('components.alert')
             @endcomponent
             <main class="main-content">
@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    @include('dashboard.includes.js')
+    @include('includes.js')
 
 </body>
 @component('components.modals.logout')

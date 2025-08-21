@@ -25,7 +25,7 @@ class ProduitController extends Controller
      */
     public function create(Request $request)
     {
-        $categories = Categorie::all()->where('user_id', $request->user()->id)->where('categorie_id', null);
+        $categories = Categorie::all()->where('user_id', $request->user()->id);
         return view('dashboard.modules.produits.create', compact('categories'));
     }
 
@@ -35,11 +35,11 @@ class ProduitController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240",
             'designation' => "required|string|unique:produits|max:255",
-            'categorie_id' => "nullable|exists:categories,id",
-            'tag' => "json|max:4294967296",
-            'parametre' => "json|max:4294967296",
+            'categorie_id' => "required|exists:categories,id",
+            'tag' => "max:4294967296",
+            'parametre' => "max:4294967296",
             'description' => "max:65535"
         ]);
 
@@ -48,6 +48,7 @@ class ProduitController extends Controller
         $fields = [
             'designation',
             'type',
+            'categorie_id',
             'description'
         ];
 
@@ -106,11 +107,11 @@ class ProduitController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            'image' => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240",
             'designation' => "required|string|unique:produits,designation,$id,id|max:255",
-            'categorie_id' => "nullable|exists:categories,id",
-            'tag' => "json|max:4294967296",
-            'parametre' => "json|max:4294967296",
+            'categorie_id' => "required|exists:categories,id",
+            'tag' => "max:4294967296",
+            'parametre' => "max:4294967296",
             'description' => "max:65535"
         ]);
         $produit = Produit::findOrFail($id);
@@ -118,6 +119,7 @@ class ProduitController extends Controller
         $fields = [
             'designation',
             'type',
+            'categorie_id',
             'description'
         ];
         foreach ($fields as $field) {

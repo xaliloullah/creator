@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Abonnement;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 class AbonnementController extends Controller
 {
@@ -14,7 +14,7 @@ class AbonnementController extends Controller
      */
     public function index()
     {
-        $abonnements = Abonnement::all();
+        $abonnements = Auth::user()->Abonnements;
         return view('admin.modules.abonnements.index', compact('abonnements'));
     }
 
@@ -29,7 +29,7 @@ class AbonnementController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $model = false)
+    public function store(Request $request)
     {
         $request->validate([
             'user_id' => 'required',
@@ -53,10 +53,10 @@ class AbonnementController extends Controller
         $abonnement->etat = True;
 
         $abonnement->save();
-        if ($model) {
-            return $abonnement;
-        }
-        return back()->with('success', 'Enregistrement effectué avec succès.');
+        return $abonnement;
+        // if ($model) {
+        // }
+        // return back()->with('success', 'Enregistrement effectué avec succès.');
     }
 
     /**

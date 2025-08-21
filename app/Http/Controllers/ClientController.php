@@ -16,7 +16,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Client::all()->where('user_id', Auth::user()->id);
+        $clients = Auth::user()->Clients;
         return view('dashboard.modules.clients.index', compact('clients'));
     }
 

@@ -108,6 +108,13 @@ Route::middleware(['auth', 'verified', 'role:admin|user'])->prefix('dashboard')-
     // });
 });
 
+use App\Http\Controllers\Chats\DiscussionController;
+use App\Http\Controllers\Chats\MessageController;
+Route::middleware(['auth', 'verified', 'role:user'])->prefix('chat')->group(function () {
+    Route::get('/', [RouteController::class, 'chats'])->name('chats');
+    Route::resource('discussions', DiscussionController::class);
+    Route::resource('messages', MessageController::class);
+});
+
 require __DIR__ . '/auth.php';
-require __DIR__ . '/admin.php';
-require __DIR__ . '/chat.php';
+require __DIR__ . '/admin.php'; 

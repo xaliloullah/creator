@@ -114,6 +114,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(VCard::class);
     }
 
+    public function Categories()
+    {
+        return $this->hasMany(Categorie::class);
+    }
+
     public function getEmailStatutAttribute(): Statut
     {
         if ($this->hasVerifiedEmail()) {

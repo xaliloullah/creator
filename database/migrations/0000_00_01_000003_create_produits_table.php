@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('produits', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            // $table->foreignUuid('business_id')->constrained('businesses')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade'); 
             $table->foreignUuid('categorie_id')->constrained('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->string('image')->nullable();
             $table->string('designation')->unique();
-            $table->decimal('prix', 10, 2);
-            $table->integer('duree')->nullable();
+            $table->decimal('prix', 10, 2); 
             $table->integer('notes')->default(0);
             $table->integer('reduction')->nullable();
             $table->text('description')->nullable();

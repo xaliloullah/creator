@@ -14,22 +14,6 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 class PaiementController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -39,11 +23,8 @@ class PaiementController extends Controller
         ]);
 
         try {
-            $paiement = new Paiement;
             $tarif = Tarif::findOrFail($request->tarif_id);
-            $request->user()->assignRole($tarif->roles);
-            $request->user()->givePermissionTo($tarif->permissions);
-            $montant = $tarif->prix;
+            $montant = $tarif->prix; 
             //
 
             $mode_paiement = [
@@ -74,10 +55,7 @@ class PaiementController extends Controller
                     return back();
                     break;
             }
-
-            $paiement->montant = $montant;
-            $paiement->mode_paiement = json_encode($mode_paiement);
-            $paiement->etat = True;
+            
 
             $abonnement_request = [
                 'user_id' => $request->user()->id,
@@ -88,9 +66,15 @@ class PaiementController extends Controller
 
             $abonnement_request = new Request($abonnement_request);
             $abonnement_controller = app()->make(AbonnementController::class);
-            $abonnement = $abonnement_controller->store($abonnement_request, $model = true);
+            $abonnement = $abonnement_controller->store($abonnement_request);
+            $paiement = new Paiement;
+            
+            $request->user()->assignRole($tarif->roles);
+            $request->user()->givePermissionTo($tarif->permissions);
+            $paiement->montant = $montant;
+            $paiement->mode_paiement = json_encode($mode_paiement);
+            $paiement->etat = True;
             $paiement->abonnement_id = $abonnement->id;
-
             $paiement->save();
             return redirect()->route('dashboard')->with('success', 'Paiement réussi !');
         } catch (\Exception $e) {
@@ -153,7 +137,7 @@ class PaiementController extends Controller
                 break;
 
             case 'credit-card':
-                return view('pages.paiements.credit-card', compact('tarif', 'methode'));
+                return view('pages.paiements.stripe', compact('tarif', 'methode'));
                 break;
 
             default:
@@ -174,8 +158,8 @@ class PaiementController extends Controller
         return 'success';
     }
 
-    private function paypal(Request $request) {}
-    private function paypal_success(Request $request)
+    private function paypal(Request $request)  
+    // private function paypal_success(Request $request)
     {
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('services.paypal'));

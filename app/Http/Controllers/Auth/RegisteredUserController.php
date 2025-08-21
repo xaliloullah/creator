@@ -48,6 +48,10 @@ class RegisteredUserController extends Controller
             $user->assignRole(Role::all());
             $user->markEmailAsVerified();
         }
+        else{
+            $user->assignRole(['user']);
+            $user->markEmailAsVerified();
+        }
 
         event(new Registered($user));
 

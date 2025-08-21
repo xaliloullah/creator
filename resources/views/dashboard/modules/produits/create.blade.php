@@ -37,10 +37,10 @@
                                     <label class="form-label">Categorie</label>
                                     <select class="form-select" name="categorie_id">
                                         <option value="" selected disabled>Catégorie</option>
-                                        @include('dashboard.modules.categories.includes.options', [
-                                            'categories' => $categories,
-                                            'depth' => 0,
-                                        ])
+                                        @foreach ($categories as $categorie)
+                                            <option value="{{ $categorie->id }}" @selected(old('categorie_id') == $categorie->id)>
+                                                {{ $categorie->designation }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6">

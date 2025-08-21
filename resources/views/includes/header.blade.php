@@ -1,31 +1,102 @@
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="{{ asset('assets/images/logo.png') }}" class="navbar-brand-logo" alt="" />
-            <span class="navbar-brand-text">{{ config('app.name') }}</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+<!-- Top Navbar -->
+<header class="top-navbar d-flex navbar-light bg-white bg-gradient sticky-top align-items-center px-3 shadow">
+    <div class="navbar-brand d-flex align-items-center">
+        <button class="btn d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+            <i class="bi bi-list fs-4"></i>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#home">Home</a>
+        <a href="{{ route('dashboard') }}" class="text-decoration-none text-dark">
+            <img src="{{ asset('assets/images/logo.png') }}" class="navbar-brand-logo" alt="logo" />
+            <span class="navbar-brand-text notranslate">{{ config('app.name') }}</span>
+        </a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="dropdown">
+            <button type="button" class="btn" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="position-relative">
+                    <i class="bi bi-bell fs-5"></i>
+                    @if (auth()->user()->unreadNotifications->count() > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ count(auth()->user()->unreadNotifications) }}
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    @endif
+                </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end scrollbar scrollbar-md shadow">
+                <li class="dropdown-header text-center card card-ghost sticky-top">
+                    <h6>
+                        Notifications
+                    </h6>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#features">Features</a>
+                @foreach (auth()->user()->unreadNotifications->take(4) as $notification)
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center"
+                            href="{{ route('notifications.show', $notification->id) }}">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="{{ asset('assets/images/logo.png') }}" alt="...">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-bold">
+                                <div class="text-truncate text-capitalize">{{ $notification->data['title'] }}</div>
+                                <div class="text-truncate small text-gray-700">{{ $notification->data['message'] }}
+                                </div>
+                                <div class="small text-gray-500">{{ $notification->created_at->diffForHumans() }}</div>
+                            </div>
+                        </a>
+                    </li>
+                @endforeach
+                <li class="dropdown-footer text-center card card-ghost sticky-bottom">
+                    <a class="dropdown-item small text-gray-500 btn-outline-dark"
+                        href="{{ route('notifications.index') }}">Voir toutes les notifications</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About</a>
+            </ul>
+        </div>
+        <a class="btn" href="#settings" data-bs-toggle="modal" data-bs-target="#settings-modal">
+            <i class="bi bi-gear fs-5"></i>
+        </a>
+        <div class="dropdown">
+            <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                <img src="{{ asset('assets/images/' . auth()->user()->image()) }}" alt="User"
+                    class="rounded-circle img-xs" />
+
+                <span class="d-none d-md-block">{{ auth()->user()->prenom }}
+                    {{ auth()->user()->nom }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                {{-- @admin
+                    <a class="dropdown-item text-info" href="{{ route('admin') }}" target="_blank">
+                        <i class="bi bi-window me-2"></i>
+                        Admin
+                    </a>
+                @endadmin --}}
+                <li>
+                    <a class="dropdown-item text-info" href="{{ route('dashboard') }}">
+                        <i class="bi bi-window-sidebar me-2"></i>
+                        Dashboard
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#services">Services</a>
+                <li>
+                    <a class="dropdown-item" href="{{ route('profile.edit') }}"><i
+                            class="bi bi-person me-2"></i>Profile</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
+                <li>
+                    <a class="dropdown-item" href="#settings" data-bs-toggle="modal" data-bs-target="#settings-modal"><i
+                            class="bi bi-gear me-2"></i>Paramètres</a>
+                </li>
+                <li>
+                    <a id="theme-toggle" href="#theme" class="dropdown-item">
+                        <i id="theme-icon" class="bi bi-moon me-2"></i>
+                        <span id="theme-text">Mode Sombre</span>
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+                <li>
+                    <a class="dropdown-item text-danger" href="#logout" data-bs-toggle="modal"
+                        data-bs-target="#logout-modal"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a>
                 </li>
             </ul>
         </div>
     </div>
-</nav>
+</header>
