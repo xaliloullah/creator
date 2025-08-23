@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'role:admin', 'password.confirm'])->prefix('dashboard')->group(function () {
+Route::middleware(['auth', 'mode', 'verified', 'role:admin', 'password.confirm'])->prefix('dashboard')->group(function () {
     Route::resource('users', UserController::class)->middleware('permission:users');
     Route::resource('modules', ModuleController::class)->middleware('permission:modules');
     Route::resource('tarifs', TarifController::class)->middleware('permission:tarifs');

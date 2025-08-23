@@ -10,7 +10,7 @@
                 <i class="bi bi-three-dots"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow">
-                @foreach (['maintenance' => 'Maintenance', 'production' => 'Production', 'development' => 'Développement', 'staging' => 'Staging (Pré-production)', 'test' => 'Test', 'demo' => 'Démo', 'offline' => 'Hors ligne', 'debug' => 'Debug'] as $key => $mode)
+                @foreach (['maintenance' => 'Maintenance', 'production' => 'Production', 'development' => 'Développement', 'demo' => 'Démo'] as $key => $mode)
                     <li>
                         <a class="dropdown-item @if (settings('mode') == $key) active @endif"
                             href="{{ route('settings.update', ['mode' => $key]) }}">

@@ -1,6 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'Access')
-@section('title2', 'Nouveau')
+@section('subtitle', 'Nouveau')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -35,10 +35,10 @@
             <div class="tab-content" id="components-content">
                 <div class="tab-pane fade show active" id="roles" role="tabpanel" aria-labelledby="roles-tab"
                     tabindex="0">
-                    @include('dashboard.modules.admin.access.roles.create')
+                    @include('dashboard.pages.admin.access.roles.create')
                 </div>
                 <div class="tab-pane fade" id="permission" role="tabpanel" aria-labelledby="permission-tab" tabindex="0">
-                    @include('dashboard.modules.admin.access.permissions.create')
+                    @include('dashboard.pages.admin.access.permissions.create')
                 </div>
             </div>
         </div>

@@ -17,7 +17,7 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Auth::user()->Clients;
-        return view('dashboard.modules.clients.index', compact('clients'));
+        return view('dashboard.pages.clients.index', compact('clients'));
     }
 
     /**
@@ -26,7 +26,7 @@ class ClientController extends Controller
     public function create()
     {
         $statuts = Statut::forState();
-        return view('dashboard.modules.clients.create', compact('statuts'));
+        return view('dashboard.pages.clients.create', compact('statuts'));
     }
 
     /**
@@ -96,7 +96,7 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::findOrFail($id);
-        return view('dashboard.modules.clients.view', compact('client'));
+        return view('dashboard.pages.clients.view', compact('client'));
     }
 
     /**
@@ -106,7 +106,7 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($id);
         $statuts = Statut::forState();
-        return view('dashboard.modules.clients.edit', compact('client', 'statuts'));
+        return view('dashboard.pages.clients.edit', compact('client', 'statuts'));
     }
 
     /**
@@ -193,7 +193,7 @@ class ClientController extends Controller
                         ->orWhere('entreprise', 'like', '%' . $query . '%')
                         ->orWhereJsonContains('telephones', $query);
                 })->get();
-            return view('dashboard.modules.clients.search', compact('clients', 'mode'));
+            return view('dashboard.pages.clients.search', compact('clients', 'mode'));
         }
     }
 }

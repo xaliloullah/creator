@@ -1,6 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'employes')
-@section('title2', 'Details')
+@section('subtitle', 'Details')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>

@@ -19,13 +19,13 @@ class AccessController extends Controller
     {
         $roles = Role::all();
         $permissions = Permission::all();
-        return view('dashboard.modules.admin.access.index', compact('roles', 'permissions'));
+        return view('dashboard.pages.admin.access.index', compact('roles', 'permissions'));
     }
 
     public function create()
     {
         $permissions = Permission::all();
-        return view('dashboard.modules.admin.access.create', compact('permissions'));
+        return view('dashboard.pages.admin.access.create', compact('permissions'));
     }
 
     /**
@@ -68,7 +68,7 @@ class AccessController extends Controller
     {
         $role = Role::findOrFail($id);
         $permissions = Permission::all();
-        return view('dashboard.modules.admin.access.roles.edit', compact('role', 'permissions'));
+        return view('dashboard.pages.admin.access.roles.edit', compact('role', 'permissions'));
     }
 
     public function update_role(Request $request, $id)
@@ -176,7 +176,7 @@ class AccessController extends Controller
     public function edit_permission($id)
     {
         $permission = Permission::findOrFail($id);
-        return view('dashboard.modules.admin.access.permissions.edit', compact('permission'));
+        return view('dashboard.pages.admin.access.permissions.edit', compact('permission'));
     }
 
 

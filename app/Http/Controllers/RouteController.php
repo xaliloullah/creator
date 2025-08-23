@@ -32,7 +32,7 @@ class RouteController extends Controller
 
     public function chats()
     {
-        return view('dashboard.modules.chats.pages.main');
+        return view('dashboard.pages.chats.pages.main');
     }
 
     public function test()

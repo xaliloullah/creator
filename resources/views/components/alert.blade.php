@@ -113,11 +113,11 @@
 
 
 <div class="toast-container position-fixed top-0 end-0 p-3 border-0">
-    <div id="invalid-toast" class="toast align-items-center card-ghost text-danger" role="alert" aria-live="assertive"
-        aria-atomic="true">
+    <div id="invalid-toast" class="toast align-items-center card-ghost border-danger text-danger" role="alert"
+        aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
-                <i class="bi bi-exclamation-triangle"></i> Il y a des erreurs dans le formulaire. Veuillez les corriger.
+                <i class="bi bi-exclamation-triangle-fill me-3"></i> Certaines informations sont incorrectes.
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
                 aria-label="Close"></button>

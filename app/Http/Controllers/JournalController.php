@@ -16,7 +16,7 @@ class journalController extends Controller
     public function index(Request $request)
     {
         $journals = Journal::all();
-        return view('dashboard.modules.journals.index', compact('journals'));
+        return view('dashboard.pages.journals.index', compact('journals'));
     }
 
     /** 
@@ -24,7 +24,7 @@ class journalController extends Controller
      */
     public function create(Request $request)
     {
-        return view('dashboard.modules.journals.create');
+        return view('dashboard.pages.journals.create');
     }
 
     /**
@@ -85,7 +85,7 @@ class journalController extends Controller
     public function show($id)
     {
         $journal = Journal::findOrFail($id);
-        return view('dashboard.modules.journals.view', compact('journal'));
+        return view('dashboard.pages.journals.view', compact('journal'));
     }
 
     /**
@@ -94,7 +94,7 @@ class journalController extends Controller
     public function edit($id)
     {
         $journal = Journal::findOrFail($id);
-        return view('dashboard.modules.journals.edit', compact('journal'));
+        return view('dashboard.pages.journals.edit', compact('journal'));
     }
 
     /**

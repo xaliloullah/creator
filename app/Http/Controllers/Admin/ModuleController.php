@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bases\Permission;
 use App\Models\Module;
 use App\Models\Bases\Statut;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ModuleController extends Controller
     public function index()
     {
         $modules = Module::all();
-        return view('dashboard.modules.admin.modules.index', compact('modules'));
+        return view('dashboard.pages.admin.modules.index', compact('modules'));
     }
 
     /**
@@ -25,7 +26,7 @@ class ModuleController extends Controller
     { 
         $statuts = Statut::forState();
         $modules = Module::all();
-        return view('dashboard.modules.admin.modules.create', compact( 'statuts', 'modules'));
+        return view('dashboard.pages.admin.modules.create', compact( 'statuts', 'modules'));
     }
 
     /**
@@ -66,7 +67,20 @@ class ModuleController extends Controller
                 $module->$field = json_encode($request->$field);
             }
         }
+
         $module->save();
+        $permission = new Permission();
+        $fields = [
+            'name',
+            'designation',
+            'description'
+        ];
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $permission->$field = $module->$field;
+            }
+        } 
+        $permission->save();
         return back()->with('success', 'Enregistrement effectué avec succès.');
     }
 
@@ -76,7 +90,7 @@ class ModuleController extends Controller
     public function show($id)
     {
         $module = Module::findOrFail($id);
-        return view('dashboard.modules.admin.modules.view', compact('module'));
+        return view('dashboard.pages.admin.modules.view', compact('module'));
     }
 
     /**
@@ -87,7 +101,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id); 
         $statuts = Statut::forState();
         $modules = Module::all()->where('id', '!=', $id);
-        return view('dashboard.modules.admin.modules.edit', compact('module','statuts', 'modules'));
+        return view('dashboard.pages.admin.modules.edit', compact('module','statuts', 'modules'));
     }
 
     /**
@@ -99,6 +113,7 @@ class ModuleController extends Controller
             'name' => "required|string|unique:modules,name,$id,id",  
         ]);
         $module = Module::where('id', $id)->first();
+        // $permission = Permission::where('name', $module->name);
         $fields = [
             'name',
             'designation',
@@ -127,6 +142,17 @@ class ModuleController extends Controller
             }
         }
         $module->update();
+        // $fields = [
+        //     'name',
+        //     'designation',
+        //     'description'
+        // ];
+        // foreach ($fields as $field) {
+        //     if ($request->has($field)) {
+        //         $permission->$field = $module->$field;
+        //     }
+        // } 
+        // $permission->save();
         return back()->with('success', 'Modification effectué avec succès.');
     }
 

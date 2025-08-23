@@ -15,7 +15,7 @@ class AbonnementController extends Controller
     public function index()
     {
         $abonnements = Auth::user()->Abonnements;
-        return view('admin.modules.abonnements.index', compact('abonnements'));
+        return view('admin.pages.abonnements.index', compact('abonnements'));
     }
 
     /**
@@ -23,7 +23,7 @@ class AbonnementController extends Controller
      */
     public function create()
     {
-        return view('admin.modules.abonnements.create');
+        return view('admin.pages.abonnements.create');
     }
 
     /**
@@ -65,7 +65,7 @@ class AbonnementController extends Controller
     public function show($id)
     {
         $abonnement = Abonnement::findOrFail($id);
-        return view('admin.modules.abonnements.view', compact('abonnement'));
+        return view('admin.pages.abonnements.view', compact('abonnement'));
     }
 
     /**
@@ -74,7 +74,7 @@ class AbonnementController extends Controller
     public function edit($id)
     {
         $abonnement = Abonnement::findOrFail($id);
-        return view('admin.modules.abonnements.edit', compact('abonnement'));
+        return view('admin.pages.abonnements.edit', compact('abonnement'));
     }
 
     /**

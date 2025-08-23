@@ -17,7 +17,7 @@ class DiscussionController extends Controller
     public function create(Request $request)
     {
         $users = User::where('id', '!=', $request->user()->id)->get();
-        return view('dashboard.modules.chats.discussions.create', compact('users'));
+        return view('dashboard.pages.chats.discussions.create', compact('users'));
     }
 
 
@@ -71,7 +71,7 @@ class DiscussionController extends Controller
     public function show($id)
     {
         $discussion = Discussion::findOrFail($id);
-        return view('dashboard.modules.chats.discussions.view', compact('discussion'));
+        return view('dashboard.pages.chats.discussions.view', compact('discussion'));
     }
 
     public function update(Request $request, $id)

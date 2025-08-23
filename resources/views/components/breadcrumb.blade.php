@@ -5,17 +5,17 @@
             <li class="breadcrumb-item">
                 <a href="{{ route('dashboard') }}" class="text-decoration-none text-dark">Dashboard</a>
             </li>
-            @if (View::hasSection('title2'))
+            @if (View::hasSection('subtitle'))
                 <li class="breadcrumb-item">
                     <a href="{{ url()->previous() }}" class="text-decoration-none text-dark">@yield('title')</a>
                 </li>
-                @if (View::hasSection('title3'))
+                @if (View::hasSection('subsubtitle'))
                     <li class="breadcrumb-item">
-                        <a href="{{ url()->previous() }}" class="text-decoration-none text-dark">@yield('title2')</a>
+                        <a href="{{ url()->previous() }}" class="text-decoration-none text-dark">@yield('subtitle')</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">@yield('title3')</li>
+                    <li class="breadcrumb-item active" aria-current="page">@yield('subsubtitle')</li>
                 @else
-                    <li class="breadcrumb-item active" aria-current="page">@yield('title2')</li>
+                    <li class="breadcrumb-item active" aria-current="page">@yield('subtitle')</li>
                 @endif
             @else
                 <li class="breadcrumb-item active" aria-current="page">@yield('title')</li>

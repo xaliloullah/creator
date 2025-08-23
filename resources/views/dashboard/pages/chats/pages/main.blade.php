@@ -1,4 +1,4 @@
-@extends('dashboard.modules.chats.index')
+@extends('dashboard.pages.chats.index')
 @section('title', 'Chats')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">

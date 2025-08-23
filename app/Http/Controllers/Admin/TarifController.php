@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
+use App\Http\Controllers\NotificationController;
 use App\Models\Tarif;
 use App\Models\Bases\Role;
 use App\Models\Bases\Permission;
 use App\Models\Bases\Statut;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 class TarifController extends Controller
 {
@@ -19,7 +19,7 @@ class TarifController extends Controller
     public function index()
     {
         $tarifs = Tarif::all();
-        return view('dashboard.modules.admin.tarifs.index', compact('tarifs'));
+        return view('dashboard.pages.admin.tarifs.index', compact('tarifs'));
     }
 
     /**
@@ -30,7 +30,7 @@ class TarifController extends Controller
         $roles = Role::all();
         $permissions = Permission::all();
         $statuts = Statut::forState();
-        return view('dashboard.modules.admin.tarifs.create', compact('roles', 'permissions', 'statuts'));
+        return view('dashboard.pages.admin.tarifs.create', compact('roles', 'permissions', 'statuts'));
     }
 
     /**
@@ -81,7 +81,7 @@ class TarifController extends Controller
     public function show($id)
     {
         $tarif = Tarif::findOrFail($id);
-        return view('dashboard.modules.admin.tarifs.view', compact('tarif'));
+        return view('dashboard.pages.admin.tarifs.view', compact('tarif'));
     }
 
     /**
@@ -93,7 +93,7 @@ class TarifController extends Controller
         $roles = Role::all();
         $permissions = Permission::all();
         $statuts = Statut::forState();
-        return view('dashboard.modules.admin.tarifs.edit', compact('tarif', 'roles', 'permissions', 'statuts'));
+        return view('dashboard.pages.admin.tarifs.edit', compact('tarif', 'roles', 'permissions', 'statuts'));
     }
 
     /**
@@ -144,6 +144,7 @@ class TarifController extends Controller
     {
         $tarif = Tarif::findOrFail($id);
         $path = '/app/public/images/tarifs/';
+        
         $tarif->delete();
         return back()->with('success', 'Suppression effectué avec succès.');
     } 

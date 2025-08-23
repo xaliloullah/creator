@@ -15,7 +15,7 @@ class VCardController extends Controller
     public function index(Request $request)
     {
         $vcards = VCard::where('user_id', $request->user()->id)->get();
-        return view('dashboard.modules.vcards.index', compact('vcards'));
+        return view('dashboard.pages.vcards.index', compact('vcards'));
     }
 
     /**
@@ -23,7 +23,7 @@ class VCardController extends Controller
      */
     public function create()
     {
-        return view('dashboard.modules.vcards.create');
+        return view('dashboard.pages.vcards.create');
     }
 
     /**
@@ -80,7 +80,7 @@ class VCardController extends Controller
     public function show($id)
     {
         $vcard = VCard::findOrFail($id);
-        return view('dashboard.modules.vcards.view', compact('vcard'));
+        return view('dashboard.pages.vcards.view', compact('vcard'));
     }
 
     /**
@@ -89,7 +89,7 @@ class VCardController extends Controller
     public function edit($id)
     {
         $vcard = VCard::findOrFail($id);
-        return view('dashboard.modules.vcards.edit', compact('vcard'));
+        return view('dashboard.pages.vcards.edit', compact('vcard'));
     }
 
     /**

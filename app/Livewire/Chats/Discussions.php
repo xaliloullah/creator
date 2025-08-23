@@ -30,6 +30,6 @@ class Discussions extends Component
 
     public function render()
     {
-        return view('dashboard.modules.chats.discussions.index');
+        return view('dashboard.pages.chats.discussions.index');
     }
 }

@@ -24,14 +24,18 @@ class NotificationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {}
+    public function create() {
+        $notif_controller = app()->make(NotificationController::class);
+        $notif_controller->store(Auth::user(), 'Success', 'test de message test de message test de message test de message test de message test de message test de messagetest de message test de message test de message', 'warning');
+        return back();
+    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store($user, $title = 'Notification', $message)
+    public function store($user, $title = 'Notification', $message, $type = 'info')
     {
-        $user->notify(new NotificationCustom($user, $title, $message));
+        $user->notify(new NotificationCustom($user, $title, $message, $type));
     }
 
     /**

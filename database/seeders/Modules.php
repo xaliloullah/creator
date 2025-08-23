@@ -132,6 +132,15 @@ class Modules extends Seeder
             'route' => 'qrcodes.index',
             'module_id' => $app->id,
         ]);
+        Module::create([
+            'name' => 'websites',
+            'designation' => 'Site Web',
+            'color' => 'dark',
+            'icon' => 'bi bi-globe',
+            'lock' => true,
+            'route' => 'websites.index',
+            'module_id' => $app->id,
+        ]);
 
         Module::create([
             'name' => 'emails',
@@ -218,8 +227,8 @@ class Modules extends Seeder
             'designation' => 'Contrats',
             'color' => 'secondary',
             'icon' => 'bi bi-file-earmark',
-            'lock' => true,
             'route' => 'contrats.index',
+            'lock' => true,
             'module_id' => $commerciale->id,
         ]);
 
@@ -228,6 +237,7 @@ class Modules extends Seeder
             'designation' => 'Fournisseurs',
             'color' => 'dark',
             'icon' => 'bi bi-person-check',
+            'link' => '#!',
             'lock' => true,
             'module_id' => $commerciale->id,
         ]);
@@ -247,6 +257,7 @@ class Modules extends Seeder
             'designation' => 'Comptes',
             'color' => 'danger',
             'icon' => 'bi bi-person-circle',
+            'link' => '#!',
             'lock' => true,
             'module_id' => $comptabilite->id,
         ]);
@@ -266,6 +277,7 @@ class Modules extends Seeder
             'designation' => 'Caisses',
             'color' => 'success',
             'icon' => 'bi bi-cash-coin',
+            'link' => '#!',
             'lock' => true,
             'module_id' => $comptabilite->id,
         ]);
@@ -275,8 +287,8 @@ class Modules extends Seeder
             'designation' => 'Paiements',
             'color' => 'success',
             'icon' => 'bi bi-cash-stack',
+            'link' => '#!',
             'lock' => true,
-            'link' => '#',
             'module_id' => $comptabilite->id,
         ]);
 

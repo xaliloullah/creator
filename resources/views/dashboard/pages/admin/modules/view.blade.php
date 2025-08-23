@@ -11,7 +11,7 @@
             <a href="{{ route('modules.index') }}" class="btn btn-outline-dark">
                 <i class="bi bi-list-ul"></i> <span class="d-none d-sm-inline ms-2">Liste</span>
             </a>
-            <a href="{{ route('modules.edit', $module->id) }}" class="btn btn-primary">
+            <a href="{{ route('modules.edit', $module->id) }}" class="btn btn-outline-dark">
                 <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline ms-2">Modifier</span>
             </a>
         </div>

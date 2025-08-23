@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Bases\Role;
 use App\Models\Bases\Permission;
 use App\Models\Bases\Statut;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Http\Request;
@@ -25,7 +24,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('dashboard.modules.admin.users.index', compact('users'));
+        return view('dashboard.pages.admin.users.index', compact('users'));
     }
 
     /**
@@ -36,7 +35,7 @@ class UserController extends Controller
         $roles = Role::all();
         $permissions = Permission::all();
         $statuts = Statut::forUser();
-        return view('dashboard.modules.admin.users.create', compact('roles', 'permissions', 'statuts'));
+        return view('dashboard.pages.admin.users.create', compact('roles', 'permissions', 'statuts'));
     }
 
     /**
@@ -92,7 +91,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return view('dashboard.modules.admin.users.view', compact('user'));
+        return view('dashboard.pages.admin.users.view', compact('user'));
     }
 
     /**
@@ -104,7 +103,7 @@ class UserController extends Controller
         $roles = Role::all();
         $permissions = Permission::all();
         $statuts = Statut::forUser();
-        return view('dashboard.modules.admin.users.edit', compact('user', 'roles', 'permissions', 'statuts'));
+        return view('dashboard.pages.admin.users.edit', compact('user', 'roles', 'permissions', 'statuts'));
     }
 
     /**

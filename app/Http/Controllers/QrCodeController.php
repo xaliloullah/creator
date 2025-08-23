@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\Client; 
 use App\Models\QRcode;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as QR;
+
 use App\Http\Controllers\Bases\RessourceController;
 class QrCodeController extends Controller
 {
@@ -16,7 +15,7 @@ class QrCodeController extends Controller
     public function index()
     {
         $qrcodes = QRcode::all();
-        return view('dashboard.modules.qrcodes.index', compact('qrcodes'));
+        return view('dashboard.pages.qrcodes.index', compact('qrcodes'));
     }
 
     /**
@@ -24,7 +23,7 @@ class QrCodeController extends Controller
      */
     public function create()
     {
-        return view('dashboard.modules.qrcodes.create');
+        return view('dashboard.pages.qrcodes.create');
     }
 
     /**
@@ -57,7 +56,7 @@ class QrCodeController extends Controller
             }
         }
         if ($request->hasfile('image')) {
-            $path = '/app/public/images/QRcodes/';
+            $path = '/assets/images/qrcodes/';
             $ressource_controller = app()->make(RessourceController::class);
             $filename = $ressource_controller->store($request->file('image'), $path, 500, 500);
             $qrcode->image = $filename;
@@ -73,49 +72,9 @@ class QrCodeController extends Controller
 
     public function show($id)
     {
-        $qrcode = QRcode::findOrFail(decrypter($id));
-
-        $content = $qrcode->content;
-        $parametre = json_decode($qrcode->parametre, true);
-        $size = $parametre['size'];
-        $style = $parametre['style'] ?? 'square';
-        $eye = $parametre['eye'] ?? 'square';
-        $ecl = $parametre['error_correction_level'] ?? 'H';
-        $gradient = $parametre['gradient'] ?? 'vertical';
-        [$red, $green, $blue] = $this->hexToRgb($parametre['color'] ?? '#000000');
-        [$bgRed, $bgGreen, $bgBlue] = $this->hexToRgb($parametre['background'] ?? '#000000');
-        if ($parametre['gradient-color'] ?? '') {
-            [$gRed, $gGreen, $gBlue] = $this->hexToRgb($parametre['gradient-color'] ?? '#ffffff');
-        }
-        else{
-            [$gRed, $gGreen, $gBlue] = [$red, $green, $blue];
-        }
-
-        [$eyeRed, $eyeGreen, $eyeBlue] = $this->hexToRgb($parametre['eye-color'] ?? '#000000');
-        [$bgEyeRed, $bgEyeGreen, $bgEyeBlue] = $this->hexToRgb($parametre['background-eye-color'] ?? '#000000');
-
-        $margin = $parametre['margin'] ?? '3';
-        $logo = '/public/assets/images/logo.png';
-
-        $qrCode = QR::size($size)
-            ->encoding('UTF-8')
-            ->color($red, $green, $blue)
-            ->backgroundColor($bgRed, $bgGreen, $bgBlue)
-            ->margin($margin)
-            ->errorCorrection($ecl)
-            ->style($style)
-            ->eye($eye)
-            // ->eyeColor(0, $bgEyeRed, $bgEyeGreen, $bgEyeBlue, $eyeRed, $eyeGreen, $eyeBlue)
-            // ->eyeColor(1, $bgEyeRed, $bgEyeGreen, $bgEyeBlue, $eyeRed, $eyeGreen, $eyeBlue)
-            // ->eyeColor(2, $bgEyeRed, $bgEyeGreen, $bgEyeBlue, $eyeRed, $eyeGreen, $eyeBlue)
-            ->gradient($red, $green, $blue, $gRed, $gGreen, $gBlue, $gradient)
-            ->merge($logo, .3)
-            // public_path('assets/images/qr.png')
-            ->generate($content);
-        // $qrCode;
-        // return response($qrCode)
-        //     ->header('Content-Type', 'image/svg+xml');
-        return view('dashboard.modules.qrcodes.view', compact('qrcode', 'qrCode'));
+        $qrcode = QRcode::findOrFail($id); 
+        $result = $qrcode->generate();
+        return view('dashboard.pages.qrcodes.view', compact('qrcode', 'result'));
     }
 
     /**
@@ -125,7 +84,7 @@ class QrCodeController extends Controller
     {
         $qrcode = QRcode::findOrFail($id);
         $clients = Client::all()->where('etat', true);
-        return view('dashboard.modules.qrcodes.edit', compact('qrcode', 'clients'));
+        return view('dashboard.pages.qrcodes.edit', compact('qrcode', 'clients'));
     }
 
     /**
@@ -136,21 +95,15 @@ class QrCodeController extends Controller
 
         $request->validate([
             'content' => 'required|string',
-            'type' => 'nullable|string',
-            'size' => 'nullable|integer|min:100|max:1000',
-            'foreground_color' => 'nullable|string',
-            'background_color' => 'nullable|string',
-            'image' => 'nullable|string',
-            'error_correction_level' => 'nullable|integer|between:1,3',
-            'margin' => 'nullable|integer|min:0|max:10',
-            'shape' => 'nullable|string',
+            'type' => 'nullable|string', 
+            'image' => 'nullable|string', 
         ]);
         $fields = [
             'content',
             'type'
         ];
 
-
+    try {
         $qrcode = QRcode::where('id', $id)->first();
         foreach ($fields as $field) {
             if ($request->has($field)) {
@@ -177,6 +130,11 @@ class QrCodeController extends Controller
         $qrcode->user_id = $request->user()->id;
         $qrcode->update();
         return back()->with('success', "Modification effectué avec succès.");
+        } catch (\Exception $e) { 
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['error' =>  $e->getMessage()]);
+    }
     }
 
     /**
@@ -192,8 +150,8 @@ class QrCodeController extends Controller
     public function pdf($id)
     {
         $qrcode = QRcode::findOrFail($id);
-        $pdf = Pdf::loadView('dashboard.modules.qrcodes.pdf', compact('qrcode'));
-        return $pdf->download($qrcode->numero . '.pdf');
+        // $pdf = Pdf::loadView('dashboard.pages.qrcodes.pdf', compact('qrcode'));
+        // return $pdf->download($qrcode->numero . '.pdf');
     }
 
     public function archive($id)
@@ -245,22 +203,10 @@ class QrCodeController extends Controller
     public function download($id)
     {
         $qrcode = QRcode::findOrFail($id);
-        return response($qrcode->contact)
-            ->header('Content-Type', 'text/QRcode')
-            ->header('Content-Disposition', 'attachment; filename="' . $qrcode->nom . '.vcf"');
-    }
-    private function hexToRgb($hex)
-    {
-        $hex = str_replace('#', '', $hex);
-        if (strlen($hex) == 3) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
-        }
+        $ressource_controller = app()->make(RessourceController::class); 
+//         return response()->streamDownload(function () {
+//     echo Browsershot::url(route('qrcodes.show', $qrcode->id ))->pdf();
+// }, 'page.pdf');
 
-        if (strlen($hex) == 6) {
-            $rgb = sscanf($hex, "%02x%02x%02x");
-            return $rgb;
-        }
-
-        return null; // Cas où la couleur hex n'est pas valide
     }
 }

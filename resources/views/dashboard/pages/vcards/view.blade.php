@@ -7,9 +7,16 @@
     $foreground = $vcard->parametre['foreground'] ?? '#ffffff';
 @endphp
 @section('title', 'VCard')
-@include('dashboard.includes.head')
+@include('includes.head')
 
 <style>
+    :root {
+        --bs-primary: {{ $primary }};
+        --bs-secondary: {{ $secondary }};
+        --bs-body-bg: {{ $background }};
+        --bs-body-color: {{ $foreground }};
+    }
+
     span {
         color: {{ $primary }}
     }
@@ -42,7 +49,7 @@
                         target="_blank" class="btn shadow" style="background: {{ $secondary }};"><i
                             class="bi bi-geo-alt-fill"></i>
                     </a>
-                    <a href="tel:{{ $vcard->telephones[0] }}" class="btn shadow"
+                    <a href="tel:{{ $vcard->telephones[0] ?? '' }}" class="btn shadow"
                         style="background: {{ $secondary }};"><i class="bi bi-telephone-fill"></i>
                     </a>
                     <a href="{{ route('vcard.download', $vcard->id) }}" class="btn shadow"
@@ -94,7 +101,7 @@
             </div>
         </div>
     @endif
-    <div class="card mb-4 border-0 shadow-lg" style="background: {{ $foreground }}; color:{{ $secondary }}">
+    <div class="card mb-4 border-0 shadow" style="background: {{ $foreground }}; color:{{ $secondary }}">
         <div class="card-body">
             <h2 class="h5"><i class="bi bi-globe me-3"></i>Site Web</h2>
             <ul class="list-style">
@@ -104,6 +111,7 @@
             </ul>
         </div>
     </div>
+    @include('includes.js')
 </body>
 
 </html>

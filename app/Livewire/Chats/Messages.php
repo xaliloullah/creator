@@ -94,6 +94,6 @@ class Messages extends Component
 
     public function render()
     {
-        return view('dashboard.modules.chats.messages.index');
+        return view('dashboard.pages.chats.messages.index');
     }
 }

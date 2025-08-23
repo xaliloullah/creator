@@ -7,7 +7,7 @@
     $foreground = $resume->parametre['foreground'] ?? '#ffffff';
 @endphp
 @section('title', "CV - $resume->prenom $resume->nom")
-@include('dashboard.includes.head')
+@include('includes.head')
 
 <style>
     span {
@@ -287,6 +287,7 @@
             </div>
         </div>
     </div>
+    @include('includes.js')
 </body>
 
 </html>

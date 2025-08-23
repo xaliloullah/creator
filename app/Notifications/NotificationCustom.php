@@ -13,14 +13,16 @@ class NotificationCustom extends Notification
     protected $user;
     protected $title;
     protected $message;
+    protected $type;
     /**
      * Create a new notification instance.
      */
-    public function __construct($user, $title, $message)
+    public function __construct(object $user, string $title, string $message, string $type)
     {
         $this->user = $user;
         $this->title = $title;
         $this->message = $message;
+        $this->type = $type;
     }
     /**
      * Get the notification's delivery channels.
@@ -49,6 +51,7 @@ class NotificationCustom extends Notification
         return [
             'title' => $this->title,
             'message' => $this->message,
+            'type' => $this->type,
         ];
     }
     /**
@@ -61,6 +64,7 @@ class NotificationCustom extends Notification
         return [
             'title' => $this->title,
             'message' => $this->message,
+            'type' => $this->type,
         ];
     }
 }

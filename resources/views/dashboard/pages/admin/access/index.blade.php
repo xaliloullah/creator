@@ -1,7 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'Access')
-@section('title2', 'Liste')
-
+@section('subtitle', 'Liste')
 @section('content')
     @push('styles')
         <link rel="stylesheet" href="{{ asset('assets/css/datatables/bootstrap.css') }}">
@@ -30,10 +29,10 @@
     </ul>
     <div class="tab-content" id="components-content">
         <div class="tab-pane fade show active" id="roles" role="tabpanel" aria-labelledby="roles-tab" tabindex="0">
-            @include('dashboard.modules.admin.access.roles.index')
+            @include('dashboard.pages.admin.access.roles.index')
         </div>
         <div class="tab-pane fade" id="permission" role="tabpanel" aria-labelledby="permission-tab" tabindex="0">
-            @include('dashboard.modules.admin.access.permissions.index')
+            @include('dashboard.pages.admin.access.permissions.index')
         </div>
     </div>
 

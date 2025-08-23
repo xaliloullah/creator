@@ -16,7 +16,7 @@ class FactureController extends Controller
     public function index()
     {
         $factures = Auth::user()->Factures;
-        return view('dashboard.modules.factures.index', compact('factures'));
+        return view('dashboard.pages.factures.index', compact('factures'));
     }
 
     /**
@@ -26,7 +26,7 @@ class FactureController extends Controller
     {
         $clients = Client::all();
         $produits = Produit::all();
-        return view('dashboard.modules.factures.create', compact('clients', 'produits'));
+        return view('dashboard.pages.factures.create', compact('clients', 'produits'));
     }
 
     /**
@@ -79,7 +79,7 @@ class FactureController extends Controller
         $facture = Facture::findOrFail(decrypter($id));
         // $facture->parametre = json_decode($facture->parametre ?? '{}', true);
         // $facture->articles = json_decode($facture->articles ?? '{}', true);
-        return view('dashboard.modules.factures.view', compact('facture'));
+        return view('dashboard.pages.factures.view', compact('facture'));
     }
 
     /**
@@ -89,7 +89,7 @@ class FactureController extends Controller
     {
         $facture = Facture::findOrFail($id);
         $clients = Client::all();
-        return view('dashboard.modules.factures.edit', compact('facture', 'clients'));
+        return view('dashboard.pages.factures.edit', compact('facture', 'clients'));
     }
 
     /**

@@ -1,25 +1,25 @@
 @extends('dashboard.index')
-@section('title', 'resto')
-@section('title2', 'Nouveau')
+@section('title', 'service')
+@section('subtitle', 'Nouveau')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0">Ajouter une nouvelle resto</h1>
+            <h1 class="h3 mb-0">Ajouter une nouvelle service</h1>
             <p class="text-muted mb-0">
-                Remplissez le formulaire ci-dessous pour creer un resto.
+                Remplissez le formulaire ci-dessous pour creer un service.
                 <small class="d-block mt-1">Le symbole <span class="text-danger">*</span> indique un champ
                     obligatoire.</small>
             </p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('resto.index') }}" class="btn btn-outline-dark">
+            <a href="{{ route('service.index') }}" class="btn btn-outline-dark">
                 <i class="bi bi-list-ul"></i><span class="d-none d-sm-inline ms-2">Liste</span>
             </a>
         </div>
     </div>
 
     <!-- Form Card -->
-    <form action="{{ route('resto.store') }}" method="POST" enctype="multipart/form-data" class="validate">
+    <form action="{{ route('service.store') }}" method="POST" enctype="multipart/form-data" class="validate">
         @csrf
         <div class="row">
             <div class="col-lg-8">
@@ -34,7 +34,7 @@
                                         placeholder="Désignation" value="{{ old('designation') }}" required />
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label">Type de resto/label>
+                                    <label class="form-label">Type de service/label>
                                     <input type="text" class="form-control" id="type" name="type"
                                         placeholder="type ex : restaurant" value="{{ old('type') }}" />
                                 </div>
@@ -166,8 +166,8 @@
                                 <div class="col-12">
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input" id="popular"
-                                            name="parametre[popular]" @if (old('parametre.popular', $resto->parametre['popular'] ?? false)) checked @endif>
-                                        <label class="form-check-label" for="popular">Marquer comme resto
+                                            name="parametre[popular]" @if (old('parametre.popular', $service->parametre['popular'] ?? false)) checked @endif>
+                                        <label class="form-check-label" for="popular">Marquer comme service
                                             populaire</label>
                                     </div>
                                 </div>

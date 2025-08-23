@@ -7,7 +7,7 @@
                 Liste des devis
                 <a href="{{ route('devis.create') }}" class="float-right btn btn-sm btn-success btn-icon-split">
                     <span class="icon text-white-50">
-                        <i class="fas fa-plus"></i>
+                        <i class="bi bi-plus"></i>
                     </span>
                     <span class="text">Ajouter</span>
                 </a>
@@ -53,14 +53,14 @@
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-400"></i>
+                                            <i class="bi bi-ellipsis-h fa-sm fa-fw text-gray-400"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
                                             @if ($devi->archive == false)
                                                 <a href="{{ route('devis.archive', $devi->id) }}" class="dropdown-item">
                                                     <span class="icon">
-                                                        <i class="fas fa-archive"></i>
+                                                        <i class="bi bi-archive"></i>
                                                     </span>
                                                     <span class="text">Archiver</span>
                                                 </a>
@@ -68,13 +68,13 @@
                                             <a href="{{ route('devis.show', crypter($devi->id)) }}" target="_blank"
                                                 class="dropdown-item">
                                                 <span class="icon">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i class="bi bi-eye"></i>
                                                 </span>
                                                 <span class="text">Consulter</span>
                                             </a>
                                             <a href="{{ route('devis.edit', $devi->id) }}" class="dropdown-item">
                                                 <span class="icon">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="bi bi-edit"></i>
                                                 </span>
                                                 <span class="text">Modifier</span>
                                             </a>
@@ -82,7 +82,7 @@
                                                 <a href="{{ route('devis.etat', $devi->id) }}"
                                                     class="dropdown-item text-danger">
                                                     <span class="icon">
-                                                        <i class="fas fa-times"></i>
+                                                        <i class="bi bi-times"></i>
                                                     </span>
                                                     <span class="text">Désactiver</span>
                                                 </a>
@@ -90,7 +90,7 @@
                                                 <a href="{{ route('devis.etat', $devi->id) }}"
                                                     class="dropdown-item text-success">
                                                     <span class="icon">
-                                                        <i class="fas fa-check"></i>
+                                                        <i class="bi bi-check"></i>
                                                     </span>
                                                     <span class="text">Activer</span>
                                                 </a>
@@ -99,7 +99,7 @@
                                                 <a href="{{ route('devis.statut', $devi->id) }}"
                                                     class="dropdown-item text-danger">
                                                     <span class="icon">
-                                                        <i class="fas fa-times"></i>
+                                                        <i class="bi bi-times"></i>
                                                     </span>
                                                     <span class="text">Refusé</span>
                                                 </a>
@@ -107,7 +107,7 @@
                                                 <a href="{{ route('devis.statut', $devi->id) }}"
                                                     class="dropdown-item text-success">
                                                     <span class="icon">
-                                                        <i class="fas fa-check"></i>
+                                                        <i class="bi bi-check"></i>
                                                     </span>
                                                     <span class="text">Validé</span>
                                                 </a>
@@ -116,7 +116,7 @@
                                             <a href="#" class="dropdown-item text-danger" data-toggle="modal"
                                                 data-target="#delete-devi-{{ $devi->id }}">
                                                 <span class="icon ">
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="bi bi-trash"></i>
                                                 </span>
                                                 <span class="text">Supprimer</span>
                                             </a>

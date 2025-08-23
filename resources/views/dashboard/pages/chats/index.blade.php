@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-@include('dashboard.includes.head')
+@include('includes.head')
 
 <body>
-    @include('dashboard.includes.header')
+    @include('includes.header')
 
     <div class="container-fluid">
         <div class="row">
-            @include('dashboard.modules.chats.includes.sidebar')
+            @include('dashboard.pages.chats.includes.sidebar')
             @component('components.alert')
             @endcomponent
             <main class="main-content">
@@ -16,7 +16,7 @@
             </main>
         </div>
     </div>
-    @include('dashboard.includes.js')
+    @include('includes.js')
 </body>
 
 @component('components.modals.logout')

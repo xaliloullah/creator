@@ -18,7 +18,7 @@ class CategorieController extends Controller
     public function index(Request $request)
     {
         $categories = Auth::user()->Categories;
-        return view('dashboard.modules.categories.index', compact('categories'));
+        return view('dashboard.pages.categories.index', compact('categories'));
     }
 
     /**
@@ -27,7 +27,7 @@ class CategorieController extends Controller
     public function create(Request $request)
     {
         $categories = Categorie::all()->where('user_id', $request->user()->id)->where('categorie_id', null);
-        return view('dashboard.modules.categories.create', compact('categories'));
+        return view('dashboard.pages.categories.create', compact('categories'));
     }
 
     /**
@@ -85,7 +85,7 @@ class CategorieController extends Controller
     public function show($id)
     {
         $categorie = Categorie::findOrFail($id);
-        return view('dashboard.modules.categories.view', compact('categorie'));
+        return view('dashboard.pages.categories.view', compact('categorie'));
     }
 
     /**
@@ -95,7 +95,7 @@ class CategorieController extends Controller
     {
         $categorie = Categorie::findOrFail($id);
         $categories = Categorie::all()->where('user_id', $request->user()->id)->where('categorie_id', null);
-        return view('dashboard.modules.categories.edit', compact('categorie', 'categories'));
+        return view('dashboard.pages.categories.edit', compact('categorie', 'categories'));
     }
 
     /**

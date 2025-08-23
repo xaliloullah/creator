@@ -1,6 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'Produits')
-@section('title2', 'Nouveau')
+@section('subtitle', 'Nouveau')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -37,10 +37,10 @@
                                     <label class="form-label">Categorie</label>
                                     <select class="form-select" name="categorie_id">
                                         <option value="" selected disabled>Catégorie</option>
-                                        @include('dashboard.modules.categories.includes.options', [
-                                            'categories' => $categories,
-                                            'depth' => 0,
-                                        ])
+                                        @foreach ($categories as $categorie)
+                                            <option value="{{ $categorie->id }}" @selected(old('categorie_id') == $categorie->id)>
+                                                {{ $categorie->designation }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6">

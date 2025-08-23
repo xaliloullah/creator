@@ -22,22 +22,27 @@ use App\Http\Controllers\RH\PosteController;
 use App\Http\Controllers\RH\EmployeController;
 use App\Http\Controllers\RH\PointageController;
 
+use App\Http\Controllers\Chats\DiscussionController;
+use App\Http\Controllers\Chats\MessageController;
+use App\Http\Controllers\WebsiteController; 
 use Illuminate\Support\Facades\Route;
 
+Route::middleware(['mode'])->group(function () { 
+
 Route::controller(RouteController::class)->group(function () {
-    Route::get('/', 'accueil')->name('accueil');
-    // Route::get('/admin-creator', 'admin')->name('admin')->middleware(['auth', 'verified', 'role:admin', 'password.confirm']);
+    Route::get('/', 'accueil')->name('accueil'); 
 });
 
 
 
 
 Route::get('vcard/download-{id}', [VCardController::class, 'download'])->name('vcard.download');
-Route::get('vcard-{id}', [VCardController::class, 'show'])->name('vcard');
-Route::get('resume-{id}', [ResumeController::class, 'show'])->name('resume');
-Route::get('devis-{id}', [DeviController::class, 'show'])->name('devis');
-Route::get('factures-{id}', [FactureController::class, 'show'])->name('factures');
-Route::get('services-{id}', [ServiceController::class, 'show'])->name('services');
+Route::get('vcard-{id}', [VCardController::class, 'show'])->name('vcards.show');
+Route::get('resume-{id}', [ResumeController::class, 'show'])->name('resumes.show');
+Route::get('devis-{id}', [DeviController::class, 'show'])->name('devis.show');
+Route::get('factures-{id}', [FactureController::class, 'show'])->name('factures.show');
+Route::get('services-{id}', [ServiceController::class, 'show'])->name('services.show');
+Route::get('websites-{id}', [WebsiteController::class, 'show'])->name('websites.show');
 
 
 
@@ -75,19 +80,21 @@ Route::middleware(['auth', 'verified', 'role:admin|user'])->prefix('dashboard')-
     // notifications
     Route::resource('notifications', NotificationController::class);
     // factures
-    Route::resource('factures', FactureController::class)->middleware('permission:factures');
+    Route::resource('factures', FactureController::class)->middleware('permission:factures')->except('show');
     // devis
-    Route::resource('devis', DeviController::class)->middleware('permission:devis');
+    Route::resource('devis', DeviController::class)->middleware('permission:devis')->except('show');
     // contrats
-    Route::resource('contrats', ContratController::class)->middleware('permission:contrats');
+    Route::resource('contrats', ContratController::class)->middleware('permission:contrats')->except('show');
     // vcards
-    Route::resource('vcards', VCardController::class)->middleware('permission:vcards');
+    Route::resource('vcards', VCardController::class)->middleware('permission:vcards')->except('show');
     // resumes
-    Route::resource('resumes', ResumeController::class)->middleware('permission:resumes');
+    Route::resource('resumes', ResumeController::class)->middleware('permission:resumes')->except('show');
     // qrcodes
-    Route::resource('qrcodes', QrCodeController::class)->middleware('permission:qrcodes');
+    Route::resource('qrcodes', QrCodeController::class)->middleware('permission:qrcodes')->except('show');
     // services
-    Route::resource('services', ServiceController::class)->middleware('permission:services');
+    Route::resource('services', ServiceController::class)->middleware('permission:services')->except('show');
+    // websites
+    Route::resource('websites', WebsiteController::class)->middleware('permission:websites')->except('show');
 
     // articles 
     Route::resource('categories', CategorieController::class)->middleware('permission:categories');
@@ -108,13 +115,14 @@ Route::middleware(['auth', 'verified', 'role:admin|user'])->prefix('dashboard')-
     // });
 });
 
-use App\Http\Controllers\Chats\DiscussionController;
-use App\Http\Controllers\Chats\MessageController;
+
 Route::middleware(['auth', 'verified', 'role:user'])->prefix('chat')->group(function () {
     Route::get('/', [RouteController::class, 'chats'])->name('chats');
     Route::resource('discussions', DiscussionController::class);
     Route::resource('messages', MessageController::class);
 });
 
-require __DIR__ . '/auth.php';
+});
+
 require __DIR__ . '/admin.php'; 
+require __DIR__ . '/auth.php';

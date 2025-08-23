@@ -1,7 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'VCards')
-@section('title2', 'Liste')
-
+@section('subtitle', 'Liste')
 @section('content')
     @push('styles')
         <link rel="stylesheet" href="{{ asset('assets/css/datatables/bootstrap.css') }}">
@@ -35,9 +34,9 @@
                         <tr>
                             <td>{{ $vcard->prenom }} {{ $vcard->nom }}</td>
                             <td class="no-select">
-                                <a data-copy="{{ route('vcard', $vcard->id) }}" href="{{ route('vcard', $vcard->id) }}"
-                                    target="_blank">
-                                    {{ Str::limit(route('vcard', $vcard->id), 30) }}
+                                <a data-copy="{{ route('vcards.show', $vcard->id) }}"
+                                    href="{{ route('vcards.show', $vcard->id) }}" target="_blank">
+                                    {{ Str::limit(route('vcards.show', $vcard->id), 30) }}
                                 </a>
                                 <button class="btn btn-sm btn-outline-dark ms-3" onclick="copy(this)">
                                     <i class="bi bi-copy"></i>

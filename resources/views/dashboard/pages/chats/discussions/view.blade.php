@@ -1,4 +1,4 @@
-@extends('dashboard.modules.chats.index')
+@extends('dashboard.pages.chats.index')
 @section('title', 'Chats')
 @section('content')
     @livewire('chats.messages', ['discussion' => $discussion])

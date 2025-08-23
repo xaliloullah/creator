@@ -14,7 +14,7 @@
         {{-- <div wire:poll='load_messages'> --}}
         <div class="">
             @forelse ($messages ?? [] as $message)
-                @include('dashboard.modules.chats.messages.view', ['message' => $message])
+                @include('dashboard.pages.chats.messages.view', ['message' => $message])
             @empty
         </div>
         <div class="text-center p-4 my-3 bg-light border rounded-lg shadow-sm">
@@ -25,7 +25,7 @@
         @endforelse
         <div class="card card-ghost shadow-lg sticky-bottom">
             <div class="card-body p-1">
-                @include('dashboard.modules.chats.messages.create')
+                @include('dashboard.pages.chats.messages.create')
             </div>
         </div>
     </div>

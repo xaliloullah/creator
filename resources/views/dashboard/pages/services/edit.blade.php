@@ -1,32 +1,32 @@
 @extends('dashboard.index')
-@section('title', 'restos')
-@section('title2', 'Modifier')
+@section('title', 'services')
+@section('subtitle', 'Modifier')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0">Modifier un resto</h1>
+            <h1 class="h3 mb-0">Modifier un service</h1>
             <p class="text-muted mb-0">
-                Mettez à jour les informations du resto en remplissant le formulaire ci-dessous.
+                Mettez à jour les informations du service en remplissant le formulaire ci-dessous.
                 <small class="d-block mt-1">Le symbole <span class="text-danger">*</span> indique un champ
                     obligatoire.</small>
             </p>
 
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('restos.index') }}" class="btn btn-outline-dark">
+            <a href="{{ route('services.index') }}" class="btn btn-outline-dark">
                 <i class="bi bi-list-ul"></i><span class="d-none d-sm-inline ms-2">Liste</span>
             </a>
-            <a href="{{ route('restos.show', $resto->id) }}" class="btn btn-outline-dark" target="_blank">
+            <a href="{{ route('services.show', $service->id) }}" class="btn btn-outline-dark" target="_blank">
                 <i class="bi bi-eye"></i><span class="d-none d-sm-inline ms-2">Consulter</span>
             </a>
-            <a href="{{ route('restos.create') }}" class="btn btn-outline-dark">
+            <a href="{{ route('services.create') }}" class="btn btn-outline-dark">
                 <i class="bi bi-plus-circle"></i><span class="d-none d-sm-inline ms-2">Nouveau</span>
             </a>
         </div>
     </div>
 
     <!-- Form Card -->
-    <form action="{{ route('restos.update', $resto->id) }}" method="POST" enctype="multipart/form-data"
+    <form action="{{ route('services.update', $service->id) }}" method="POST" enctype="multipart/form-data"
         class="validate">
         @csrf
         @method('PUT')
@@ -61,7 +61,7 @@
                                             <div class="text-center mb-3">
                                                 <h5 class="mb-3">Image</h5>
                                                 <div class="image-container rounded-circle img-lg shadow">
-                                                    <img src="{{ asset('assets/images/' . $resto->image()) }}"
+                                                    <img src="{{ asset('assets/images/' . $service->image()) }}"
                                                         alt="image"
                                                         class="image-preview img-square image mx-auto d-block" />
                                                     <label for="image" class="image-overlay">
@@ -83,26 +83,26 @@
                                         <div class="col-md-12">
                                             <label class="form-label">Désignation <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" id="designation" name="designation"
-                                                value="{{ old('designation', $resto->designation) }}"
+                                                value="{{ old('designation', $service->designation) }}"
                                                 placeholder="Désignation" required />
                                         </div>
                                         <div class="col-md-12">
-                                            <label class="form-label">Type de resto </label>
+                                            <label class="form-label">Type de service </label>
                                             <input type="text" class="form-control" id="type" name="type"
-                                                value="{{ old('type', $resto->type) }}" placeholder="type" />
+                                                value="{{ old('type', $service->type) }}" placeholder="type" />
                                         </div>
                                         {{-- <div class="col-md-6">
                                             <label class="form-label">Email</label>
                                             <div class="input-group">
                                                 <input type="email" class="form-control" id="email" name="email"
-                                                    placeholder="email" value="{{ old('email', $resto->email) }}" />
+                                                    placeholder="email" value="{{ old('email', $service->email) }}" />
                                                 <span class="input-group-text">@</span>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <label class="form-label">Telephones</label>
                                             <select class="form-select tags" multiple name="telephones[]">
-                                                @foreach ($resto->telephones as $telephone)
+                                                @foreach ($service->telephones as $telephone)
                                                     <option value="{{ $telephone }}" selected>{{ $telephone }}
                                                     </option>
                                                 @endforeach
@@ -120,7 +120,7 @@
                                         <label class="form-label" for="parametre[primary]">Couleur Primaire</label>
                                         <div class="input-group color-picker mb-4">
                                             <input type="color" class="color-input color-option shadow border-0"
-                                                value="{{ old('parametre.primary', $resto->parametre['primary'] ?? '#4e73df') }}"
+                                                value="{{ old('parametre.primary', $service->parametre['primary'] ?? '#4e73df') }}"
                                                 id="parametre[primary]" name="parametre[primary]"
                                                 title="Choisissez votre couleur" />
                                             <input type="text" class="color-code form-control form-control-sm"
@@ -135,7 +135,7 @@
                                         <label class="form-label" for="parametre[secondary]">Couleur Secondaire</label>
                                         <div class="input-group color-picker mb-4">
                                             <input type="color" class="color-input color-option shadow border-0"
-                                                value="{{ old('parametre.secondary', $resto->parametre['secondary'] ?? '#858796') }}"
+                                                value="{{ old('parametre.secondary', $service->parametre['secondary'] ?? '#858796') }}"
                                                 id="parametre[secondary]" name="parametre[secondary]"
                                                 title="Choisissez votre couleur" />
                                             <input type="text" class="color-code form-control form-control-sm"
@@ -150,7 +150,7 @@
                                         <label class="form-label" for="parametre[background]">Couleur Arrière plan</label>
                                         <div class="input-group color-picker mb-4">
                                             <input type="color" class="color-input color-option shadow border-0"
-                                                value="{{ old('parametre.background', $resto->parametre['background'] ?? '#f8f9fc') }}"
+                                                value="{{ old('parametre.background', $service->parametre['background'] ?? '#f8f9fc') }}"
                                                 id="parametre[background]" name="parametre[background]"
                                                 title="Choisissez votre couleur" />
                                             <input type="text" class="color-code form-control form-control-sm"
@@ -165,7 +165,7 @@
                                         <label class="form-label" for="parametre[foreground]">Couleur Premier plan</label>
                                         <div class="input-group color-picker mb-4">
                                             <input type="color" class="color-input color-option shadow border-0"
-                                                value="{{ old('parametre.foreground', $resto->parametre['foreground'] ?? '#ffffff') }}"
+                                                value="{{ old('parametre.foreground', $service->parametre['foreground'] ?? '#ffffff') }}"
                                                 id="parametre[foreground]" name="parametre[foreground]"
                                                 title="Choisissez votre couleur" />
                                             <input type="text" class="color-code form-control form-control-sm"
@@ -192,7 +192,7 @@
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="radio" name="statut"
                                                         id="statut-{{ $statut->value }}" value="{{ $statut->value }}"
-                                                        @if (old('statut', $resto->statut->value) == $statut->value) checked @endif required />
+                                                        @if (old('statut', $service->statut->value) == $statut->value) checked @endif required />
                                                     <label class="form-check-label badge bg-{{ $statut->color }}"
                                                         for="statut-{{ $statut->value }}">{{ $statut->name }}</label>
                                                 </div>
@@ -200,12 +200,12 @@
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Description</label>
-                                            <textarea class="form-control editor" id="description" name="description" placeholder="Description">{{ $resto->description }}</textarea>
+                                            <textarea class="form-control editor" id="description" name="description" placeholder="Description">{{ $service->description }}</textarea>
                                         </div>
                                         {{-- <div class="col-12">
                                             <label class="form-label">Condition</label>
                                             <select class="form-select tags" multiple name="condition[]">
-                                                @foreach (json_decode($resto->condition, true) ?? [] as $tag)
+                                                @foreach (json_decode($service->condition, true) ?? [] as $tag)
                                                     <option value="{{ $tag }}" selected>{{ $tag }}</option>
                                                 @endforeach
                                             </select>
@@ -213,7 +213,7 @@
                                         <div class="col-12">
                                             <label class="form-label">Tags</label>
                                             <select class="form-select tags" multiple name="tags[]">
-                                                @foreach ($resto->tags as $tag)
+                                                @foreach ($service->tags as $tag)
                                                     <option value="{{ $tag }}" selected>{{ $tag }}
                                                     </option>
                                                 @endforeach
@@ -222,7 +222,7 @@
                                         <div class="col-md-12">
                                             <label class="form-label">Site Web</label>
                                             <select class="form-select tags" multiple name="site_web[]">
-                                                @foreach ($resto->site_web as $site_web)
+                                                @foreach ($service->site_web as $site_web)
                                                     <option value="{{ $site_web }}" selected>{{ $site_web }}
                                                     </option>
                                                 @endforeach
@@ -237,7 +237,7 @@
                                 <div class="mb-4">
                                     <h5 class="mb-3">Réseaux Sociaux</h5>
                                     <div id="reseaux_sociaux-container" class="col-12 row g-3 sortable">
-                                        @forelse ($resto->reseaux_sociaux as $index => $reseaux_sociaux)
+                                        @forelse ($service->reseaux_sociaux as $index => $reseaux_sociaux)
                                             <div class="card shadow col-12 reseaux_sociaux-section">
                                                 <div class="card-body">
                                                     <div class="form-group row g-1">
@@ -342,7 +342,7 @@
 
 
                 <script>
-                    let reseaux_sociauxIndex = {{ count((array) $resto->reseaux_sociaux) + 1 }};
+                    let reseaux_sociauxIndex = {{ count((array) $service->reseaux_sociaux) + 1 }};
 
                     function addReseauxSociaux(button) {
                         const icon = button.dataset.icon;
@@ -396,7 +396,7 @@
             <div class="col-lg-4 d-none d-sm-block">
                 <div class="card shadow-lg sticky-top overflow-hidden rounded-4 h-25">
                     <div class="card-header shadow">Aperçu</div>
-                    <iframe src="{{ route('restos.show', $resto->id) }}" class="w-100 h-100 border-0"></iframe>
+                    <iframe src="{{ route('services.show', $service->id) }}" class="w-100 h-100 border-0"></iframe>
                 </div>
 
                 {{-- <div class="card card-ghost shadow-lg">

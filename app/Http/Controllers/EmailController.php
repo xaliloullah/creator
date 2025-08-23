@@ -15,12 +15,12 @@ class EmailController extends Controller
     public function index()
     {
         $emails = Email::all();
-        return view('dashboard.modules.emails.index', compact('emails'));
+        return view('dashboard.pages.emails.index', compact('emails'));
     }
 
     public function create()
     {
-        return view('dashboard.modules.emails.create');
+        return view('dashboard.pages.emails.create');
     }
 
     public function store(Request $request)
@@ -57,7 +57,7 @@ class EmailController extends Controller
     public function show($id)
     {
         $email = Email::findOrFail(decrypter($id));
-        return view('dashboard.modules.emails.view', compact('email'));
+        return view('dashboard.pages.emails.view', compact('email'));
     }
 
     /**
@@ -66,7 +66,7 @@ class EmailController extends Controller
     public function edit($id)
     {
         $email = Email::findOrFail($id);
-        return view('dashboard.modules.emails.edit', compact('email'));
+        return view('dashboard.pages.emails.edit', compact('email'));
     }
 
     /**

@@ -1,7 +1,6 @@
 @extends('dashboard.index')
-@section('title', 'restos')
-@section('title2', 'Liste')
-
+@section('title', 'services')
+@section('subtitle', 'Liste')
 @section('content')
     @push('styles')
         <link rel="stylesheet" href="{{ asset('assets/css/datatables/bootstrap.css') }}">
@@ -10,10 +9,10 @@
     @endpush
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0">Mes restos</h1>
-            <p class="text-muted mb-0">Retrouvez ci-dessous tous vos restos disponibles dans l'application.</p>
+            <h1 class="h3 mb-0">Mes services</h1>
+            <p class="text-muted mb-0">Retrouvez ci-dessous tous vos services disponibles dans l'application.</p>
         </div>
-        <a href="{{ route('restos.create') }}" class="btn btn-outline-dark">
+        <a href="{{ route('services.create') }}" class="btn btn-outline-dark">
             <i class="bi bi-plus-circle"></i><span class="d-none d-sm-inline ms-2">Nouveau</span>
         </a>
     </div>
@@ -33,17 +32,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($restos as $resto)
+                    @foreach ($services as $service)
                         <tr>
-                            <td>{{ $resto->designation }}</td>
-                            <td>{{ $resto->prix }}</td>
-                            <td>{{ $resto->duree }}</td>
-                            <td>{{ $resto->reduction }}</td>
+                            <td>{{ $service->designation }}</td>
+                            <td>{{ $service->prix }}</td>
+                            <td>{{ $service->duree }}</td>
+                            <td>{{ $service->reduction }}</td>
                             <td>
-                                @component('components.tags', ['badge' => $resto->statut])
+                                @component('components.tags', ['badge' => $service->statut])
                                 @endcomponent
                             </td>
-                            <td>{{ $resto->created_at }}</td>
+                            <td>{{ $service->created_at }}</td>
                             <td class="no-select">
                                 <div class="dropdown">
                                     <button type="button" class="btn btn-sm btn-icon" data-bs-toggle="dropdown">
@@ -51,20 +50,20 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow">
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('restos.show', $resto->id) }}"><i
+                                            <a class="dropdown-item" href="{{ route('services.show', $service->id) }}"><i
                                                     class="bi bi-eye me-2"></i>Consulter</a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('restos.edit', $resto->id) }}"><i
+                                            <a class="dropdown-item" href="{{ route('services.edit', $service->id) }}"><i
                                                     class="bi bi-pencil-square me-2"></i>Modifier</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider" />
                                         </li>
                                         <li>
-                                            <a class="dropdown-item text-danger" href="#delete-resto-{{ $resto->id }}"
+                                            <a class="dropdown-item text-danger" href="#delete-service-{{ $service->id }}"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#delete-resto-{{ $resto->id }}"><i
+                                                data-bs-target="#delete-service-{{ $service->id }}"><i
                                                     class="bi bi-trash me-2"></i>Supprimer</a>
                                         </li>
                                     </ul>
@@ -77,10 +76,10 @@
         </div>
     </div>
 
-    @foreach ($restos as $resto)
-        <div class="modal fade" id="delete-resto-{{ $resto->id }}" tabindex="-1"
-            aria-labelledby="resto-{{ $resto->id }}-label" aria-hidden="true">
-            @component('components.modals.delete', ['action' => route('restos.destroy', $resto->id)])
+    @foreach ($services as $service)
+        <div class="modal fade" id="delete-service-{{ $service->id }}" tabindex="-1"
+            aria-labelledby="service-{{ $service->id }}-label" aria-hidden="true">
+            @component('components.modals.delete', ['action' => route('services.destroy', $service->id)])
             @endcomponent
         </div>
     @endforeach

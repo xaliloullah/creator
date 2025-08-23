@@ -13,7 +13,7 @@ class DeviController extends Controller
     public function index()
     {
         $devis = Devi::all();
-        return view('dashboard.modules.devis.index', compact('devis'));
+        return view('dashboard.pages.devis.index', compact('devis'));
     }
 
     /**
@@ -21,7 +21,7 @@ class DeviController extends Controller
      */
     public function create()
     {
-        return view('dashboard.modules.devis.create');
+        return view('dashboard.pages.devis.create');
     }
 
     /**
@@ -67,7 +67,7 @@ class DeviController extends Controller
     public function show($id)
     {
         $devi = Devi::findOrFail(decrypter($id));
-        return view('dashboard.modules.devis.view', compact('devi'));
+        return view('dashboard.pages.devis.view', compact('devi'));
     }
 
     /**
@@ -76,7 +76,7 @@ class DeviController extends Controller
     public function edit($id)
     {
         $devi = Devi::findOrFail($id);
-        return view('dashboard.modules.devis.edit', compact('devi'));
+        return view('dashboard.pages.devis.edit', compact('devi'));
     }
 
     /**

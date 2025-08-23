@@ -1,6 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'Resumes')
-@section('title2', 'Modifier')
+@section('subtitle', 'Modifier')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -32,16 +32,16 @@
         <div class="row">
             <div class="col-lg-8">
 
-                @include('dashboard.modules.resumes.includes.profil')
-                @include('dashboard.modules.resumes.includes.styles')
-                @include('dashboard.modules.resumes.includes.experiences')
-                @include('dashboard.modules.resumes.includes.formations')
-                @include('dashboard.modules.resumes.includes.certifications')
-                @include('dashboard.modules.resumes.includes.competences')
-                @include('dashboard.modules.resumes.includes.langues')
-                @include('dashboard.modules.resumes.includes.reseaux_sociaux')
-                @include('dashboard.modules.resumes.includes.interets')
-                @include('dashboard.modules.resumes.includes.liens')
+                @include('dashboard.pages.resumes.includes.profil')
+                @include('dashboard.pages.resumes.includes.styles')
+                @include('dashboard.pages.resumes.includes.experiences')
+                @include('dashboard.pages.resumes.includes.formations')
+                @include('dashboard.pages.resumes.includes.certifications')
+                @include('dashboard.pages.resumes.includes.competences')
+                @include('dashboard.pages.resumes.includes.langues')
+                @include('dashboard.pages.resumes.includes.reseaux_sociaux')
+                @include('dashboard.pages.resumes.includes.interets')
+                @include('dashboard.pages.resumes.includes.liens')
 
                 <div class="card card-ghost shadow-lg sticky-bottom">
                     <div class="card-body p-3">

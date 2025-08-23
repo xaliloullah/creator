@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 @section('title', 'Docs')
-@include('dashboard.includes.head')
+@include('includes.head')
 
 <body>
     <div class="container my-5">
@@ -135,10 +135,24 @@
                 <a href="https://livewire.laravel.com/" target="_blank" class="text-decoration-none">
                     <div class="card shadow-sm">
                         <div class="card-body d-flex align-items-center">
-                            <i class="bi bi-infinity fs-1 text-purple me-3"></i>
+                            <i class="bi bi-infinity fs-1 text-danger me-3"></i>
                             <div>
                                 <h5 class="card-title">Livewire</h5>
                                 <p class="card-text">Composants interactifs pour Laravel.</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Livewire -->
+            <div class="col">
+                <a href="https://michalsnik.github.io/aos/" target="_blank" class="text-decoration-none">
+                    <div class="card shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="bi bi-file-play fs-1 text-warning me-3"></i>
+                            <div>
+                                <h5 class="card-title">AOS</h5>
+                                <p class="card-text">Animate On Scroll Library.</p>
                             </div>
                         </div>
                     </div>
@@ -175,7 +189,7 @@
             </div>
         </div>
     </div>
-    @include('dashboard.includes.js')
+    @include('includes.js')
 </body>
 @component('components.modals.components')
 @endcomponent

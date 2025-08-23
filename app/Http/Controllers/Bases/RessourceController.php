@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Bases;
 use App\Http\Controllers\Controller;
 
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
+use Intervention\Image\Drivers\Gd\Driver; 
+use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 // use Illuminate\Http\Request;
@@ -113,25 +112,20 @@ class RessourceController extends Controller
         return back()->with('error', 'Fichier introuvable ou invalide.');
     }
 
-    public function qrcode($size = 100, $color = '#000', $background = '#fff', $text = 'qrcode')
-    {
-        [$red, $green, $blue] = $this->hexToRgb($color);
-        [$bgRed, $bgGreen, $bgBlue] = $this->hexToRgb($background);
+    // public function qrcode($size = 100, $color = '#000', $background = '#fff', $text = 'qrcode')
+    // {
+    //     [$red, $green, $blue] = $this->hexToRgb($color);
+    //     [$bgRed, $bgGreen, $bgBlue] = $this->hexToRgb($background);
 
-        $qrcode = QrCode::size($size)
-            ->color($red, $green, $blue)
-            ->backgroundColor($bgRed, $bgGreen, $bgBlue)
-            ->generate($text);
-        return $qrcode;
-    }
+    //     $qrcode = QrCode::size($size)
+    //         ->color($red, $green, $blue)
+    //         ->backgroundColor($bgRed, $bgGreen, $bgBlue)
+    //         ->generate($text);
+    //     return $qrcode;
+    // }
 
-    private function hexToRgb($hex)
-    {
-        $hex = str_replace('#', '', $hex);
-        if (strlen($hex) == 3) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
-        }
-        $rgb = sscanf($hex, "%02x%02x%02x");
-        return $rgb;
-    }
+     public function pdf($url, $path){
+        Browsershot::url($url)
+            ->save($path);
+     }
 }

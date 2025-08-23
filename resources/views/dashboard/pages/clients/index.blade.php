@@ -1,7 +1,6 @@
 @extends('dashboard.index')
 @section('title', 'clients')
-@section('title2', 'Liste')
-
+@section('subtitle', 'Liste')
 @section('content')
     @push('styles')
         <link rel="stylesheet" href="{{ asset('assets/css/datatables/bootstrap.css') }}">

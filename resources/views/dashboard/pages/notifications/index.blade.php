@@ -1,111 +1,66 @@
 @extends('dashboard.index')
 @section('title', 'Notifications')
-@section('content')
-    <main class="col py-3 main-content">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col">
-                <h1 class="h3">Notifications</h1>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Titre</th>
-                                        <th width='50%'>Message</th>
-                                        <th>Envoyée</th>
-                                        <th>statut</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($notifications as $notification)
-                                        <tr>
-                                            <td>{{ $notification->data['title'] }}</td>
-                                            <td>{{ Str::limit($notification->data['message'], 30, '...') }}</td>
-                                            <td><small> {{ $notification->created_at->diffForHumans() }} </small></td>
-                                            <td>
-                                                @if ($notification->read_at)
-                                                    <span class="badge badge-success">{{ 'lue' }}</span>
-                                                @else
-                                                    <span class="badge badge-warning">{{ 'non lue' }}</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button"
-                                                        id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-400"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                        aria-labelledby="dropdownMenuLink">
-                                                        @if ($notification->archive == false)
-                                                            <a href="{{ route('notifications.archive', $notification->id) }}"
-                                                                class="dropdown-item">
-                                                                <span class="icon">
-                                                                    <i class="fas fa-archive"></i>
-                                                                </span>
-                                                                <span class="text">Archiver</span>
-                                                            </a>
-                                                        @endif
-                                                        <a href="{{ route('notifications.show', $notification->id) }}"
-                                                            class="dropdown-item">
-                                                            <span class="icon">
-                                                                <i class="fas fa-eye"></i>
-                                                            </span>
-                                                            <span class="text">Consulter</span>
-                                                        </a>
-                                                        @if ($notification->read_at)
-                                                            <a href="{{ route('notifications.statut', $notification->id) }}"
-                                                                class="dropdown-item text-danger">
-                                                                <span class="icon">
-                                                                    <i class="fas fa-times"></i>
-                                                                </span>
-                                                                <span class="text">marquer comme non lue</span>
-                                                            </a>
-                                                        @else
-                                                            <a href="{{ route('notifications.statut', $notification->id) }}"
-                                                                class="dropdown-item text-success">
-                                                                <span class="icon">
-                                                                    <i class="fas fa-check"></i>
-                                                                </span>
-                                                                <span class="text">marquer comme lue</span>
-                                                            </a>
-                                                        @endif
-                                                        <div class="dropdown-divider"></div>
-                                                        <a href="#" class="dropdown-item text-danger"
-                                                            data-toggle="modal"
-                                                            data-target="#delete-notification-{{ $notification->id }}">
-                                                            <span class="icon ">
-                                                                <i class="fas fa-trash"></i>
-                                                            </span>
-                                                            <span class="text">Supprimer</span>
-                                                        </a>
-                                                    </div>
-                                                </div>
+@section('subtitle', 'Mes notifications')
 
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Mes notifications</h1>
+        <p class="text-muted mb-0">Retrouvez toutes vos notifications récentes.</p>
+    </div>
+    <a href="#" class="btn btn-outline-dark">
+        <i class="bi bi-bell me-1"></i> Marquer tout comme lu
+    </a>
+</div>
+
+<div class="list-group shadow-sm">
+    @php
+        $icons = [
+            'success' => ['bg' => 'bg-success', 'text' => 'text-success', 'icon' => 'bi-check-circle-fill'],
+            'warning' => ['bg' => 'bg-warning', 'text' => 'text-warning', 'icon' => 'bi-exclamation-triangle-fill'],
+            'error' => ['bg' => 'bg-danger', 'text' => 'text-danger', 'icon' => 'bi-x-circle-fill'],
+            'info' => ['bg' => 'bg-info', 'text' => 'text-info', 'icon' => 'bi-info-circle-fill'],
+            'default' => ['bg' => 'bg-secondary', 'text' => 'text-secondary', 'icon' => 'bi-bell-fill'],
+        ];
+    @endphp
+
+    @forelse ($notifications as $notification)
+        @php
+            $type = $notification->data['type'] ?? 'default';
+            $icon = $icons[$type] ?? $icons['default'];
+        @endphp
+
+        <a href="{{ route('notifications.show', $notification->id) }}"
+           class="list-group-item list-group-item-action d-flex align-items-start gap-3 py-3 mb-3
+           @if(is_null($notification->read_at)) list-group-item-info @endif"
+           style="border-radius: 0.5rem; transition: background 0.2s;">
+           
+            <div class="flex-shrink-0">
+                <div class="{{ $icon['bg'] }} bg-opacity-10 {{ $icon['text'] }} rounded-circle d-flex align-items-center justify-content-center"
+                     style="width: 48px; height: 48px;">
+                    <i class="bi {{ $icon['icon'] }} fs-5"></i>
                 </div>
             </div>
+
+            <div class="flex-fill">
+                <div class="fw-bold">{{ $notification->data['title'] ?? 'Notification' }}</div>
+                <div class="text-muted small">{{ Str::limit($notification->data['message'] ?? '', 100) }}</div>
+            </div>
+
+            <div class="text-end text-muted small flex-shrink-0">
+                {{ $notification->created_at->diffForHumans() }}
+            </div>
+        </a>
+    @empty
+        <div class="list-group-item text-center text-muted py-4">
+            Aucune notification pour le moment.
         </div>
-    </main>
-    @foreach ($notifications as $notification)
-        <div class="modal fade" id="delete-notification-{{ $notification->id }}" tabindex="-1"
-            aria-labelledby="notification-{{ $notification->id }}Label" aria-hidden="true">
-            @component('components.modal-delete', ['action' => route('notifications.destroy', $notification->id)])
-            @endcomponent
-        </div>
-    @endforeach
+    @endforelse
+</div>
+
+<div class="mt-3 text-center">
+    <a href="{{ route('notifications.index') }}" class="btn btn-outline-secondary">
+        Voir toutes les notifications
+    </a>
+</div>
 @endsection

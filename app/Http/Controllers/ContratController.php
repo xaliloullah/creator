@@ -14,7 +14,7 @@ class ContratController extends Controller
     public function index()
     {
         $contrats = Contrat::all();
-        return view('dashboard.modules.contrats.index', compact('contrats'));
+        return view('dashboard.pages.contrats.index', compact('contrats'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ContratController extends Controller
     public function create()
     {
         $clients = Client::all()->where('etat', true);
-        return view('dashboard.modules.contrats.create', compact('clients'));
+        return view('dashboard.pages.contrats.create', compact('clients'));
     }
 
     /**
@@ -66,7 +66,7 @@ class ContratController extends Controller
     public function show($id)
     {
         $contrat = Contrat::findOrFail(decrypter($id));
-        return view('dashboard.modules.contrats.view', compact('contrat'));
+        return view('dashboard.pages.contrats.view', compact('contrat'));
     }
 
     /**
@@ -76,7 +76,7 @@ class ContratController extends Controller
     {
         $contrat = Contrat::findOrFail($id);
         $clients = Client::all()->where('etat', true);
-        return view('dashboard.modules.contrats.edit', compact('contrat', 'clients'));
+        return view('dashboard.pages.contrats.edit', compact('contrat', 'clients'));
     }
 
     /**

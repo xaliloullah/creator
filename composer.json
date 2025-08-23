@@ -18,6 +18,7 @@
         "livewire/livewire": "^3.5",
         "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.13",
         "srmklive/paypal": "^3.0",
         "stripe/stripe-php": "^16.3"

@@ -34,7 +34,5 @@
             @component('components.tags', ['tags' => $tarif->tags, 'color' => $tarif->parametre['color'] ?? ''])
             @endcomponent
         </div>
-
-
     </div>
 </div>

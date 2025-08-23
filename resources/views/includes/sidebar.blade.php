@@ -9,7 +9,7 @@
             @endforeach
         </ul>
         <div class="card card-ghost shadow-lg mt-auto sticky-bottom mb-3 p-3">
-            <a href="#" class="btn btn-outline-dark"></a>
+            <a href="#" class="btn btn-outline-dark">{{ auth()->user()->prenom }} {{ auth()->user()->nom }}</a>
         </div>
     </div>
 </div>

@@ -13,10 +13,11 @@ use App\Models\Admin\Setting;
 
 if (!function_exists('formatDate')) {
     function formatDate($date)
-    {
+    { 
         return Carbon::parse($date)->format('d/m/Y');
     }
 }
+
 if (!function_exists('formatTime')) {
     function formatTime($time)
     {
@@ -29,7 +30,12 @@ if (!function_exists('formatDateTime')) {
         return Carbon::parse($datetime)->format('d/m/Y à H:i');
     }
 }
-
+if (!function_exists('formatDateHuman')) {
+    function formatDateHuman($date)
+    { 
+        return Carbon::parse($date)->diffForHumans();
+    }
+}
 if (!function_exists('crypter')) {
     function crypter($id)
     {
@@ -53,12 +59,7 @@ if (!function_exists('decrypter')) {
 }
 
 
-if (!function_exists('devise')) {
-    // function devise($amount, $decimals = 2, $separator = ',', $thousand = ' ')
-    // {
-    //     return number_format($amount, $decimals, $separator, $thousand);
-    // }
-
+if (!function_exists('devise')) { 
     function devise($value = null, $rate = null)
     {
         $devise = new Devise($value);

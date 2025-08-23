@@ -15,7 +15,7 @@ class ResumeController extends Controller
     public function index(Request $request)
     {
         $resumes = Resume::where('user_id', $request->user()->id)->get();
-        return view('dashboard.modules.resumes.index', compact('resumes'));
+        return view('dashboard.pages.resumes.index', compact('resumes'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ResumeController extends Controller
      */
     public function create()
     {
-        return view('dashboard.modules.resumes.create');
+        return view('dashboard.pages.resumes.create');
     }
 
     /**
@@ -79,7 +79,7 @@ class ResumeController extends Controller
     public function show($id)
     {
         $resume = Resume::findOrFail($id);
-        return view('dashboard.modules.resumes.view', compact('resume'));
+        return view('dashboard.pages.resumes.view', compact('resume'));
     }
 
     /**
@@ -88,7 +88,7 @@ class ResumeController extends Controller
     public function edit($id)
     {
         $resume = Resume::findOrFail($id);
-        return view('dashboard.modules.resumes.edit', compact('resume'));
+        return view('dashboard.pages.resumes.edit', compact('resume'));
     }
 
     /**

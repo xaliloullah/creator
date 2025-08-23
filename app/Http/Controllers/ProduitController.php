@@ -17,7 +17,7 @@ class ProduitController extends Controller
     public function index(Request $request)
     {
         $produits = Produit::all()->where('user_id', $request->user()->id);
-        return view('dashboard.modules.produits.index', compact('produits'));
+        return view('dashboard.pages.produits.index', compact('produits'));
     }
 
     /**
@@ -26,7 +26,7 @@ class ProduitController extends Controller
     public function create(Request $request)
     {
         $categories = Categorie::all()->where('user_id', $request->user()->id);
-        return view('dashboard.modules.produits.create', compact('categories'));
+        return view('dashboard.pages.produits.create', compact('categories'));
     }
 
     /**
@@ -89,7 +89,7 @@ class ProduitController extends Controller
     public function show($id)
     {
         $produit = Produit::findOrFail($id);
-        return view('dashboard.modules.produits.view', compact('produit'));
+        return view('dashboard.pages.produits.view', compact('produit'));
     }
 
     /**
@@ -98,7 +98,7 @@ class ProduitController extends Controller
     public function edit($id)
     {
         $produit = Produit::findOrFail($id);
-        return view('dashboard.modules.produits.edit', compact('produit'));
+        return view('dashboard.pages.produits.edit', compact('produit'));
     }
 
     /**

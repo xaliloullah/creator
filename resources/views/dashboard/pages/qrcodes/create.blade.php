@@ -1,86 +1,242 @@
 @extends('dashboard.index')
 @section('title', 'qrcodes')
+@section('subtitle', 'Nouveau')
 @section('content')
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-dark">
-                Ajouter une qrcode
-                <a href="{{ route('qrcodes.index') }}" class="float-right btn btn-sm btn-secondary btn-icon-split">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                    <span class="text">Retour</span>
-                </a>
-            </h6>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Ajouter une nouvelle qrcode</h1>
+            <p class="text-muted mb-0">
+                Remplissez le formulaire ci-dessous pour creer un qrcode.
+                <small class="d-block mt-1">Le symbole <span class="text-danger">*</span> indique un champ
+                    obligatoire.</small>
+            </p>
         </div>
-        <div class="card-body">
-            <form action="{{ route('qrcodes.store') }}" method="POST">
-                @csrf
-                <div class="row">
-                    <div class="form-group col-lg-12">
-                        <label class="form-label" for="image">Image</label>
-                        <div class="image-preview">
-                            <input class="d-none" name="image" id="image" type="file" />
-                            <img src="{{ asset('assets/images/' . (auth()->user()->image ? 'users/' . auth()->user()->image : 'default.png')) }}"
-                                alt="img" id="preview-image" />
-
-                            <label for="image" class="btn btn-sm btn-secondary btn-edit" id="btn-edit">
-                                <i class="fa fa-edit"></i>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group col-lg-12">
-                        <label class="form-label" for="content">Contenu :</label>
-                        <input class="form-control" id="content" name="content" type="text" placeholder="content"
-                            required>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label" for="type">Type :</label>
-                        <select id="type" class="form-control" name="type">
-                            <option value="url">url</option>
-                            <option value="texte">texte</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label"for="size">Taille :</label>
-                        <input class="form-control" type="number" id="size" name="parametre[size]" min="100"
-                            max="500" value="200">
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label" for="margin">Marge :</label>
-                        <input class="form-control" type="number" id="margin" name="parametre[margin]" min="0"
-                            max="10" value="3">
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label" for="error_correction_level">Niveau de correction d'erreur :</label>
-                        <select id="error_correction_level" class="form-control" name="parametre[error_correction_level]">
-                            @foreach (['L' => 'Low', 'M' => 'Medium', 'Q' => 'Quartile', 'H' => 'High'] as $index => $ecl)
-                                <option value="{{ $index }}" @if (json_decode($qrcode->parametre, true)['error_correction_level'] ?? 'H' == $index) selected @endif>
-                                    {{ $ecl }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label" for="style">Style :</label>
-                        <select id="style" class="form-control" name="parametre[style]">
-                            <option value="square">Carré</option>
-                            <option value="dot">Dot</option>
-                            <option value="round">Rond</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label class="form-label" for="eye">Forme des yeux:</label>
-                        <select id="eye" class="form-control" name="parametre[eye]">
-                            <option value="square">Carré</option>
-                            <option value="circle">Rond</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <button type="reset" class="btn btn-danger">Annuler</button>
-                    <button type="submit" class="btn btn-success">Continuer</button>
-                </div>
-            </form>
+        <div class="d-flex gap-2">
+            <a href="{{ route('qrcodes.index') }}" class="btn btn-outline-dark">
+                <i class="bi bi-list-ul"></i><span class="d-none d-sm-inline ms-2">Liste</span>
+            </a>
         </div>
     </div>
+
+    <!-- Form Card -->
+    <form action="{{ route('qrcodes.store') }}" method="POST" enctype="multipart/form-data" class="validate">
+        @csrf
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <h5 class="mb-3">Informations générales</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Contenue <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="content" name="content"
+                                        placeholder="content" value="{{ old('content') }}" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" id="type" name="type"
+                                        placeholder="type"value="{{ old('type') }}" />
+                                </div> 
+                                <div class="col-md-6">
+                                    <label class="form-label">Organisation</label>
+                                    <input type="text" class="form-control" id="organisation" name="organisation"
+                                        placeholder="Organisation" value="{{ old('organisation') }}" />
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Adresse</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        <input type="text" class="form-control"
+                                            placeholder="Numéro de rue, nom de la rue" id="rue" name="adresse[rue]"
+                                            value="{{ old('adresse.rue') }}">
+                                        <span class="input-group-text"><i class="bi bi-house-add"></i></span>
+                                        <input type="text" class="form-control"
+                                            placeholder="Complément d'adresse (facultatif)" id="complement"
+                                            name="adresse[complement]" value="{{ old('adresse.complement') }}">
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-buildings"></i></span>
+                                        <input type="text" class="form-control" placeholder="Ville" id="ville"
+                                            name="adresse[ville]" value="{{ old('adresse.ville') }}">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="text" class="form-control" placeholder="Code Postal"
+                                            id="code_postal" name="adresse[code_postal]"
+                                            value="{{ old('adresse.code_postal') }}">
+                                        <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                        <input type="text" class="form-control" placeholder="Pays" id="pays"
+                                            name="adresse[pays]" value="{{ old('adresse.pays') }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="row mb-4">
+                            <h5 class="mb-3">Styles</h5>
+                            <div class="col-md-6">
+                                <label class="form-label" for="parametre[primary]">Couleur Primaire</label>
+                                <div class="input-group color-picker mb-4">
+                                    <input type="color" class="color-input color-option shadow border-0"
+                                        value="{{ old('parametre.primary', '#4e73df') }}" id="parametre[primary]"
+                                        name="parametre[primary]" title="Choisissez votre couleur" />
+                                    <input type="text" class="color-code form-control form-control-sm"
+                                        placeholder="e.g. #4e73df" />
+                                    <button type="button" class="color-option color-random btn btn-dark"
+                                        title="Choisissez une couleur aléatoire">
+                                        <i class="bi bi-shuffle "></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="parametre[secondary]">Couleur Secondaire</label>
+                                <div class="input-group color-picker mb-4">
+                                    <input type="color" class="color-input color-option shadow border-0"
+                                        value="{{ old('parametre.secondary', '#858796') }}" id="parametre[secondary]"
+                                        name="parametre[secondary]" title="Choisissez votre couleur" />
+                                    <input type="text" class="color-code form-control form-control-sm"
+                                        placeholder="e.g. #858796" />
+                                    <button type="button" class="color-option color-random btn btn-dark"
+                                        title="Choisissez une couleur aléatoire">
+                                        <i class="bi bi-shuffle "></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="parametre[background]">Couleur Arrière plan</label>
+                                <div class="input-group color-picker mb-4">
+                                    <input type="color" class="color-input color-option shadow border-0"
+                                        value="{{ old('parametre.background', '#f8f9fc') }}" id="parametre[background]"
+                                        name="parametre[background]" title="Choisissez votre couleur" />
+                                    <input type="text" class="color-code form-control form-control-sm"
+                                        placeholder="e.g. #f8f9fc" />
+                                    <button type="button" class="color-option color-random btn btn-dark"
+                                        title="Choisissez une couleur aléatoire">
+                                        <i class="bi bi-shuffle "></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="parametre[foreground]">Couleur Premier plan</label>
+                                <div class="input-group color-picker mb-4">
+                                    <input type="color" class="color-input color-option shadow border-0"
+                                        value="{{ old('parametre.foreground', '#ffffff') }}" id="parametre[foreground]"
+                                        name="parametre[foreground]" title="Choisissez votre couleur" />
+                                    <input type="text" class="color-code form-control form-control-sm"
+                                        placeholder="e.g. #ffffff" />
+                                    <button type="button" class="color-option color-random btn btn-dark"
+                                        title="Choisissez une couleur aléatoire">
+                                        <i class="bi bi-shuffle "></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <h5 class="mb-3">Informations supplémentaires</h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">Statut : </label>
+                                    @foreach ($statuts ?? [] as $statut)
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="statut"
+                                                id="statut-{{ $statut->value }}" value="{{ $statut->value }}"
+                                                @if (old('statut') == $statut->value) checked @endif required />
+                                            <label class="form-check-label badge bg-{{ $statut->color }}"
+                                                for="statut-{{ $statut->value }}">{{ $statut->name }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control editor-simple" id="description" name="description" placeholder="Description">{{ old('description') }}</textarea>
+                                </div>
+                                {{-- <div class="col-12">
+                                    <label class="form-label">Conditions</label>
+                                    <select class="form-select tags" multiple name="condition[]">
+                                        @foreach (old('condition', []) as $condition)
+                                            <option value="{{ $condition }}" selected>{{ $condition }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> --}}
+                                {{-- <div class="col-12">
+                                    <label class="form-label">Tags</label>
+                                    <select class="form-select tags" multiple name="tags[]">
+                                        @foreach (old('tags', []) as $tags)
+                                            <option value="{{ $tags }}" selected>{{ $tags }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> --}}
+                                <div class="col-12">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="popular"
+                                            name="parametre[popular]" @if (old('parametre.popular', $qrcode->parametre['popular'] ?? false)) checked @endif>
+                                        <label class="form-check-label" for="popular">Marquer comme qrcode
+                                            populaire</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-ghost shadow-lg sticky-bottom">
+                    <div class="card-body p-3">
+                        <div class="d-flex gap-2 float-end">
+                            <button type="reset" class="btn btn-outline-danger">
+                                <i class="bi bi-x-circle me-1"></i>Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-plus-circle me-1"></i>Ajouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Image</h5>
+                        <div class="text-center mb-3">
+                            <div class="image-container rounded-circle img-lg shadow">
+                                <img src="{{ asset('assets/images/default.png') }}" alt="image"
+                                    class="image-preview img-square image mx-auto d-block" />
+                                <label for="image" class="image-overlay">
+                                    <i class="bi bi-camera-fill fs-3"></i>
+                                </label>
+                                <input type="file" id="image" accept="image/*" class="image-input"
+                                    name="image" />
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <label for="image" class="btn btn-outline-dark">
+                                <i class="bi bi-upload"></i><span class="ms-2">Télécharger une image</span>
+                            </label>
+                        </div>
+                        <small class="text-muted d-block text-center mt-2">Maximum file size: 2MB</small>
+                    </div>
+                </div>
+                <div class="card card-ghost shadow-lg sticky-top">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Aide</h5>
+                        <div class="alert alert-info mb-0">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-info-circle me-2"></i>Conseils
+                            </h6>
+                            <ul class="mt-2 mb-0 ps-3">
+                                <li class="mb-1">Assurez-vous de remplir tous les champs obligatoires (<span
+                                        class="text-danger">*</span>).</li>
+                                <li class="mb-1">Vérifiez les informations saisies avant de valider.</li>
+                                <li>En cas de problème, contactez l'administrateur du système.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 @endsection

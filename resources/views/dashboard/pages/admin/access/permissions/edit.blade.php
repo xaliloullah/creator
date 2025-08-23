@@ -1,4 +1,4 @@
-@extends('dashboard.modules.admin.access.edit')
+@extends('dashboard.pages.admin.access.edit')
 @section('section')
     <form action="{{ route('permissions.update', $permission->id) }}" method="POST" class="validate">
         @csrf
