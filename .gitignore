@@ -1,0 +1,13 @@
+# Environments
+.env 
+.venv
+env/
+venv/ 
+storage
+storage/*
+storage/versions/*.zip
+databases/*.db
+.vscode
+python
+__pycache__
+

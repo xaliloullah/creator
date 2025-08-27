@@ -1,0 +1,13 @@
+from main import Creator
+
+Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app=Creator.name))
+
+option = Creator.terminal.input("option", options={"1":"Connection", "2":"Inscription", "0":" Quitter"})
+if option == "1":
+    Creator.route("login") 
+elif option == "2":
+    Creator.route("register") 
+elif option == "0":
+    Creator.terminal.clear()
+    Creator.terminal.comment(Creator.lang.get("messages.goodbye"))
+    exit()

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Page de Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background-color: #f0f0f0; }
+        h1 { color: #333; }
+        p { font-size: 1.2rem; }
+        ul { list-style-type: square; }
+        .highlight { color: blue; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Page de Test</h1>
+    <p>Bienvenue sur cette page de test HTML.</p>
+
+    <h2>Liste de test</h2>
+    <ul>
+        <li>Élément 1</li>
+        <li>Élément 2</li>
+        <li>Élément 3</li>
+    </ul>
+
+    <h2>Variable Jinja (exemple)</h2>
+    <p class="highlight">Nom utilisateur : {{ name }}</p>
+    
+    <h2>Condition Jinja (exemple)</h2>
+    {% if items %}
+        <p>Liste d’items disponibles :</p>
+        <ul>
+        {% for item in items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun item disponible.</p>
+    {% endif %}
+</body>
+</html>

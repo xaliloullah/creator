@@ -1,0 +1,8 @@
+from src.models import Model
+
+class {name}(Model):
+    def __init__(self):
+        self.table = '{table}'
+        self.driver = '{driver}'
+        super().__init__(self.table, self.driver)
+        # 

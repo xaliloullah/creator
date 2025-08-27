@@ -1,0 +1,12 @@
+from main import Creator 
+
+# @Creator.view.extend("app")
+# @Creator.view.section("title", "{name} - index")
+# @Creator.view.section("content")
+def view():
+    # 
+    #   TODO: Implement the logic index {name}
+    # 
+    #   Creator.route("{name}.update", id="#")
+    # 
+    pass

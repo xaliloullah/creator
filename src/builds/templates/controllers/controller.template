@@ -1,0 +1,5 @@
+from main import Creator
+
+
+class {name}:
+    from src.core import Request

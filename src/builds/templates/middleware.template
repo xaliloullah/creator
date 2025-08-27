@@ -1,0 +1,10 @@
+from src.middlewares import Middleware
+
+
+class {name}(Middleware):
+    @staticmethod
+    def handle(request, next, params=None):
+        #
+        #
+        #
+        return next()
