@@ -74,7 +74,7 @@ class Command(argparse.ArgumentParser):
         elif args.uninstall: 
             Creator.terminal.progress_bar(10, 100) 
             Creator.terminal.highlight(Creator.build.creator())  
-            # Creator.settings.uninstall_packages()
+            Creator.settings.uninstall_packages()
 
         elif args.update: 
             Creator.terminal.progress_bar(10, 100) 

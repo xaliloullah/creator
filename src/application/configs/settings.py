@@ -77,6 +77,7 @@ class Settings:
     def set(cls, key, value): 
         cls.data = cls.load() 
         cls.data[key] = value  
+        cls.save()
         
     @classmethod
     def load(cls):

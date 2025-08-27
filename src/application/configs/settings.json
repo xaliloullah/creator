@@ -2,10 +2,11 @@
   "name": "creator",
   "version": "0.2.6-beta",
   "python": "3.13.6",
-  "langs": [
-    "en",
-    "fr"
-  ],
+  "langs": ["en", "fr"],
+  "databases": {
+    "sqlite": "SQLite",
+    "mysql": "MySQL"
+  },
   "packages": {
     "mysql-connector-python": "9.0.0",
     "psycopg2": "2.9.10",
