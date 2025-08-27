@@ -1,6 +1,6 @@
 {
   "name": "creator",
-  "version": "0.2.4-beta",
+  "version": "0.2.6-beta",
   "python": "3.13.6",
   "langs": [
     "en",

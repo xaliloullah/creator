@@ -11,3 +11,9 @@ databases/*.db
 python
 __pycache__
 
+# git init
+# git add .
+# git commit -m "first commit"
+# git branch -M main
+# git remote add origin https://github.com/xaliloullah/creator.git
+# git push -u origin main

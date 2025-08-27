@@ -56,7 +56,6 @@ class Creator:
         try:
             cls.retry = kwargs.get("retry", True)
             cls.main = kwargs.get("main", "main")   
-
             cls.request = Request(session=cls.session(), validator=cls.validator()) 
             # cls.auth.config(request = cls.request)
             cls.injector.register(Request, cls.request)
@@ -98,13 +97,14 @@ class Creator:
         cls.generate_lang(lang)
         key = cls.hash.make("creator")
         cls.settings.set("key", key)
-        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=cls.settings.get("supported_database"), value="sqlite") 
+        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=cls.settings.get("databases"), value="sqlite") 
         debug = cls.terminal.input("Activate debug app", type="checkbox", value="no")
         env = Build.Env.app(name=cls.name, lang=lang, key=key, debug=debug)
         env +="\n"+ Build.Env.database(driver=database, name=cls.name, path=cls.path.databases(cls.name))
         env +="\n"+Build.Env.session(name=f"{cls.name}_session", driver="file", lifetime=30) 
         cls.file('.env').save(env) 
         cls.settings.make_architecture(all=True) 
+
     @classmethod
     def clean(cls): 
         cls.terminal.progress_bar(10, 100) 

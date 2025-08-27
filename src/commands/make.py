@@ -193,7 +193,7 @@ class MakeCommand(Command):
                 Creator.file(destination).ensure_exists()
                 ignore = ["__pycache__", "python"]  
                 
-                only = ['src', 'config', 'resources', 'routes', 'lang', 'creator', 'main.py']
+                only = ['app',  'config', 'lang', 'resources', 'routes', 'src', 'creator', 'main.py']
                         
                 Creator.file(source).save(destination, format="zip", only=only, ignore=ignore)   
 
