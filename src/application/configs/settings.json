@@ -1,11 +1,16 @@
 {
   "name": "creator",
-  "version": "0.2.6-beta",
+  "version": "0.2.7-rc",
   "python": "3.13.6",
-  "langs": ["en", "fr"],
+  "langs": [
+    "en",
+    "fr"
+  ],
   "databases": {
     "sqlite": "SQLite",
-    "mysql": "MySQL"
+    "mysql": "MySQL",
+    "postgresql": "PostgreSQL",
+    "sqlserver": "Microsoft SQL Server"
   },
   "packages": {
     "mysql-connector-python": "9.0.0",

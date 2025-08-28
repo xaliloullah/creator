@@ -53,17 +53,19 @@ class Build:
 
         @staticmethod
         def database(**kwargs):
-            name = kwargs.get("name", "database")
-            path = kwargs.get("path", "database")
+            name = kwargs.get("name", "creator")
+            path = kwargs.get("path", "databases")
             driver = kwargs.get("driver", "sqlite")
 
             render = Template("env.databases.database").render(path=path)
             if driver == "sqlite":
-                render += Template("env.databases.sqlite").render(name=name, path=path)
+                render += Template("env.databases.sqlite").render(name=name)
             elif driver == "mysql":
                 render += Template("env.databases.mysql").render(name=name, path=path, port="3306")
             elif driver == "postgresql":
                 render += Template("env.databases.postgresql").render(name=name, path=path, port="5432")
+            elif driver == "sqlserver":
+                render += Template("env.databases.sqlserver").render(name=name, path=path, port="1433")
             return render
 
         @staticmethod

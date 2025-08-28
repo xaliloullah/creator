@@ -510,7 +510,7 @@ class Terminal:
             default = f" [{cls.style(value, Color.grey)}]"
 
         if options: 
-            inline = kwargs.get("prompt", True)
+            inline = kwargs.get("inline", True)
             choices = f" ({cls.list(options, inline=inline, separator="/")})"
 
         result = action(f"{cls.style(f"{icon} {placeholder}{choices}{default}{prompt}", Color.light)}") or value  

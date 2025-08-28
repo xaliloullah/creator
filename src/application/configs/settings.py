@@ -7,7 +7,7 @@ class Settings:
     storage = Storage(path, format="json", default={})
     
     @classmethod
-    def setup(cls):
+    def create(cls):
         try:  
             cls.data = cls.load()
             cls.data["name"] = "creator"
@@ -16,10 +16,10 @@ class Settings:
             cls.data["databases"] = {
                 "sqlite": "SQLite",
                 "mysql": "MySQL",
-                # "postgresql": "PostgreSQL",
+                "postgresql": "PostgreSQL",
+                "sqlserver": "Microsoft SQL Server",
                 # "mongodb": "MongoDB",
                 # "oracle": "Oracle",
-                # "mssql": "Microsoft SQL Server",
             } 
             cls.data["python"] = f"{sys.version.split()[0]}"
             cls.data["packages"] = {
