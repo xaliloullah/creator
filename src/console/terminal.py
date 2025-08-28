@@ -459,8 +459,7 @@ class Terminal:
         max_len = kwargs.get('max_len', None)  
         min = kwargs.get('min', None)  
         max = kwargs.get('max', None)  
-        required = kwargs.get('required', False)   
-        default = kwargs.get('default', "")        
+        required = kwargs.get('required', False)      
         accept:str = kwargs.get('accept', 'yes')
         accept_action = kwargs.get('accept_action', None)
         reject:str = kwargs.get('reject', 'no') 
@@ -506,12 +505,13 @@ class Terminal:
             icon = f"{Icon.check()} |{Icon.error()}"
             options = {accept:"", reject:""}
 
-        if value:  
-            default = f" [{cls.style(value, Color.grey)}]"
+        if value: 
+            default = f"[{cls.style(value, Color.grey)}]"
+        else: default = ""
 
-        if options: 
-            inline = kwargs.get("inline", True)
-            choices = f" ({cls.list(options, inline=inline, separator="/")})"
+        if options:  
+            separator = kwargs.get("separator", " ")
+            choices = f"\n{cls.list(options, separator=separator)}\n"
 
         result = action(f"{cls.style(f"{icon} {placeholder}{choices}{default}{prompt}", Color.light)}") or value  
 

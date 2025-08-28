@@ -5,14 +5,10 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from src.console import Terminal
 
-terminal = Terminal()
- 
-import keyboard
-
-print("Tape sur ton clavier (appuie sur 'esc' pour quitter):")
+terminal = Terminal() 
 
 while True:
-    print(terminal.keyboard())
+    terminal.input(type="select", options={"test":"Test", "name":"Khalil", "key":"value"}, value="key", inline=False)
     # event = keyboard.read_event()  # lit un évènement clavier
     # if event.event_type == keyboard.KEY_DOWN:  # quand une touche est pressée
     #     print(event.scan_code)
