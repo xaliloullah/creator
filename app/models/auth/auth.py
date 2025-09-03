@@ -1,4 +1,4 @@
-from app.models.user import User
+from app.models.auth.user import User
 from src.core import Request
  
 class Auth: 

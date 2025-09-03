@@ -1,4 +1,4 @@
-from src.models.drivers import DatabaseDriver
+from src.databases import Query
 from src.databases.schema import Column 
 
 class Table(Column):
@@ -9,19 +9,19 @@ class Table(Column):
     def __str__(self):
         return self.get_definition()
 
+    def generate_script(self, multiline=False):
+        sep = ",\n" if multiline else ", "
+        return sep.join(self.definition + self.foreign_keys)
+
     def get_definition(self):
-        return self.generate_script().replace("|", ",")
-        
-    
+        return self.generate_script(multiline=False)
+
     def get_script(self):
-        return self.generate_script().replace("|", "\n")
-        
+        return self.generate_script(multiline=True)
 
-    def create(self):  
-        DatabaseDriver().create(self.name, self.get_definition()).execute()
-
-    def generate_script(self):
-        return "| ".join(self.definition+self.foreign_keys)
+    
+    def create(self , if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
+        Query().create(self.name, self.get_definition(), if_not_exists=True, engine="InnoDB", charset="utf8mb4").execute()
 
     def drop(self): 
-        DatabaseDriver().drop(self.name).execute() 
+        Query().drop(self.name).execute() 

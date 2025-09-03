@@ -10,16 +10,17 @@ class Route:
 
         prefix = kwargs.get("prefix") or cls.data.get("prefix")
         uri = Path(uri, prefix=prefix)
-        
+        middleware = ['app'] + kwargs.get("middleware", [])
+
         cls.routes[uri.get()] = {
             "uri": uri.get(),
             "action": action, 
             "name": kwargs.get("name", uri.name()),
             "method": kwargs.get("method", "GET").upper(),
-            "middleware": kwargs.get("middleware", []),
+            "middleware": middleware,
             "controller": kwargs.get("controller"), 
-            "description": kwargs.get("description"),
-            "tags": kwargs.get("tags", []), 
+            # "description": kwargs.get("description"),
+            # "tags": kwargs.get("tags", []), 
         }   
 
         return cls
@@ -116,7 +117,7 @@ class Route:
         return None
 
     @classmethod
-    def dispatch(cls, name: str, injector, **kwargs):  
+    def dispatch(cls, name: str, **kwargs):  
         route:dict = cls.resolve(name)
         if not route: 
             raise ValueError(f"Route '{name}' not found")
@@ -125,15 +126,14 @@ class Route:
         controller = route.get("controller")
         middlewares = route.get("middleware", []) 
  
-        def handler(request):
+        def handler():
             if callable(action):
-                return injector.resolve(action, **request)
+                return action
             
             elif controller and hasattr(controller, action):
-                return injector.resolve(getattr(controller, action), **request)
+                return getattr(controller, action)
             else:
-                raise ValueError(f"invalide action for route '{name}'")
-            
+                raise ValueError(f"invalide action for route '{name}'") 
         from src.middlewares.middleware import Middleware 
         return Middleware.run(middlewares, handler, kwargs) 
         

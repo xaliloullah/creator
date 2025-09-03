@@ -21,11 +21,20 @@ class SettingCommand(Command):
     @staticmethod
     def handle(args):
         if args.database: 
-            if args.driver:
-
-                print(f'database ok... avec {args.driver}')
-            else:
-                Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"database"))
+            driver = Creator.terminal.input(Creator.lang.get("info.options", resource=f"database"), type="select", options=Creator.settings.get("databases"), value=Creator.database, inline=False) 
+            # databases = Creator.data(Creator.build.Env.database(driver=driver, name=Creator.name, path=Creator.path.databases()), "env").get()
+            # env = Creator.storage('.env', absolute=False, format="env")
+            # collect = Creator.collection(env)  
+         
+            # print(collect.get())
+            # for key, value in databases.items(): 
+            #     collect.set(key, value) 
+            # print(collect.get())
+            # env.save(collect.get()) 
+            # if args.driver: 
+            #     if args.driver in Creator.settings.get("databases"): 
+            # else:
+            #     Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"database"))
 
         elif args.lang: 
             if args.set:

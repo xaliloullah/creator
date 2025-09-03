@@ -2,33 +2,39 @@ from src.databases.connections import Connector
 
 class Database:
     def __init__(self):
-        self.Connection = Connector.connect()
+        self.connection = Connector.connect()
 
     def execute(self, query, params=None):
         if not params: 
-            return self.Connection.execute(query)
-        else: 
-            return self.Connection.execute(query, params) 
+            return self.connection.execute(query)
+        return self.connection.execute(query, params) 
 
     def commit(self):
-        self.Connection.connection.commit()
+        self.connection.connection.commit()
 
     def rollback(self):
-        self.Connection.connection.rollback()
+        self.connection.connection.rollback()
 
     def fetchall(self, query, params=None):
         self.execute(query, params)
-        return self.Connection.cursor.fetchall()
+        rows = self.connection.cursor.fetchall() 
+        return [dict(row) for row in rows] if rows else []
 
     def fetchone(self, query, params=None):
         self.execute(query, params)
-        return self.Connection.cursor.fetchone()
+        row = self.connection.cursor.fetchone()
+        return dict(row) if row else None
 
     def close(self):
-        self.Connection.cursor.close() 
+        self.connection.cursor.close() 
 
-    
-     
-     
- 
-    
+    from contextlib import contextmanager
+
+    @contextmanager
+    def transaction(self):
+        try:
+            yield
+            self.commit()
+        except Exception:
+            self.rollback()
+            raise

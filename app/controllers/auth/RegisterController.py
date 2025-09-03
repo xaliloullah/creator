@@ -1,7 +1,7 @@
 from main import Creator   
 from src.validators import Rule
-from src.models.auth import Auth
-from app.models.user import User
+from app.models.auth.auth import Auth
+from app.models.auth.user import User
 
 class RegisterController:
     from src.core import Request
@@ -23,8 +23,7 @@ class RegisterController:
             'email': Rule().required().email().unique('users'),  
             'password': Rule().password()
         }):
-            user = User()
-            user.create(
+            user = User.create(
                 name = request['name'],
                 email = request['email'],
                 password = Creator.hash.make(request['password'])

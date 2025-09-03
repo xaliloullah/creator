@@ -7,6 +7,8 @@ class Storage:
         self.format = kwargs.get("format", None)
         self.default = kwargs.get("default", None)
         self.absolute = kwargs.get("absolute", False)  
+        self.disk = kwargs.get("disk", None)  
+        
         if self.absolute:
             self.path = Path.storage(self.path)
 
@@ -46,6 +48,9 @@ class Storage:
             raise Exception(e) 
     
     def read(self):
+        return self.data 
+    
+    def get(self):
         return self.data 
     
     def create(self, data): 
@@ -103,8 +108,8 @@ class Storage:
     def __getitem__(self, key):
         return self.data[key]
     
-    def __setitem__(self, key, value):
-        self.data[key] = value
+    def __setitem__(self, value):
+        self.data = value
     
     def __repr__(self):
         return f"{self.__class__.__name__}({self.path}, format={self.format}), data={self.data}"

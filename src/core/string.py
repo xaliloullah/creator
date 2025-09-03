@@ -35,12 +35,27 @@ class String(str):
         text = re.sub(rf"{sep}+", sep, text).strip(sep)
         return String(text)
 
-    def camelcase(self): 
-        return String("".join(word.capitalize() for word in self.split()))
+    def camelcase(self):
+        words = self.split()
+        if not words:
+            return String("")
+        first = words[0].lower()
+        rest = "".join(word.capitalize() for word in words[1:])
+        return String(first + rest)
+    
+    def pascalcase(self):
+        words = re.split(r'\s+|_+', self)
+        return String("".join(word.capitalize() for word in words))
+
 
     def snakecase(self): 
-        text = re.sub(r"[\W_]+", "_", self.lower())
-        return String(text.strip("_"))
+        text = str(self) 
+        text = re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', text) 
+        text = re.sub(r'[\s\W]+', '_', text) 
+        text = text.lower() 
+        text = text.strip('_') 
+        text = re.sub(r'__+', '_', text)
+        return String(text) 
 
     def remove_spaces(self): 
         return String(self.replace(" ", ""))

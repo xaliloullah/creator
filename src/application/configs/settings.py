@@ -1,133 +1,73 @@
-from src.core import Path, File, Storage, Task, Date
+from src.core import Path, File, Task
+from src.models import Structure
 import os
 import sys
 
-class Settings: 
-    path = Path.settings()   
-    storage = Storage(path, format="json", default={})
-    
-    @classmethod
-    def create(cls):
-        try:  
-            cls.data = cls.load()
-            cls.data["name"] = "creator"
-            cls.data["version"] = "1.0.0" 
-            cls.data["langs"] = ['en']
-            cls.data["databases"] = {
-                "sqlite": "SQLite",
-                "mysql": "MySQL",
-                "postgresql": "PostgreSQL",
-                "sqlserver": "Microsoft SQL Server",
-                # "mongodb": "MongoDB",
-                # "oracle": "Oracle",
-            } 
-            cls.data["python"] = f"{sys.version.split()[0]}"
-            cls.data["packages"] = {
-                "mysql-connector-python": "9.0.0",
-                "psycopg2": "2.9.10",
-                "pymongo": "4.10.1",
-                "cryptography": "44.0.0",
-                "bcrypt": "4.2.1",
-                "argparse": "1.4.0",
-                "keyboard": "0.13.5",
-                "markdown": "3.7",
-                "pyyaml": "6.0.2",
-                "PyPDF2": "3.0.1",
-                "pillow": "11.1.0",
-                "deep-translator": "1.11.4",
-                # "PyQt5": "5.15.11",
-                "pyttsx3": "2.99"
-                }
-            cls.data["created_at"] = "2024-09-22 00:00:00.000000"
-            cls.data["updated_at"] = f"{Date.now()}"
-            cls.save()
-        except Exception as e:
-            raise Exception(e) 
+class Settings(Structure): 
+    path = Path.settings()     
+    single = True
+    # @classmethod
+    # def create(cls):
+    #     try:  
+    #         cls.data = cls.load()
+    #         cls.data["name"] = "creator"
+    #         cls.data["version"] = "1.0.0" 
+    #         cls.data["langs"] = ['en']
+    #         cls.data["databases"] = {
+    #             "sqlite": "SQLite",
+    #             "mysql": "MySQL",
+    #             "postgresql": "PostgreSQL",
+    #             "sqlserver": "Microsoft SQL Server",
+    #             "mongodb": "MongoDB",
+    #             # "oracle": "Oracle",
+    #         } 
+    #         cls.data["python"] = f"{sys.version.split()[0]}"
+    #         cls.data["packages"] = {
+    #             "mysql-connector-python": "9.0.0",
+    #             "psycopg2": "2.9.10",
+    #             "pymongo": "4.10.1",
+    #             "cryptography": "44.0.0",
+    #             "bcrypt": "4.2.1",
+    #             "argparse": "1.4.0",
+    #             "keyboard": "0.13.5",
+    #             "markdown": "3.7",
+    #             "pyyaml": "6.0.2",
+    #             "PyPDF2": "3.0.1",
+    #             "pillow": "11.1.0",
+    #             "deep-translator": "1.11.4", 
+    #             "pyttsx3": "2.99"
+    #             }
+    #         cls.data["created_at"] = "2024-09-22 00:00:00"
+    #         cls.data["updated_at"] = f"{Date.now()}"
+    #         cls.save()
+    #     except Exception as e:
+    #         raise Exception(e) 
          
-    @classmethod 
-    def update(cls, force=False):
-        try:       
-            cls.update_packages()
-            cls.data["python"] = f"{sys.version.split()[0]}" 
-            cls.data["updated_at"]=f"{Date.now()}" 
-            cls.vscode()
-            cls.make_architecture(all=True)
-            cls.save()
-        except Exception as e:
-            raise Exception(e) 
-        
-    @classmethod 
-    def refresh(cls):
-        try:         
-            cls.vscode()
-            cls.make_architecture(all=True)
-            cls.save()
-        except Exception as e:
-            raise Exception(e) 
-        
-    @classmethod
-    def get(cls, key, default=None):
-        cls.data = cls.load()
-        if key in cls.data:
-            return cls.data[key]
-        else:
-            return default
-        
-    @classmethod
-    def set(cls, key, value): 
-        cls.data = cls.load() 
-        cls.data[key] = value  
-        cls.save()
-        
-    @classmethod
-    def load(cls):
-        return File(cls.path).load(format="json") 
-        
-    @classmethod
-    def save(cls):
-        backup = cls.load()
-        try:
-            File(cls.path).save(cls.data, format="json", indent=2)
-        except Exception as e:
-            File(cls.path).save(backup, format="json", indent=2) 
-            raise
-        
-    @classmethod
-    def install_packages(cls): 
-        for package, version in cls.data["packages"].items(): 
-            Task.install(package, version=version)
-
-    @classmethod
-    def uninstall_packages(cls): 
-        for package, version in cls.data["packages"].items(): 
+    def install_packages(self): 
+        for package, version in self.get("packages").items(): 
+            Task.install(package, version=version, venv=self.get('venv', False))
+ 
+    def uninstall_packages(self): 
+        for package in self.get("packages"): 
             Task.uninstall(package)
+             
+    def update_packages(self): 
+        for package in self.get("packages"): 
+            Task.install(package, venv=self.get('venv', False))
             
-    @classmethod
-    def update_packages(cls): 
-        for package, version in cls.data["packages"].items(): 
-            Task.install(package)
+    @staticmethod
+    def vscode(path = Path.vscode()):
+        try:  
+            settings = File(path).ensure_exists().load(format="json")
+            
+            settings["files.associations"] = {
+                "*.cre": "python",
+                "creator": "python"
+            }
+            File(path).save(settings, format="json", indent=2)
+        except Exception as e:
+            raise Exception(e)
         
-    @staticmethod
-    def install_requirements(path=Path.requirements()):
-        requirements = File(path).load(format="json") 
-        for package, version in requirements.items(): 
-            Task.install(package,  version=version) 
-
-    @staticmethod
-    def update_requirements(path=Path.requirements()):
-        requirements = File(path).load(format="json")  
-        for package, version in requirements.items(): 
-            Task.install(package) 
-
-    def cache(**kwargs):
-        source=kwargs.get('source', None)
-        destination=kwargs.get('destination', None)
-        mode=kwargs.get('mode', "default")
-        # Cache.make(source, destination, mode)  
-    
-    # def backup(source, destination):
-    #     pass
-    
     @staticmethod
     def make_architecture(**kwargs):
         ignore:list = kwargs.get("ignore", []) 
@@ -149,52 +89,29 @@ class Settings:
          
     @staticmethod
     def create_venv(path=Path.environment("python")):
+        path = Path(path)
         try:
             if not File(path).exists(): 
-                File(path).ensure_exists()
+                File(path).ensure_exists(folder=True)
                 Task.execute("venv", path.get())
                 print(f"Virtual environment created at {path}")
         except Exception as e:
             raise Exception(e) 
         
-    @staticmethod
-    def activate_venv(path=Path.environment("python")): 
-        if os.name == 'nt':
-            script = Path(path).join("Scripts/Activate.ps1")
-        else:
-            script = Path(path).join("bin/activate")
-            
-        if File(script).exists():
-            script = File(script).path.absolute()
-            if os.name == 'nt':
-                os.system(f'cmd /k "{script}"')
-            else:
-                os.system(f'bash -c "{script}"')
-            print(f"Virtual environment activated at {path}")
-        # else: 
-        #     Settings.create_venv()
-        #     Settings.activate_venv() 
+    @classmethod
+    def activate_venv(cls, path=Path.environment("python").absolute()): 
+        cls.set("venv", True)   
+        if os.name == "nt":  # Windows
+            activate = path.join("Scripts\\activate.bat")
+        else:  # macOS / Linux
+            activate = path.join("bin/activate")
+        Task.execute(activate, shell=True)
 
-    @staticmethod
-    def deactivate_venv():
-        if os.name == 'nt':
-            script = "deactivate"
-        else:
-            script = "deactivate"
-        
-        os.system(script)
-        print("Virtual environment deactivated")
-
-
-    @staticmethod
-    def vscode(path = Path.vscode()):
-        try:  
-            settings = File(path).ensure_exists().load(format="json")
-            
-            settings["files.associations"] = {
-                "*.cre": "python",
-                "creator": "python"
-            }
-            File(path).save(settings, format="json", indent=2)
-        except Exception as e:
-            raise Exception(e)
+    @classmethod
+    def deactivate_venv(cls, path=Path.environment("python").absolute()):
+        cls.set("venv", False)    
+        if os.name == "nt":  # Windows
+            deactivate = path.join("Scripts\\deactivate.bat")
+        else:  # macOS / Linux
+            deactivate = path.join("bin/deactivate") 
+        Task.execute(deactivate, shell=True)

@@ -1,4 +1,4 @@
-from app.models.user import User
+from app.models.auth.user import User
 from main import Creator
 # Up function for users seeder
 def up(): 

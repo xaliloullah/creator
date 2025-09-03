@@ -4,14 +4,9 @@ from main import Creator
 @Creator.view.section("title", Creator.lang.get("sections.dashboard"))
 @Creator.view.section("content")
 def view():
-    option = Creator.terminal.input("option", options={"1":Creator.lang.get("sections.settings"), "2":"Calculator", "0":Creator.lang.get("actions.logout")}) 
+    Creator.terminal.echo(Creator.lang.get("sections.dashboard")) 
+    Creator.terminal.input("option", options={"1":Creator.lang.get("sections.settings"), "2":"Calculator", "0":Creator.lang.get("actions.logout")}) 
     
    
-    if option == "1":
-        Creator.route("settings") 
-    elif option == "2":
-        Creator.route("tools.calculator") 
-    elif option == "0":
-        if Creator.terminal.input(Creator.lang.get("confirm.proceed"), type="confirm", value="yes", reject_action=Creator.view.back):
-            Creator.route("logout") 
+     
          

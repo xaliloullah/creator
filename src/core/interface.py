@@ -2,8 +2,8 @@ try:
     from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QWidget, QFrame, QPushButton, QLabel, QLineEdit, QComboBox, QProgressBar, QDialog, QDialogButtonBox, QRadioButton, QCheckBox, QSpinBox, QSlider, QMenuBar, QTableWidget, QTreeWidget, QMessageBox, QTextEdit, QFileDialog, QScrollArea, QMenu, QScrollArea
     from PyQt5.QtGui import QIcon, QPixmap, QCursor, QScreen, QMouseEvent  
     from PyQt5.QtCore import Qt, QPoint 
-except:
-    pass
+except ImportError as e:
+    raise ImportError("PyQt5 must be installed in your venv. Run: creator install PyQt5") from e
 
 from src.core import File
 
@@ -89,8 +89,8 @@ class Interface:
         if max_heigth:
             widget.setMaximumHeight(max_heigth)
             
-        if scrollable:
-            widget = Interface.scrollable(widget)
+        # if scrollable:
+        #     widget = Interface.scrollable(widget)
         if style:
             widget.setProperty("class", style) 
             
@@ -355,12 +355,20 @@ class Interface:
 
 
 
-class Window(QMainWindow):
-    def __init__(self, **kwargs):
-        title = kwargs.get("title", "Creator") 
-        super().__init__() 
-        self.stacked_widget = QStackedWidget()
+# class Window(QMainWindow):
+#     def __init__(self, **kwargs):
+#         title = kwargs.get("title", "Creator") 
+#         super().__init__() 
+#         self.stacked_widget = QStackedWidget()
         
-        self.setWindowTitle(title)
-    def resizeEvent(self, event):
-        super().resizeEvent(event) 
+#         self.setWindowTitle(title)
+#     def resizeEvent(self, event):
+#         super().resizeEvent(event) 
+
+# if __name__ == "__main__":
+#     import sys
+
+#     app = QApplication(sys.argv)
+#     window = Window()
+#     window.show()
+#     sys.exit(app.exec_())

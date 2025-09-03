@@ -23,7 +23,7 @@ class MakeCommand(Command):
         controller_parser = parser.add_argument_group("controller")
         controller_parser.add_argument('--controller', help="Create a new controller")
         controller_parser.add_argument('-r', '--resource', action='store_true', help="Create a resource for the controller")
-        
+
         parser.add_argument('--migration', help="Create a new migration file")
         parser.add_argument('--middleware', help="Create a new middleware")
         parser.add_argument('--service', help="Create a new service")
@@ -46,8 +46,7 @@ class MakeCommand(Command):
         version_parser = new_parser.add_argument_group("version")
         version_parser.add_argument("-v", "--version", nargs='?', choices=['major', 'minor', 'patch'], const='patch')
         version_parser.add_argument('-s','--suffix', choices=['alpha', 'beta', 'rc','stable'],   help="suffix of the version")
-
-        # new_parser = parser.add_subparsers('new', action='store_true', help="Perform the backup action on all available sources and destinations")
+ 
         new_parser.set_defaults(func=cls.new)
         parser.set_defaults(func=cls.handle)
 
@@ -55,21 +54,21 @@ class MakeCommand(Command):
     def handle(args):
         """Create a new model, controller, migration or a backup."""
         if args.controller:
-            name = str(args.controller).replace(" ", "_") 
+            name = Creator.string(args.controller).pascalcase()
             try: 
-                filename = Creator.path.controllers(name)
+                filename = Creator.path.controllers(name.snakecase())
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"Controller '{args.controller}'"))
-                Creator.file(filename).ensure_exists().save(Creator.build.controller(Creator.file(filename).name, args.model, args.resource))
+                Creator.file(filename).ensure_exists().save(Creator.build.controller(Creator.file(name).name, args.model, args.resource))
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"Controller '{args.controller}'"))
             except Exception:
                 Creator.terminal.error(f"{traceback.format_exc()}")  
 
         elif args.model:
-            name = str(args.model).replace(" ", "_")
-            table = Creator.string(name.lower()).pluralize()
+            name = Creator.string(args.model).pascalcase()
+            table = name.pluralize().snakecase()
             try: 
-                filename = Creator.path.models(name)
+                filename = Creator.path.models(name.snakecase())
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"Model '{args.model}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.model(Creator.file(name).name, table, args.driver))
@@ -87,9 +86,9 @@ class MakeCommand(Command):
             Migration(name).create()
 
         elif args.middleware:
-            name = Creator.string(args.middleware).replace(" ", "_") 
+            name = Creator.string(args.middleware).pascalcase() 
             try: 
-                filename = Creator.path.middlewares(name)
+                filename = Creator.path.middlewares(name.snakecase())
                 if Creator.file(filename).exists(): 
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"middleware '{args.middleware}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.middleware(Creator.file(name).name))  
@@ -99,9 +98,9 @@ class MakeCommand(Command):
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 
         elif args.command:
-            name = str(args.command).replace(" ", "_") 
+            name = Creator.string(args.command).pascalcase() 
             try:
-                filename = Creator.path.commands(name)
+                filename = Creator.path.commands(name.snakecase())
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"command '{args.command}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.command(Creator.file(name).name)) 
@@ -110,9 +109,9 @@ class MakeCommand(Command):
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 
         elif args.seeder:
-            name = str(args.seeder).replace(" ", "_") 
+            name = Creator.string(args.seeder).pascalcase() 
             try: 
-                filename = Creator.path.seeds(name)
+                filename = Creator.path.seeds(name.snakecase())
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"seed '{args.seeder}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.seed(Creator.file(name).name)) 

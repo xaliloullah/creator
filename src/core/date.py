@@ -1,121 +1,74 @@
-import datetime 
+import datetime
 
 class Date:
-    
+    def __init__(self, date=None):
+        self._date = self._parse_date(date)
+
     @staticmethod
-    def now():
-        return datetime.datetime.now()
-    
-    @staticmethod
-    def today():
-        return datetime.date.today()
-    
-    @staticmethod
-    def today_str():
-        return Date.today().strftime("%Y-%m-%d")
-    
-    @staticmethod
-    def current_time():
-        return Date.now().strftime("%H:%M:%S")
-    
-    @staticmethod
-    def current_datetime():
-        return Date.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    
-    @staticmethod
-    def strtotime(date , format="%Y-%m-%d %H:%M:%S.%f"):
-        return datetime.datetime.strptime(date, format)
-    
-    @staticmethod
-    def format_date(date, format="%Y-%m-%d"):
-        return datetime.datetime.strptime(date,  format)
-    
-    @staticmethod
-    def string_to_date(date_str, format="%Y-%m-%d"):
-        return datetime.datetime.strptime(date_str, format)
-    
-    @staticmethod
-    def add(date, days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0):
-        
-        return date + datetime.timedelta(days=days, seconds=seconds, microseconds=microseconds, milliseconds=milliseconds, minutes=minutes, hours=hours, weeks=weeks)
-    
-    @staticmethod
-    def add_days(date, days): 
-        return Date.add(date, days=days)
-    
-    @staticmethod
-    def add_minutes(date, minutes): 
-        return Date.add(date, minutes=minutes)
-    
-    @staticmethod
-    def add_seconds(date, seconds): 
-        return Date.add(date, seconds=seconds)
-    
-    @staticmethod
-    def add_hours(date, hours): 
-        return Date.add(date, hours=hours)
-    
-    @staticmethod
-    def add_weeks(date, weeks):
-        return Date.add(date, weeks=weeks) 
-    
-    @staticmethod 
-    def subtract_days(date, days):
-        return date - datetime.timedelta(days=days)
- 
-    @staticmethod
-    def is_past(date):
-        return date < Date.now()
- 
-    @staticmethod
-    def is_future(date):
-        return date > Date.now()
- 
-    @staticmethod
-    def time_of_day():
-        hour = Date.now().hour
-        if 5 <= hour < 12:
-            return "matin"
-        elif 12 <= hour < 17:
-            return "après-midi"
-        elif 17 <= hour < 21:
-            return "soir"
+    def _parse_date(date):
+        """Parse différents types d'entrée en datetime.datetime"""
+        if date is None:
+            return datetime.datetime.now()
+        elif isinstance(date, (int, float)):  # timestamp
+            return datetime.datetime.fromtimestamp(date)
+        elif isinstance(date, datetime.datetime):
+            return date
+        elif isinstance(date, datetime.date):
+            return datetime.datetime.combine(date, datetime.time())
+        elif isinstance(date, str):
+            try:
+                return datetime.datetime.fromisoformat(date)
+            except ValueError:
+                try:
+                    return datetime.datetime.fromtimestamp(float(date))
+                except ValueError:
+                    raise ValueError(f"Impossible d'interpréter la date : {date}")
         else:
-            return "nuit"
+            raise TypeError(f"Type de date non supporté : {type(date)}")
 
-    @staticmethod
-    # Retourne la différence entre deux dates
-    def date_difference(date1, date2):
-        return (date1 - date2).days
-
-    # Retourne la date d'un jour spécifique de la semaine (par exemple, le lundi de cette semaine)
-    @staticmethod
-    def get_weekday_date(weekday):
-        today_date = Date.today()
-        days_to_subtract = (today_date.weekday() - weekday) % 7
-        return today_date - datetime.timedelta(days=days_to_subtract)
-
-    # Exemple : obtenir la date du lundi de la semaine actuelle
-    @staticmethod
-    def get_monday():
-        return Date.get_weekday_date(0)  # 0 pour lundi
-
-    # Exemple : obtenir la date du dimanche de la semaine actuelle
-    @staticmethod
-    def get_sunday():
-        return Date.get_weekday_date(6)  # 6 pour dimanche
-
-    # Retourne le mois actuel sous forme de numéro (1-12)
-    @staticmethod
-    def current_month():
-        return Date.now().month
-
-    # Retourne l'année actuelle
-    @staticmethod
-    def current_year():
-        return Date.now().year
+    # 🔹 Constructeurs alternatifs
+    @classmethod
+    def now(cls):
+        return cls(datetime.datetime.now())
     
-    @staticmethod
-    def time():
-        return datetime.time
+    @classmethod
+    def today(cls):
+        return cls(datetime.date.today())
+
+    # 🔹 Opérations
+    def add(self, **kwargs):
+        """Ajouter un intervalle de temps (jours, heures, minutes, etc.)"""
+        self._date += datetime.timedelta(**kwargs)
+        return self
+
+    def subtract(self, **kwargs):
+        """Soustraire un intervalle de temps"""
+        self._date -= datetime.timedelta(**kwargs)
+        return self
+
+    # 🔹 Raccourcis
+    def add_days(self, days): return self.add(days=days)
+    def add_hours(self, hours): return self.add(hours=hours)
+    def add_minutes(self, minutes): return self.add(minutes=minutes)
+    def add_seconds(self, seconds): return self.add(seconds=seconds)
+    def add_weeks(self, weeks): return self.add(weeks=weeks)
+    
+    def subtract_days(self, days): return self.subtract(days=days)
+
+    # 🔹 Outputs
+    def datetime(self): return self._date
+    def timestamp(self): return int(self._date.timestamp())
+    def date(self): return self._date.date()
+    def time(self): return self._date.time()
+    def to_string(self, fmt="%Y-%m-%d %H:%M:%S"): return self._date.strftime(fmt)
+
+    # 🔹 Comparaisons
+    def __eq__(self, other): return isinstance(other, Date) and self._date == other._date
+    def __lt__(self, other): return isinstance(other, Date) and self._date < other._date
+    def __le__(self, other): return isinstance(other, Date) and self._date <= other._date
+    def __gt__(self, other): return isinstance(other, Date) and self._date > other._date
+    def __ge__(self, other): return isinstance(other, Date) and self._date >= other._date
+
+    # 🔹 Représentation
+    def __repr__(self): return f"Date({self._date.isoformat()})"
+    def __str__(self): return self.to_string()

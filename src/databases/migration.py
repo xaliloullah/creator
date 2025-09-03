@@ -1,20 +1,20 @@
 from config import database
-from src.core import File, Date, Task
+from src.core import File, Path, Date, Task
 from src.builds import Build
 from src.console import Terminal 
 
 
 class Migration:
-    
+    path = database.migrations['path']
+    table = database.migrations['name']
+    file = File(path) 
+
     def __init__(self, name=None):
         self.name = name
-        self.path = database.migrations['path']
-        self.file = File(self.path) 
-        self.table = database.migrations['name']
 
     def create(self):
-        try:
-            _timestamp = Date.now().strftime("%Y_%m_%d")
+        try: 
+            _timestamp = Date.now().to_string("%Y_%m_%d")
             self.file.path.join(f"{_timestamp}_create_{self.name}_table.py")
             self.file.save(Build.migration(self.name))
             Terminal.success(f"Migration {self.file.name} created successfully.")
@@ -22,62 +22,66 @@ class Migration:
             Terminal.error(f"{e}") 
             exit()
             
-    def run(self, name, action='up'): 
+    @classmethod
+    def run(cls, name, action='up'): 
         try:
-            path = self.file.path.join(name)
+            path = Path(cls.path).join(name)
             Task.run(path, action) 
         except Exception as e:
             Terminal.error(f"{e}") 
             exit()
 
-    def get(self):
+    @classmethod
+    def get(cls):
         try:
-            migrations = self.file.list(endswith=".py")       
+            migrations = cls.file.list(endswith=".py")       
             return sorted(migrations)
         except Exception as e: 
             Terminal.error(f"{e}") 
             exit()
-         
-    def get_last_batch(self): 
-        from src.models.drivers import DatabaseDriver
-        result = DatabaseDriver().select(self.table, 'batch').last().fetchone()
+    
+    @classmethod
+    def get_last_batch(cls): 
+        from src.databases import Query
+        result = Query().select(cls.table, 'batch').last().fetchone()
         if result is not None:
             return result['batch']
         else: 
             return 0
     
-    def migrate(self, run='up'):
-        self.up()  
-        from src.models.drivers import DatabaseDriver
+    @classmethod
+    def migrate(cls, run='up'):
+        cls.up()  
+        from src.databases import Query
         alert = {}
         try:
             if run == 'up':
-                self.up()  
-                applied_migrations = self.check()  
-                migrations = self.get()
+                cls.up()  
+                applied_migrations = cls.check()  
+                migrations = cls.get()
                 if migrations is not None: 
                     migrations
-                    batch = self.get_last_batch()+1
+                    batch = cls.get_last_batch()+1
                 for migration in migrations:
                     if migration not in applied_migrations:  
-                        self.run(migration, "up")  
+                        cls.run(migration, "up")  
                         Terminal.success(f"Applying migration '{migration}'.") 
-                        DatabaseDriver().insert(self.table, migration=migration,batch=batch).execute() 
+                        Query().insert(cls.table, migration=migration,batch=batch).execute() 
                         alert = {'info': 'Migrations applied successfully.'}
                     else:
                         alert = {'warning': 'Nothing to migrate...'}
             elif run == 'down':  
-                applied_migrations = self.check()  
-                migrations = self.get()
+                applied_migrations = cls.check()  
+                migrations = cls.get()
                 if migrations is not None:
                     migrations.sort(reverse=True)
-                    batch = self.get_last_batch()
+                    batch = cls.get_last_batch()
                 for migration in migrations:
                     if migration in applied_migrations: 
-                        if DatabaseDriver().select(self.table).where(batch=batch).fetchone(): 
-                            self.run(migration, "down")   
+                        if Query().select(cls.table).where(batch=batch).fetchone(): 
+                            cls.run(migration, "down")   
                             Terminal.warning(f"Rollback of migration '{migration}'.")
-                            DatabaseDriver().delete(self.table).where(migration=migration, batch=batch).execute()  
+                            Query().delete(cls.table).where(migration=migration, batch=batch).execute()  
                             alert = {'info': 'Rollback of migrations executed successfully.'} 
                     else:
                         alert = {'error': 'Migrations was not applied; cannot rollback.'}
@@ -98,11 +102,11 @@ class Migration:
             Terminal.error(f"{e}") 
             exit()
         
-
-    def check(self): 
-        from src.models.drivers import DatabaseDriver 
-        results = DatabaseDriver().select(self.table, 'migration').get() 
-        migrations = self.get()
+    @classmethod
+    def check(cls): 
+        from src.databases import Query 
+        results = Query().select(cls.table, 'migration').get() 
+        migrations = cls.get()
         applied_migrations = []
         for result in results: 
             if result['migration'] in migrations:
@@ -110,15 +114,17 @@ class Migration:
         return applied_migrations
 
 
-    def up(self):
+    @classmethod
+    def up(cls):
         from src.databases.schema.table import Table 
-        table = Table(self.table) 
+        table = Table(cls.table) 
         table.id()
         table.string('migration').unique().not_null()
         table.tinyint('batch').default(1) 
         table.create()
 
-    def down(self):
+    @classmethod
+    def down(cls):
         from src.databases.schema.table import Table 
-        table = Table(self.table)
+        table = Table(cls.table)
         table.drop()

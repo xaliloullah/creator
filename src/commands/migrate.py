@@ -32,30 +32,30 @@ class MigrateCommand(Command):
         
         if args.run:
             Creator.terminal.info(Creator.lang.get("info.run", resource="migration")) 
-            Migration().migrate()
+            Migration.migrate()
 
         elif args.rollback:
             Creator.terminal.info(Creator.lang.get("info.rollback", resource="migration"))
-            Migration().migrate('down')
+            Migration.migrate('down')
 
         elif args.check:
             Creator.terminal.info(Creator.lang.get("info.check", resource="migration")) 
-            migrations = Migration().check()
+            migrations = Migration.check()
             Creator.terminal.list(migrations, icon = Creator.terminal.icon.light_check(), margin=3, display=True) 
 
         elif args.list:
             Creator.terminal.info(Creator.lang.get("info.list", resource="migration"))
-            migrations = Migration().get()
+            migrations = Migration.get()
             Creator.terminal.list(migrations, icon = Creator.terminal.icon.arrow_right(), margin=3, color = Creator.terminal.color.black, display=True) 
 
         elif args.fresh:
             Creator.terminal.info(Creator.lang.get("info.fresh", resource="migration"))
-            Migration().migrate('down')
-            Migration().migrate()
+            Migration.migrate('down')
+            Migration.migrate()
             
         elif args.drop:
             Creator.terminal.info(Creator.lang.get("info.drop", resource="migration"))
-            Migration().down()  
+            Migration.down()  
         else:  
             Creator.terminal.error("Unknown migration action.")
  

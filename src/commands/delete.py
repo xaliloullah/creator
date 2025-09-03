@@ -21,26 +21,24 @@ class DeleteCommand(Command):
     @staticmethod
     def handle(args):
         """Delete a model, controller, migration, or a backup."""
-        if args.model:
-            name = str(args.model).replace(" ", "_").lower()
-            filename = Creator.path.models(name)
-            if Creator.file(filename).exists():
-                Creator.file(filename).delete() 
-                Creator.terminal.success(Creator.lang.get("success.delete", resource=f"Model '{args.model}'"))
-            else:
-                Creator.terminal.error(Creator.lang.get("error.delete", resource=f"Model {args.model}")) 
-                
-        elif args.controller:
-            name = str(args.controller).replace(" ", "_").lower()
-            filename = Creator.path.controllers(name)
+        if args.controller:
+            name = Creator.string(args.controller).pascalcase()
+            filename = Creator.path.controllers(name.snakecase())
             if Creator.file(filename).exists():
                 Creator.file(filename).delete() 
                 Creator.terminal.success(Creator.lang.get("success.delete", resource=f"Controller '{args.controller}'"))
             else:
                 Creator.terminal.error(Creator.lang.get("error.delete", resource=f"Controller '{args.controller}'")) 
-                
+        elif args.model:
+            name = Creator.string(args.model).pascalcase() 
+            filename = Creator.path.models(name.snakecase()) 
+            if Creator.file(filename).exists():
+                Creator.file(filename).delete() 
+                Creator.terminal.success(Creator.lang.get("success.delete", resource=f"Model '{args.model}'"))
+            else:
+                Creator.terminal.error(Creator.lang.get("error.delete", resource=f"Model {args.model}"))      
         elif args.migration: 
-            name = str(args.migration).replace(" ", "_").lower()
+            name = Creator.string(args.migration).snakecase()
             filename = Creator.path.migrations(name)
             if Creator.file(filename).exists():
                 Creator.file(filename).delete()

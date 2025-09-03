@@ -1,9 +1,9 @@
-from flask import Flask, request, Response
 import threading 
 from routes.route import Route
 from main import Creator
 class Server:
     def __init__(self, host="127.0.0.1", port=8000):
+        from flask import Flask, request, Response
         self.host = host
         self.port = port
         self.app = Flask(__name__)

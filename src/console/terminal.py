@@ -114,7 +114,8 @@ class Terminal:
         styles = [style() if callable(style) else str(style) for style in styles] 
         return f"{''.join(styles)}{text}{Format.reset()}"
     
-    @classmethod      
+    @classmethod   
+    # def print(cls, *contents, **kwargs):   
     def echo(cls, *contents, **kwargs):
         margin = kwargs.get("margin", [0, 0, 0, 0])
         end=kwargs.get("end", None)

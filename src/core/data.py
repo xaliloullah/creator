@@ -32,7 +32,7 @@ class Data:
     def __init__(self, content="", format="txt"):
         self.content = content
         self.format = format
-        self.get()
+        self.data = self.get()
 
     def get(self): 
         try:
@@ -75,8 +75,8 @@ class Data:
         except Exception as e:
             raise Exception(f"Error loading data ({self.format}): {e}")
 
-    def convert(self, **kwargs):  
-        self.format = kwargs.get('format', self.format)
+    def convert(self, format, **kwargs):  
+        self.format = format
         try:
             if self.format == 'json':
                 indent = kwargs.get('indent', None)
@@ -136,4 +136,4 @@ class Data:
             raise Exception(f"Error saving data ({self.format}): {e}")
 
     def __str__(self):
-        return str(self.content)
+        return str(self.data)

@@ -197,16 +197,16 @@ class Validator:
                         self.errors.append(f"The '{field}' field must be alphanumeric characters with spaces.")
                        
                 if rule.startswith("unique"):
-                    from src.models import Model
-                    if value:
-                        params = rule.split(":")[1].split(",")
-                        table = str(params[0])
-                        ignore = params[1] if len(params) > 1 else None 
-                        if table:
-                           row = Model(table).where(**{field: value}).first()
-                           if row:
-                            self.errors.append(Creator.lang.get("validation.unique", attribute=field)) 
-                                
+                    params = rule.split(":")[1].split(",")
+                    table = str(params[0])
+                    ignore = params[1] if len(params) > 1 else None 
+                    if table:
+                        from src.models import Model
+                        Model.table = table
+                        row = Model.where(**{field: value}).count()
+                        if row:
+                            self.errors.append(Creator.lang.get("validation.unique", attribute=field))  
+                                    
                 # if rule.startswith("exists"):
                 #     from src.models.model import Model
                 #     if value:

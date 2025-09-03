@@ -2,14 +2,12 @@ try:
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
     from cryptography.hazmat.backends import default_backend
     from cryptography.hazmat.primitives import padding
-except:
-    pass
-try:
     import secrets
     import base64
 except:
-    pass
-
+    cryptography = None
+    secrets = None
+    base64 = None
 
 class Crypt:
     key = secrets.token_bytes(32)

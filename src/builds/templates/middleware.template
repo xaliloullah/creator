@@ -1,9 +1,9 @@
-from src.middlewares import Middleware
-
+from src.middlewares import Middleware 
+from src.core import Request
 
 class {name}(Middleware):
     @staticmethod
-    def handle(request, next, params=None):
+    def handle(request: Request, next: callable):
         #
         #
         #

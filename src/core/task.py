@@ -12,8 +12,9 @@ class Task:
             user = kwargs.get('user', False) 
             quiet = kwargs.get('quiet', False)  
             force_reinstall = kwargs.get('force_reinstall', False)  
+            venv = kwargs.get("venv", False)
             
-            command = [sys.executable, '-m', 'pip', 'install']
+            command = ['pip', 'install']
             
             if version:
                 command.append(f"{package}=={version}")
@@ -32,11 +33,11 @@ class Task:
             if extra_args:
                 command.extend(extra_args)
                 
-            subprocess.check_call(command) 
+            Task.execute(*command, venv=venv) 
             
             if not version:
-                result = subprocess.run([sys.executable, "-m", "pip", "show", package], capture_output=True, text=True)
-                version_line = next(line for line in result.stdout.splitlines() if line.startswith("Version:"))
+                result = Task.execute("pip", "show", package, capture_output=True, text=True, venv=venv)
+                version_line:str = next(line for line in result.stdout.splitlines() if line.startswith("Version:"))
                 version = version_line.split(":")[1].strip()
               
             requirements = File(Path.settings().ensure_exists()).load(format="json")
@@ -47,9 +48,9 @@ class Task:
             raise Exception(e)   
             
     @staticmethod
-    def uninstall(package):
+    def uninstall(package, venv=False):
         try:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'uninstall', package, '-y']) 
+            Task.execute('pip', 'uninstall', package, '-y', venv=venv) 
             requirements = File(Path.settings()).load(format="json")
             del requirements["packages"][package]  
             File(Path.settings()).save(requirements, format="json", indent=2) 
@@ -58,12 +59,28 @@ class Task:
             
     @staticmethod        
     def execute(*command, **kwargs):
-        script = kwargs.get("script", False)
+        import os 
+        shell = kwargs.get("shell", False)
+        capture_output = kwargs.get("capture_output", False)
+        text = kwargs.get("text", False) 
+        check = kwargs.get("check", True)
+        venv = kwargs.get("venv", False)
+
+        executable = sys.executable
+        if venv:
+            if os.name == 'nt':
+                python = Path.environment("python").join("Scripts\\python.exe").absolute()
+            else:
+                python = Path.environment("python").join("bin/python").absolute()
+            if File(python).exists():
+                executable=python.get()
         try:
             cmd = list(command)
-            if not script:
-                cmd = [sys.executable, '-m'] + cmd
-            subprocess.run(cmd, shell=True, check=True)
+            if not shell:
+                cmd = [executable, '-m'] + cmd
+            result = subprocess.run(cmd, shell=shell, check=check, capture_output=capture_output, text=text)
+            if capture_output:
+                return result
         except Exception as e:
             raise Exception(e)
     
@@ -79,42 +96,12 @@ class Task:
                         namespace[function]() 
         except Exception as e:
             raise Exception(e)
-        
-    @staticmethod
-    def replace(data:str, old, new="", count=-1): 
-        if not isinstance(old, str): 
-            for item in old:
-                data = data.replace(item, new, count)
-        else:
-            data = data.replace(old, new, count)
-        return data 
-
-    # @staticmethod
-    # def explode(separator, data:str): 
-    #     return data.split(separator)
-
-    # @staticmethod
-    # def implode(separator:str, data:list): 
-    #     return separator.join(data)
-
-
-    # def load_globals(filepath):
-    #     globals_dict = {}
-    #     with open(filepath, 'r') as f:
-    #         code = f.read()
-    #         exec(code, globals_dict)
-    #     # Retirer les clés inutiles comme '__builtins__'
-    #     return {k: v for k, v in globals_dict.items() if not k.startswith('__')}
-
-    # # Exemple :
-    # vars_dict = load_globals('mon_fichier.py')
-    # print(vars_dict)
-
-     
+         
     @staticmethod   
     def build_import(source:str, *modules) -> str:
+        from src.core import String
         try: 
-            source = Task.replace(source, ['/','\\'], '.') 
+            source = String(source).replace(['/','\\'], '.') 
             if modules:
                 return f"from {source} import {', '.join(File(m).path.strip() for m in modules)}"
             

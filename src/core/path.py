@@ -80,9 +80,9 @@ class Path:
         self.set(os.path.realpath(self.path))
         return self
     
-    def ensure_exists(self):
+    def ensure_exists(self, folder=False):
         if not self.exists():
-            self.make()
+            self.make(folder)
         return self
     
     def is_file(self):
@@ -122,15 +122,15 @@ class Path:
     def name(self):
         return os.path.splitext(self.basename())[0] 
     
-    def make(self):  
-        dir, file = self.split() 
-        if dir: 
-            os.makedirs(dir, exist_ok=True)
-        if file:
-            open(self.path, "a").close() 
-        # if self.is_file():
-        # else : 
-        #     os.makedirs(self.path, exist_ok=True)
+    def make(self, folder=False):  
+        if folder:
+            os.makedirs(self.path, exist_ok=True)
+        else:
+            dir, file = self.split() 
+            if dir: 
+                os.makedirs(dir, exist_ok=True)
+            if file:
+                open(self.path, "a").close()  
         return self
     
     def remove(self):
@@ -295,7 +295,7 @@ class Path:
         return Path.storage("backups").join(path, **kwargs)
 
     @staticmethod
-    def sessions(path:str=None, **kwargs):
+    def session(path:str=None, **kwargs):
         return Path.storage("sessions").join(path, **kwargs)
 
     @staticmethod

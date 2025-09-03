@@ -2,6 +2,9 @@ from src.core import File
 
 class Lang:
     def __init__(self, lang):
+        self.setup(lang) 
+
+    def setup(self, lang):
         self.lang = lang
         self.path = f"lang/{self.lang}/"
         self.translations = self.load()

@@ -32,6 +32,9 @@ class File:
         self.content = kwargs.get("content", None) 
         self.encoding = kwargs.get("encoding", 'utf-8') 
 
+        # if not self.format:
+        #     self.format = self.file.get_extension(with_dot=False) 
+
     @property
     def name(self):
         return self.path.name() 
@@ -245,8 +248,8 @@ class File:
     def exists(self):
         return self.path.exists()
     
-    def ensure_exists(self):
-        self.path.ensure_exists()
+    def ensure_exists(self, folder=False):
+        self.path.ensure_exists(folder)
         return self
 
     @staticmethod

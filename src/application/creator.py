@@ -7,23 +7,23 @@ class Creator:
         # , Interface 
         from src.builds import Build
         from src.application.configs import Settings, Version
-
-        from config import app
-
         from src.validators.validator import Validator  
         # from src.models.auth import Auth
+
+        from config import app, database
+
         cls.name = app.name
         cls.mode = app.mode
         cls.author = app.author
         cls.description = app.description
         cls.key = app.key
         cls.debug = app.debug
+        cls.database = database.driver
         cls.lang = Lang(app.lang)
-        cls.settings = Settings
+        cls.settings = Settings.first()
         cls.version = Version(cls.settings.get("version", None))
         cls.python = cls.settings.get("python", None)
         cls.packages = cls.settings.get("packages", {})
-
 
         cls.injector = Injector()
         cls.terminal = Terminal
@@ -42,12 +42,12 @@ class Creator:
         cls.speaker = Speaker
         cls.http = Http 
         cls.view = View 
-        cls.routes = Route 
-        cls.http = Http
+        cls.routes = Route  
         # cls.interface =Interface
         # cls.auth = Auth
-        cls.request = Request
-        cls.session = Session
+
+        cls.REQUEST = Request 
+        cls.SESSION = Session 
         cls.validator = Validator
 
     @classmethod
@@ -56,14 +56,25 @@ class Creator:
             cls.setup()
             cls.retry = kwargs.get("retry", True)
             cls.main = kwargs.get("main", "main")   
-            cls.request = cls.request(session=cls.session(), validator=cls.validator()) 
-            # cls.auth.config(request = cls.request)
-            cls.injector.register(cls.request, cls.request)
-            cls.injector.register(cls.session, cls.request.session)
-            cls.name = cls.settings.get("name") 
+            # cls.name = app.name
+            # cls.mode = app.mode
+            # cls.author = app.author
+            # cls.description = app.description
+            # cls.key = app.key
+            # cls.debug = app.debug
+            # cls.database = database.driver
+            # cls.lang = Lang(app.lang)
+            # cls.settings = Settings.first()
+            # cls.version = Version(cls.settings.get("version", None))
+            cls.python = cls.settings.get("python", None)
+            cls.packages = cls.settings.get("packages", {})
+            cls.request = cls.REQUEST(validator=cls.validator()) 
+            # cls.auth.config(request = cls.request) 
+            cls.injector.register(cls.REQUEST, cls.request)
+            cls.injector.register(cls.SESSION, cls.request.session) 
             cls.version.set(cls.settings.get("version"))   
             if cls.key:
-                if cls.key  == cls.settings.get("key"):
+                if cls.key == cls.settings.get("key"):
                     return cls
                 else:
                     raise RuntimeError("Invalid key provided in the configuration.")
@@ -74,7 +85,11 @@ class Creator:
                 cls.settings.create()
                 return cls.configure(retry=False)
             else:
-                raise RuntimeError("Configuration échouée après une tentative de récupération.") from e
+                raise RuntimeError("") from e
+
+    @classmethod 
+    def stop(cls): 
+        exit(1)
 
     @classmethod 
     def run(cls, **kwargs): 
@@ -83,28 +98,49 @@ class Creator:
              
         except Exception as e:
             cls.handle_exception(e) 
-
+        
     @classmethod
     def create(cls):
         cls.terminal.progress_bar(10, 100, 50)
         cls.terminal.highlight(cls.build.creator())   
-        cls.settings.vscode()   
-        cls.terminal.progress(10, 100, spinner="dots")
+        use_venv = cls.terminal.input("Do you want to create a virtual environment ?", type="checkbox", value="yes")
+        if use_venv:
+            cls.settings.create_venv()  
+            cls.terminal.success("Virtual environment created.")
+            cls.settings.activate_venv() 
+        else:
+            cls.terminal.info("Skipping virtual environment setup.")
+
+        use_vscode = cls.terminal.input("Do you want to setup VSCode configs ?", type="checkbox", value="yes")
+        if use_vscode:
+            cls.settings.vscode()
+
+        cls.terminal.progress(5, 100, spinner="dots")
         cls.terminal.info(cls.lang.get("info.install", resource="packages"))
         cls.settings.install_packages()
-        cls.terminal.progress(1, 100, spinner="blocks")
+        cls.terminal.progress(2, 100, spinner="blocks")
         lang = cls.terminal.input(cls.lang.get("info.options", resource=f"lang"), type="select", options=cls.lang.languages, value="en", inline=False)
         cls.generate_lang(lang) 
-        key = cls.hash.make("creator")
-        cls.settings.set("key", key) 
+        try:
+            key = cls.hash.make("creator")
+            cls.settings.set("key", key) 
+        except:
+            key = cls.settings.get("key")
+        
+        name = cls.terminal.input("name", value="creator") 
         database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=cls.settings.get("databases"), value="sqlite", inline=False) 
+        mode = cls.terminal.input(cls.lang.get("info.options", resource=f"mode"), type="select", options=['console', 'web', 'desktop'], value="console", inline=False) 
         debug = cls.terminal.input("Activate debug app", type="checkbox", value="no")
-        env = cls.build.Env.app(name=cls.name, lang=lang, key=key, debug=debug)
-        env +="\n"+ cls.build.Env.database(driver=database, name=cls.name, path=cls.path.databases())
-        env +="\n"+cls.build.Env.session(name=f"{cls.name}_session", driver="file", lifetime=30) 
+        env = cls.build.Env.app(name=name, lang=lang, key=key, mode=mode, debug=debug)
+        env +="\n"+ cls.build.Env.database(driver=database, name=name, path=cls.path.databases())
+        env +="\n"+cls.build.Env.session(name=f"{name}_session") 
         cls.file('.env').save(env) 
-        # do migrate ?
-        # use starter kits ?
+        do_migrate = cls.terminal.input("Do you want to run migrations now ?", type="checkbox", value="no")
+        if do_migrate:
+            cls.terminal.info("Running database migrations...")
+        starter_kit = cls.terminal.input("Do you want to install a starter kit ?", type="select", options=["none", "api", "web", "auth"], value="none")
+        if starter_kit != "none":
+            cls.terminal.info(f"Installing starter kit: {starter_kit}...")
         cls.settings.make_architecture(all=True) 
 
     @classmethod
@@ -122,6 +158,7 @@ class Creator:
                 cls.lang.generate(lang)
                 langs.append(lang)
                 cls.settings.set("langs", langs)
+                cls.lang.setup(lang)
                 cls.terminal.success(cls.lang.get("success.create", resource=f"lang {lang}")) 
         else:
             cls.terminal.error(cls.lang.get("error.invalid", data=f"lang '{lang}'"))
@@ -132,14 +169,12 @@ class Creator:
     
     @classmethod
     def url(cls, uri, **kwargs): 
-        pass
+        return uri
     
     @classmethod
-    def route(cls, name, **kwargs): 
-        from routes.route import Route
-        if cls.mode == "web":
-            return Route.resolve(name)['uri']
-        Route.dispatch(name, cls.injector, **kwargs) 
+    def route(cls, name, intended=None, **kwargs): 
+        from routes.route import Route 
+        Route.dispatch(name, **kwargs) 
 
     @classmethod
     def form(cls, **kwargs):

@@ -1,14 +1,13 @@
 try: 
     import bcrypt
-except:
-    pass
-
-try: 
     import hashlib
     import secrets
     import base64 
-except:
-    pass
+except: 
+    bcrypt = None
+    hashlib = None
+    secrets = None
+    base64 = None
 
 class Hash: 
     
@@ -55,27 +54,18 @@ class Hash:
  
 class Hash2:    
     @staticmethod
-    def __init__(self, algorithm="sha3_256"):
-        """
-        Initialise une instance avec un algorithme de hachage.
-        """
+    def __init__(self, algorithm="sha3_256"): 
         self.algorithm = algorithm.lower()
 
-    def method(self):
-        """Retourne la méthode de hachage associée à l'algorithme."""
+    def method(self): 
         return getattr(hashlib, self.algorithm, None)
     
     @staticmethod
-    def generate_salt(length=16):
-        """Génère un sel cryptographique."""
+    def generate_salt(length=16): 
         return secrets.token_bytes(length)
     
     @staticmethod
-    def hash(self, password):
-        """
-        Hache un mot de passe avec un sel.
-        Retourne le hachage au format "salt:hashed_password".
-        """
+    def hash(self, password): 
         if isinstance(password, str):
             password = password.encode('utf-8')
  
@@ -90,10 +80,7 @@ class Hash2:
             raise ValueError(f"Algorithm '{self.algorithm}' not supported.")
     
     @staticmethod
-    def verify(self, password, stored_hash):
-        """
-        Vérifie si un mot de passe correspond au hachage stocké.
-        """
+    def verify(self, password, stored_hash): 
         try: 
             salt_hex, hashed_password = stored_hash.split(":")
             salt = bytes.fromhex(salt_hex)

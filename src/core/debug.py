@@ -1,14 +1,13 @@
-import sys
+from pprint import pprint
+import sys 
 
-class Debug:
-    def __init__(self, *args):
-        self.args = args  
+class Debug: 
+    @staticmethod
+    def dump(*args):
+        print(args)
 
-    def dd(self, exit_code=1):
-        self.dump()
-        sys.exit(exit_code)
-
-
-    def dump(self):
-        print(self.args)     
-
+    @staticmethod
+    def dd(*args):
+        for a in args:
+            pprint(a)
+        sys.exit(1)

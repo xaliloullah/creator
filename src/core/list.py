@@ -1,7 +1,5 @@
-import random 
-from collections import Counter
-from itertools import chain, combinations, permutations
-from statistics import mean, median
+import random  
+from itertools import chain
 
 
 class List(list):
@@ -13,10 +11,7 @@ class List(list):
     def shuffle(self):
         temp = self.copy()
         random.shuffle(temp)
-        return List(temp)
-     
-    def frequency(self):
-        return dict(Counter(self))
+        return List(temp) 
      
     def flatten(self):
         return List(list(chain.from_iterable(
@@ -70,10 +65,7 @@ class List(list):
         return List(self + list(other)) 
     
     def sum(self):
-        return sum(self)
-    
-    def mean(self):
-        return mean(self) if self else 0
+        return sum(self) 
     
     def unique_count(self):
         return len(set(self))
@@ -96,13 +88,7 @@ class List(list):
     
     def clear(self):
         super().clear()
-        return self
+        return self  
     
-    def min(self):
-        return super().min() if self else None
-
-    def max(self):
-        return super().max() if self else None
-
-    def range(self):
-        return self.max() - self.min() if self else None
+    def pluck(self, key):
+        return List([item[key] for item in self.items if isinstance(item, dict) and key in item])

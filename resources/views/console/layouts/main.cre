@@ -8,9 +8,6 @@ from main import Creator
 def view(): 
     Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app="Creator"))
     
-    if Creator.request.session.is_active():
-        Creator.route("dashboard")
-
     option = Creator.terminal.input("option", options={"1":Creator.lang.get("actions.login"), "2":Creator.lang.get("actions.signup"),  "0":Creator.lang.get("actions.exit")})
 
     if option == "1":
@@ -21,4 +18,4 @@ def view():
         Creator.terminal.clear()
         if Creator.terminal.input(Creator.lang.get("confirm.exit"), type="confirm", value="yes"):
             Creator.terminal.comment(Creator.lang.get("messages.goodbye"))
-            exit()
+            Creator.stop()

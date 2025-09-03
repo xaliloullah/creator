@@ -1,5 +1,5 @@
 from src.builds.templates import Template
-from src.core import Path
+from src.core import String
 class Build:
 
     @staticmethod
@@ -12,13 +12,15 @@ class Build:
 
     @staticmethod
     def model(name: str, table: str, driver:str):
-        return Template("model").render(name=name.capitalize(), table=table, driver=driver)
+        if driver in ["file", "structure", ]:
+            return Template("models.structure").render(name=name, table=table)
+        return Template("models.model").render(name=name, table=table)
       
     @staticmethod
     def controller(name:str, model: str=None, resource: bool=False):
         render = ""
         if model:
-            render += Template("controllers.model").render(model=model.lower(), Model=model.capitalize())
+            render += Template("controllers.model").render(model=String(model).snakecase(), Model=String(model).pascalcase())
         render += Template("controllers.controller").render(name=name)
         if resource:
             render += Template("controllers.resource").render()
