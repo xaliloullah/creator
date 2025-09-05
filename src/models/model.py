@@ -1,4 +1,5 @@
 from src.databases import Query
+from src.core import Collection
 
 class Model:
     table = None 
@@ -9,7 +10,7 @@ class Model:
     protected = ['attributes', 'casts', 'provider', 'table', 'primary_key']
 
     def __init__(self, attributes):
-        self.attributes = attributes 
+        self.attributes = attributes
 
     @classmethod
     def create(cls, **column):
@@ -74,7 +75,7 @@ class Model:
     def count(self, column='id'): 
         result = self.provider.count(column).fetchone()
         return next(iter(result.values())) if isinstance(result, dict) else result[0] if isinstance(result, tuple) else result
-     
+    
     def first(self):  
         self.attributes = self.provider.first().fetchone()   
         return self
@@ -103,8 +104,6 @@ class Model:
     def clone(self):
         return self.__class__(self.attributes.copy())
 
-
-
     def get(self): 
         if isinstance(self.attributes, list):
             return [self.__class__(row) for row in self.attributes]
@@ -112,6 +111,9 @@ class Model:
             return [self.__class__(self.attributes)]
         return []
     
+    def collect(self):
+        return Collection(self.attributes)
+
     @classmethod
     def exists(cls, **kwargs):
         return cls.where(**kwargs).count() > 0
@@ -136,10 +138,6 @@ class Model:
             obj[0].update(**update)
             return obj[0]
         return cls.create(**{**search, **update})
-
-
-
-    
     
     def belongs_to(self, related:'Model', foreign_key, primary_key=primary_key): 
         value = self.attributes.get(foreign_key)
@@ -177,13 +175,7 @@ class Model:
 
 
     def __str__(self):
-        return str(self.attributes)
-    
-    # def __getattr__(self, key):
-    #     if isinstance(self.attributes, dict):
-    #         if key in self.attributes:
-    #             return self.attributes[key]
-    #     raise AttributeError(f"{key} not found")
+        return str(self.attributes) 
     
     def __getattr__(self, key):
         if isinstance(self.attributes, dict):
@@ -206,11 +198,15 @@ class Model:
             super().__setattr__(key, value)
         else: 
             self.attributes[key] = value
+            
     def __iter__(self): 
         return iter(self.attributes)
-
+ 
     def __len__(self):
+        if self.attributes is None:
+            return 0
         return len(self.attributes)
+
     
     def __repr__(self):
         return str(self.attributes)

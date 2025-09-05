@@ -1,4 +1,4 @@
-from src.core import File, Path
+from src.core import File, Path, Collection
 
 class Storage:
 
@@ -6,8 +6,8 @@ class Storage:
         self.path = path if isinstance(path, Path) else Path(path)
         self.format = kwargs.get("format", None)
         self.default = kwargs.get("default", None)
-        self.absolute = kwargs.get("absolute", False)  
-        self.disk = kwargs.get("disk", None)  
+        self.absolute = kwargs.get("absolute", True)  
+        # self.disk = kwargs.get("disk", None)  
         
         if self.absolute:
             self.path = Path.storage(self.path)
@@ -18,40 +18,20 @@ class Storage:
             self.format = self.file.get_extension(with_dot=False) 
         self.file.set_extension(self.format)
 
-
-    @property
-    def data(self):
-        return self.load() or self.default
-
-    @data.setter
-    def data(self, value):
-        self.save(value) 
+        self.data = self.load()  
 
     def load(self, **kwargs):
-        try:    
-            self.file.path.ensure_exists()
+        try:
             return self.file.load(format=self.format, **kwargs)
+        except Exception:
+            return self.default
+    
+    def save(self):
+        try:
+            data = self.data if self.data is not None else self.default
+            self.file.save(data, format=self.format, default=self.default)
         except Exception as e:
-            raise Exception(e)
-    
-    def save(self, data=None, **kwargs):  
-        backup = self.load()
-        format = kwargs.get("format", self.format)
-        default = kwargs.get("default", self.default)
-        try:     
-            if data is None:
-                data = self.data if self.data is not None else default
-            self.file.save(data, format=format, **kwargs)
-
-        except Exception as e:
-            self.file.save(backup, format=self.format)   
-            raise Exception(e) 
-    
-    def read(self):
-        return self.data 
-    
-    def get(self):
-        return self.data 
+            raise Exception(f"Failed to save storage: {e}")
     
     def create(self, data): 
         self.data = data
@@ -59,9 +39,6 @@ class Storage:
         return self
     
     def update(self, data):
-        return self.create(data)
-
-    def add(self, data):
         try:
             if isinstance(self.data, dict):
                 self.data.update(data)  
@@ -78,7 +55,6 @@ class Storage:
         except Exception as e:
             raise Exception(e)
         
-        
     def delete(self):
         return self.file.delete()
         
@@ -94,8 +70,11 @@ class Storage:
         else:
             raise TypeError("Invalid !")
         self.save()
-        return self 
-
+        return self  
+    
+    def collect(self):
+        return Collection(self.data)
+    
     def exists(self):
         return self.file.exists()
         
@@ -108,8 +87,9 @@ class Storage:
     def __getitem__(self, key):
         return self.data[key]
     
-    def __setitem__(self, value):
-        self.data = value
+    def __setitem__(self, key, value):
+        self.data[key] = value
+        self.save()
     
     def __repr__(self):
         return f"{self.__class__.__name__}({self.path}, format={self.format}), data={self.data}"

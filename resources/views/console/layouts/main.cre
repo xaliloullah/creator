@@ -1,7 +1,5 @@
 from main import Creator
 
-
-
 @Creator.view.extend("app")
 @Creator.view.section("title", "Creator")
 @Creator.view.section("content")

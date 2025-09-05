@@ -1,230 +1,211 @@
+import random
+
 class Collection:
-    
-    def __init__(self, *data):   
-        data = list(data) 
-        if len(data) == 1: 
-            self.data = data[0]
-        else: 
-            self.data = data
-            
-    def get(self, keys:str=None, default=None):
-        data = self.data
-        if keys:
-            try:
-                for key in keys.split("."):
-                    if isinstance(data, (list, tuple)):
-                        index = data.index(key)
-                        data = data[index]
-                    else: 
-                        data = data[key]
-            except:
-                return default
-        return data  
-    
-    def set(self, keys: str, value):
-        keys = keys.split(".")
-        data = self.data 
-        for key in keys[:-1]: 
-            if key not in data or not isinstance(data[key], dict):
-                data[key] = {}
-            data = data[key]
-        data[keys[-1]] = value  
-        
-    def create(self, data):
-        return Collection(*data)
-    
+    def __init__(self, items=None):
+        self.items = list(items) if items else []
+
     def all(self):
-        return self
-
-    def add(self, item):
-        self.data.append(item)
-        
-    def update(self, old, new):
-        if old in self.data:
-            index = self.data.index(old)
-            self.data[index] = new
-        else: 
-            self.data.append(new)
+        return self.items
     
-    def remove(self, item):   
-        if item in self.data:
-            index = self.data.index(item)
-            self.data.pop(index)
-        
-    def find(self, **kwargs): 
-        for item in self.data:
-            if isinstance(item, dict):
-                if all(item.get(key) == value for key, value in kwargs.items()): 
-                    return item
-            else:
-                if all(item == value for key, value in kwargs.items()):
-                    return item
-        return None
-    
-    def where(self, **kwargs):
-        for item in self.data:
-            if isinstance(item, dict):
-                if all(item.get(key) == value for key, value in kwargs.items()):
-                    self.data = item 
-                else:
-                    if all(item == value for key, value in kwargs.items()): 
-                        self.data = item 
-                    else:
-                        self.data = None 
-        return self
-    
-    def first(self, func=None): 
-        if func:
-            for item in self.data:
-                if func(item):
-                    return item 
-        return self.data[0] if self.data else None  
-    
-    def last(self, func=None):
-        if func:
-            for item in reversed(self.data):
-                if func(item):
-                    return item
-        return self.data[-1] if self.data else None 
-
-    def sort(self, key=None, reverse=False):
-        return Collection(sorted(self.data, key=key, reverse=reverse)) 
-    
-    def new(self, data):
-        return Collection(*data)
-    
-    def filter(self, func):
-        return Collection(filter(func, self.data))
-
-    def map(self, func):
-        return Collection(map(func, self.data))
-
-    def reduce(self, func, initial=None):
-        from functools import reduce
-        return reduce(func, self.data, initial)
-
-    def chunk(self, size):
-        return Collection([self.data[i:i + size] for i in range(0, len(self.data), size)]) 
-    
-    def pluck(self, key):
-        return Collection(item.get(key) for item in self.data if isinstance(item, dict)) 
-    
-    def merge(self, other) -> 'Collection': 
-        self.data.extend(other)
-        return self
-    
-    def count(self) -> int: 
-        return len(self.data)
-
-    def sum(self, key= None): 
-        if key:
-            return sum(key(item) for item in self.data)
-        return sum(self.data)
-
-    def avg(self, key= None): 
-        if not self.data:
-            return None
-        return self.sum(key) / self.count()
-
-    def max(self, key= None): 
-        if not self.data:
-            return None
-        return max(self.data, key=key) if key else max(self.data)
-
-    def min(self, key= None): 
-        if not self.data: 
-            return None
-        return min(self.data, key=key) if key else min(self.data)
-    
-    def json(self):
-        import json
-        return json.dumps(self.data) 
-    
-    def dict_to_list(self):
-        return list(self.data.items())
-     
-    def explode(self, separator): 
-        self.data = str(self.data).split(separator)
-        return self
- 
-    def implode(self, separator:str): 
-        self.data = separator.join(self.data)
-        return self
-    
-    def replace(self, old, new="", count=-1):
-        if not isinstance(old, str): 
-            for item in old:
-                self.data = self.data.replace(item, new, count)
-        else:
-            self.data = self.data.replace(old, new, count)
-        return self
-
-    
-    def __getitem__(self, index):
-        return self.data[index]
-    
-    def __setitem__(self, index, value):
-        self.data[index] = value
-
-    def __len__(self):
-        return len(self.data)
-
-    def __iter__(self):
-        return iter(self.data)
-
-    def __str__(self):
-        return f"{self.data}"
-    
-    def __delitem__(self, index):
-        del self.data[index]
-
-    def __call__(self, index):
-        return self.data[index] if index < len(self.data) else None
     
     def __repr__(self):
-        return f"Collection({self.data})"
-    
-    def __add__(self, other):
-        if isinstance(other, Collection):
-            return Collection(self.data + other.data)
-        raise TypeError("Unsupported type for addition")
+        return f"Collection({self.items})"
+
+    # ------------------------------
+    # Extraction
+    # ------------------------------
+    def first(self, default=None):
+        return self.items[0] if self.items else default
+
+    def last(self, default=None):
+        return self.items[-1] if self.items else default
+
+    def get(self, index, default=None):
+        return self.items[index] if 0 <= index < len(self.items) else default
+
+    def set(self, index, value):
+        if 0 <= index < len(self.items):
+            self.items[index] = value
+        return self
+
+    def take(self, n):
+        return Collection(self.items[:n])
+
+    def skip(self, n):
+        return Collection(self.items[n:])
+
+    def chunk(self, size):
+        return [Collection(self.items[i:i+size]) for i in range(0, len(self.items), size)]
+
+    def nth(self, step, offset=0):
+        return Collection(self.items[offset::step])
+
+    def random(self, n=1):
+        return Collection(random.sample(self.items, n))
+
+    def shuffle(self):
+        items = self.items[:]
+        random.shuffle(items)
+        return Collection(items)
+
+    # ------------------------------
+    # Transformation
+    # ------------------------------
+    def map(self, func):
+        return Collection([func(item) for item in self.items])
+
+    def filter(self, func):
+        return Collection([item for item in self.items if func(item)])
+
+    def reject(self, func):
+        return Collection([item for item in self.items if not func(item)])
+
+    def each(self, func):
+        for item in self.items:
+            func(item)
+        return self
+
+    def pluck(self, key):
+        return Collection([item[key] for item in self.items if isinstance(item, dict) and key in item])
+
+    def group_by(self, key):
+        grouped = {}
+        for item in self.items:
+            if isinstance(item, dict) and key in item:
+                grouped.setdefault(item[key], []).append(item)
+        return {k: Collection(v) for k, v in grouped.items()}
+
+    def sort(self, key=None, reverse=False):
+        return Collection(sorted(self.items, key=key, reverse=reverse))
+
+    def sort_by(self, key, reverse=False):
+        return Collection(sorted(self.items, key=lambda x: x.get(key) if isinstance(x, dict) else getattr(x, key, None), reverse=reverse))
+
+    def flatten(self):
+        flat = []
+        for item in self.items:
+            if isinstance(item, (list, tuple, Collection)):
+                flat.extend(Collection(item).flatten().all())
+            else:
+                flat.append(item)
+        return Collection(flat)
+
+    def values(self):
+        return Collection(list(self.items))
+
+    def keys(self):
+        if all(isinstance(item, dict) for item in self.items):
+            return Collection([list(item.keys()) for item in self.items]).flatten().unique()
+        return Collection(range(len(self.items)))
+
+    def unique(self):
+        return Collection(list(dict.fromkeys(self.items)))
+
+    def concat(self, other):
+        return Collection(self.items + list(other))
+
+    def merge(self, other):
+        return self.concat(other)
+
+    def zip(self, other):
+        return Collection(list(zip(self.items, other)))
+
+    def combine(self, values):
+        return Collection(dict(zip(self.items, values)))
+
+    def cross_join(self, other):
+        return Collection([(a, b) for a in self.items for b in other])
+
+    # ------------------------------
+    # Agrégations
+    # ------------------------------
+    def sum(self):
+        return sum(self.items)
+
+    def avg(self):
+        return sum(self.items) / len(self.items) if self.items else 0
+
+    def max(self):
+        return max(self.items) if self.items else None
+
+    def min(self):
+        return min(self.items) if self.items else None
+
+    def count(self):
+        return len(self.items)
+
+    def implode(self, sep=","):
+        return sep.join(map(str, self.items))
+
+    def join(self, sep=", ", last=" and "):
+        if len(self.items) <= 1:
+            return "".join(map(str, self.items))
+        return sep.join(map(str, self.items[:-1])) + last + str(self.items[-1])
+
+    def reduce(self, func, initial=None):
+        result = initial
+        for item in self.items:
+            result = func(result, item) if result is not None else item
+        return result
+
+    # ------------------------------
+    # Comparaisons & inclusion
+    # ------------------------------
+    def contains(self, value):
+        if callable(value):
+            return any(value(item) for item in self.items)
+        return value in self.items
+
+    def diff(self, other):
+        return Collection([item for item in self.items if item not in other])
+
+    def intersect(self, other):
+        return Collection([item for item in self.items if item in other])
+
+    def except_keys(self, keys):
+        return Collection([{k: v for k, v in d.items() if k not in keys} for d in self.items if isinstance(d, dict)])
+
+    def only(self, keys):
+        return Collection([{k: v for k, v in d.items() if k in keys} for d in self.items if isinstance(d, dict)])
+
+    def where(self, **kwargs):
+        def matches(item):
+            if not isinstance(item, dict):
+                return False
+            return all(item.get(k) == v for k, v in kwargs.items())
+        
+        return Collection([item for item in self.items if matches(item)])
 
 
+    def where_in(self, key, values):
+        return Collection([item for item in self.items if isinstance(item, dict) and item.get(key) in values])
 
-# Usage:
-# collection = Collection([1, 2, 3, 4, 5])
-# print(collection)
-# print(collection.all())
-# print(collection.count())
-# print(collection.sum())
-# print(collection.avg())
-# print(collection.max())
-# print(collection.min())
-# print(collection.first())
-# print(collection.last())
-# print(collection.where(id=2))
-# print(collection.sort())
-# print(collection.chunk(2))
-# print(collection.pluck('name'))
-# print(collection.merge([6, 7, 8, 9, 10]))
-# print(collection.filter(lambda x: x % 2 == 0))
-# print(collection.map(lambda x: x * 2))
-# print(collection.reduce(lambda x, y: 23 + 3))
-# print(collection.get("2"))
-# print(collection.set("2", 10))
-# print(collection.new([1, 2, 3, 4, 5]))
-# print(collection.add(6))
-# print(collection.remove(2))
-# print(collection.find(2))
-# print(collection[2])
-# # collection[2] = 10
-# # for item in collection:
-# #     print(item)
-# # print(collection)
-# # print(collection.data)
-# # print(collection.__repr__())
-# # print(collection.__str__())
-# # print(collection.__len__())
-# # print(collection.__iter__())
-# # print(collection.__getitem__(2))
-# # print(collection.__setitem__(2, 10) 
+    def where_not_in(self, key, values):
+        return Collection([item for item in self.items if isinstance(item, dict) and item.get(key) not in values])
+
+    def where_null(self, key):
+        return Collection([item for item in self.items if isinstance(item, dict) and item.get(key) is None])
+
+    def where_not_null(self, key):
+        return Collection([item for item in self.items if isinstance(item, dict) and item.get(key) is not None])
+
+    # ------------------------------
+    # Helpers "conditionnels"
+    # ------------------------------
+    def when(self, condition, func):
+        return func(self) if condition else self
+
+    def unless(self, condition, func):
+        return func(self) if not condition else self
+
+    # ------------------------------
+    # Magic
+    # ------------------------------
+    def __iter__(self):
+        return iter(self.items)
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, index):
+        return self.items[index]

@@ -32,22 +32,28 @@ class Query:
     def rollback(self):
         self.database.rollback()
         return self
+    
+    # def show(self ):
+    #     self.values = ()
+    #     self.script = f"SHOW TABLES" 
+    #     tables = self.fetchall()
+    #     return [t[0] for t in tables]
 
     def create(self, table, columns, if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
         self.values = ()
-        self.script = f'''CREATE TABLE IF NOT EXISTS {table} ({columns})''' 
+        self.script = f"CREATE TABLE IF NOT EXISTS {table} ({columns})" 
         return self
         
     def drop(self, table, if_exists=True):
         self.values = ()
-        self.script = f'''DROP TABLE IF EXISTS {table}'''
+        self.script = f"DROP TABLE IF EXISTS {table}"
         return self
     
     def insert(self, table, **kwargs):
         columns = ', '.join(kwargs.keys())
         self.values = tuple(kwargs.values())
         placeholders = ', '.join([f'{self.placeholder}' for _ in kwargs.keys()])
-        self.script = f'''INSERT INTO {table} ({columns}) VALUES ({placeholders})'''  
+        self.script = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"  
         return self
     
     def update(self, table, **kwargs): 
@@ -55,12 +61,12 @@ class Query:
         self.values = tuple(kwargs.values())
         # if add_timestamp:
         columns += ', updated_at=CURRENT_TIMESTAMP'
-        self.script = f'''UPDATE {table} SET {columns}'''
+        self.script = f"UPDATE {table} SET {columns}"
         return self 
     
     def delete(self, table): 
         self.values = ()
-        self.script = f'''DELETE FROM {table}''' 
+        self.script = f"DELETE FROM {table}" 
         return self
     
     def select(self, table, *columns):
@@ -68,77 +74,77 @@ class Query:
         if not columns:
             columns = ['*'] 
         columns = ', '.join(columns)
-        self.script = f'''SELECT {columns} FROM {table}'''  
+        self.script = f"SELECT {columns} FROM {table}"  
         return self
     
     def where(self, **kwargs):
         self.conditions = ' AND '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {self.conditions}'''
+            self.script = f"{self.script} AND {self.conditions}"
         else:
-            self.script = f'''{self.script} WHERE {self.conditions}'''
+            self.script = f"{self.script} WHERE {self.conditions}"
         return self
     
     def where_not(self, **kwargs):
         self.conditions = ' AND '.join([f'{key}!={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {self.conditions}'''
+            self.script = f"{self.script} AND {self.conditions}"
         else:
-            self.script = f'''{self.script} WHERE {self.conditions}''' 
+            self.script = f"{self.script} WHERE {self.conditions}" 
         return self
     
     def like(self, **kwargs):
         self.conditions = ' AND '.join([f'{key} LIKE {self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(f"%{value}%" for value in kwargs.values())
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {self.conditions}'''
+            self.script = f"{self.script} AND {self.conditions}"
         else:
-            self.script = f'''{self.script} WHERE {self.conditions}''' 
+            self.script = f"{self.script} WHERE {self.conditions}" 
         return self
     
     def or_where(self, **kwargs):
         self.conditions = ' OR '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} OR {self.conditions}'''
+            self.script = f"{self.script} OR {self.conditions}"
         else:
-            self.script = f'''{self.script} WHERE {self.conditions}''' 
+            self.script = f"{self.script} WHERE {self.conditions}" 
         return self
     
     def where_null(self, column):
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {column} IS NULL'''
+            self.script = f"{self.script} AND {column} IS NULL"
         else:
-            self.script = f'''{self.script} WHERE {column} IS NULL'''
+            self.script = f"{self.script} WHERE {column} IS NULL"
         return self
 
     def where_not_null(self, column):
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {column} IS NOT NULL'''
+            self.script = f"{self.script} AND {column} IS NOT NULL"
         else:
-            self.script = f'''{self.script} WHERE {column} IS NOT NULL'''
+            self.script = f"{self.script} WHERE {column} IS NOT NULL"
         return self
 
     def in_clause(self, column, values):
         placeholders = ', '.join([self.placeholder for _ in values])
         if 'WHERE' in self.script:
-            self.script = f'''{self.script} AND {column} IN ({placeholders})'''
+            self.script = f"{self.script} AND {column} IN ({placeholders})"
         else:
-            self.script = f'''{self.script} WHERE {column} IN ({placeholders})'''
+            self.script = f"{self.script} WHERE {column} IN ({placeholders})"
         self.values += tuple(values)
         return self
     
     def having(self, **kwargs):
         conditions = ' AND '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
-        self.script = f'''{self.script} HAVING {conditions}'''
+        self.script = f"{self.script} HAVING {conditions}"
         self.values += tuple(kwargs.values())
         return self
     
     def group_by(self, *columns):
         cols = ', '.join(columns)
-        self.script = f'''{self.script} GROUP BY {cols}'''
+        self.script = f"{self.script} GROUP BY {cols}"
         return self
 
     
@@ -148,7 +154,7 @@ class Query:
         return self
     
     def subquery(self, subquery_script, alias):
-        self.script = f'''({subquery_script}) AS {alias}'''
+        self.script = f"({subquery_script}) AS {alias}"
         return self
     
     def paginate(self, page, per_page):
@@ -157,19 +163,19 @@ class Query:
         return self
     
     def order_by(self, column='id', option='ASC'):
-        self.script = f'''{self.script} ORDER BY {column} {option}''' 
+        self.script = f"{self.script} ORDER BY {column} {option}" 
         return self
     
     def limit(self, value):
-        self.script = f'''{self.script} LIMIT {value}''' 
+        self.script = f"{self.script} LIMIT {value}" 
         return self
     
     def alias(self, alias):
-        self.script = f'''{self.script} AS {alias}'''  
+        self.script = f"{self.script} AS {alias}"  
         return self
     
     def join(self, table, option=""):
-        self.script = f'''{self.script} {option} JOIN {table}'''  
+        self.script = f"{self.script} {option} JOIN {table}"  
         return self
     
     def on(self, **kwargs): 
@@ -179,7 +185,7 @@ class Query:
         return self
     
     def count(self, column='*'):
-        self.script = f'''SELECT COUNT({column}) FROM ({self.script}) AS alias''' 
+        self.script = f"SELECT COUNT({column}) FROM ({self.script}) AS alias" 
         return self
     
     def first(self):  

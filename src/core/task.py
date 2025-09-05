@@ -13,7 +13,6 @@ class Task:
             quiet = kwargs.get('quiet', False)  
             force_reinstall = kwargs.get('force_reinstall', False)  
             venv = kwargs.get("venv", False)
-            
             command = ['pip', 'install']
             
             if version:
@@ -104,13 +103,10 @@ class Task:
             source = String(source).replace(['/','\\'], '.') 
             if modules:
                 return f"from {source} import {', '.join(File(m).path.strip() for m in modules)}"
-            
             if '.' in source:
                 path, module = source.rsplit('.', 1)
                 return f"from {path} import {module}"
-            
             return f"import {source}"
-            
         except Exception as e:
             raise Exception(e)
 

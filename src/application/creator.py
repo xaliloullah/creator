@@ -3,7 +3,7 @@ class Creator:
     @classmethod
     def setup(cls):
         from src.console import Terminal  
-        from src.core import Path, Data, File, Task, Date, View ,Route, Lang, Hash, Crypt, String, Storage, Injector, Collection,  Translator, Speaker, Http, Session, Response, Request 
+        from src.core import Path, Data, File, Task, Date, View ,Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection,  Translator, Speaker, Http, Session, Response, Request 
         # , Interface 
         from src.builds import Build
         from src.application.configs import Settings, Version
@@ -16,11 +16,10 @@ class Creator:
         cls.mode = app.mode
         cls.author = app.author
         cls.description = app.description
-        cls.key = app.key
-        cls.debug = app.debug
+        cls.key = app.key 
         cls.database = database.driver
         cls.lang = Lang(app.lang)
-        cls.settings = Settings.first()
+        cls.settings = Settings()
         cls.version = Version(cls.settings.get("version", None))
         cls.python = cls.settings.get("python", None)
         cls.packages = cls.settings.get("packages", {})
@@ -36,6 +35,8 @@ class Creator:
         cls.crypt = Crypt
         cls.string = String  
         cls.build = Build  
+        cls.dict = Dict  
+        cls.debug = Debug 
         cls.storage = Storage 
         cls.collection = Collection 
         cls.translator = Translator 
@@ -45,9 +46,8 @@ class Creator:
         cls.routes = Route  
         # cls.interface =Interface
         # cls.auth = Auth
-
-        cls.REQUEST = Request 
-        cls.SESSION = Session 
+        cls.request = Request 
+        cls.session = Session 
         cls.validator = Validator
 
     @classmethod
@@ -56,22 +56,22 @@ class Creator:
             cls.setup()
             cls.retry = kwargs.get("retry", True)
             cls.main = kwargs.get("main", "main")   
+            cls.debug.printer = cls.terminal.debug
             # cls.name = app.name
             # cls.mode = app.mode
             # cls.author = app.author
             # cls.description = app.description
-            # cls.key = app.key
-            # cls.debug = app.debug
+            # cls.key = app.key 
             # cls.database = database.driver
             # cls.lang = Lang(app.lang)
             # cls.settings = Settings.first()
             # cls.version = Version(cls.settings.get("version", None))
             cls.python = cls.settings.get("python", None)
             cls.packages = cls.settings.get("packages", {})
-            cls.request = cls.REQUEST(validator=cls.validator()) 
+            cls.request = cls.request(session=cls.session(), validator=cls.validator()) 
             # cls.auth.config(request = cls.request) 
-            cls.injector.register(cls.REQUEST, cls.request)
-            cls.injector.register(cls.SESSION, cls.request.session) 
+            cls.injector.register('request', cls.request)
+            cls.injector.register('session', cls.request.session) 
             cls.version.set(cls.settings.get("version"))   
             if cls.key:
                 if cls.key == cls.settings.get("key"):

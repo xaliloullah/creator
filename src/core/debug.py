@@ -1,13 +1,14 @@
-from pprint import pprint
 import sys 
 
 class Debug: 
-    @staticmethod
-    def dump(*args):
-        print(args)
+    printer=print
 
-    @staticmethod
-    def dd(*args):
-        for a in args:
-            pprint(a)
-        sys.exit(1)
+    def __init__(self, *args, exit: bool = False, step: bool = False):
+        if step:
+            for arg in args:
+                self.printer(arg)
+                input("Press Enter to continue...")
+        else:
+            self.printer(*args)
+        if exit:
+            sys.exit(1)

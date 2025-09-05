@@ -1,11 +1,13 @@
 from src.core import Path, File, Task
 from src.models import Structure
-import os
-import sys
+import os 
 
 class Settings(Structure): 
-    path = Path.settings()     
-    single = True
+
+    def __init__(self):  
+        self.path = Path.settings()
+        super().__init__(self.path)
+
     # @classmethod
     # def create(cls):
     #     try:  

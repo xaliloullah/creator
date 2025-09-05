@@ -3,9 +3,10 @@ from src.core import Path, Date
 from config import session 
 
 class Session(Structure):
-    path = Path.session(session.name)
-    auto_increment = False
 
+    def __init__(self):  
+        self.path = Path.session(session.name) 
+        super().__init__(self.path)
 
     def put(self, key, value): 
         self.set(key, value)
@@ -35,7 +36,7 @@ class Session(Structure):
     def get_flash(self, status=None):
         if status:
             flash = self.get(f"flash.{status}", [])
-            self.put(f"flash.{status}", [])
+            self.put(f"flash.{status}", None)
         else: 
             flash = self.get("flash", {})
             self.put("flash", {}) 
@@ -70,9 +71,8 @@ class Session(Structure):
         if not self.has('_token'):
             self.put('_token',str(uuid.uuid4()))
         return self.get('_token')
-
-    @classmethod
-    def create(cls, user_id: str=None, remember_me: bool=False): 
+ 
+    def create(self, user_id: str=None, remember_me: bool=False): 
         return super().create(
             user_id= user_id,
             expires_at= f"{Date.add_minutes(Date.now(), int(session.lifetime)).timestamp()}",
@@ -85,7 +85,6 @@ class Session(Structure):
             kwargs['last_activity'] = f"{Date.now().timestamp()}"
         return super().update(**kwargs)
      
-    def destroy(self):
-        self.delete()
-    flush = destroy
+    def flush(self):
+        self.destroy() 
         

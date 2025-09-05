@@ -13,15 +13,16 @@ class LoginController:
 
     @staticmethod
     def store(request: Request):
+        # credentials = [request.all()]
+        # Creator.debug(credentials, step=True)
         if request.validate({
                 # 'email': ["required","email"], #"unique:users"
                 'name': Rule().required().string(),  
                 'password': Rule().required().string()
             }):    
-            # credentials = [request.all()]
+            
             user = User.where(name=request.name).first() 
-            if user and Creator.hash.check(request.password, user.password): 
-                request.user = user  
+            if user and Creator.hash.check(request.password, user.password):
                 request.session.success(Creator.lang.get('auth.succeeded'))
                 # Auth.login(user)
                 return Creator.route('dashboard')

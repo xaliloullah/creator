@@ -1,6 +1,6 @@
 class Request:
     params = {}  
-    protected = ['params', 'session', 'validator', 'user']
+    protected = ['params', 'session', 'validator', 'user', 'response']
 
     def __init__(self, params:dict={}, **kwargs):
         from src.core import Session, Response
@@ -27,7 +27,7 @@ class Request:
     def validate(self, validation: dict) -> bool:
         if self.validator.validate(validation, self.params):
             return True
-        self.session.error(*self.validator.errors)   
+        self.session.error(*self.validator.get_errors())   
         return False
     
     def has(self, key: str) -> bool:

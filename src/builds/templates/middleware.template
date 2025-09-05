@@ -1,9 +1,11 @@
+from typing import Callable
 from src.middlewares import Middleware 
 from src.core import Request
 
 class {name}(Middleware):
+
     @staticmethod
-    def handle(request: Request, next: callable):
+    def handle(request: Request, next: Callable):
         #
         #
         #

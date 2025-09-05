@@ -84,5 +84,24 @@
     "support": "Support",
     "faq": "FAQ",
     "dashboard": "Dashboard"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "French",
+    "es": "Spanish",
+    "de": "German",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "zh": "Chinese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "ru": "Russian"
+  },
+  "password": {
+    "reset": "Your password has been reset!",
+    "sent": "We have emailed your password reset link!",
+    "throttled": "Please wait before retrying.",
+    "token": "This password reset token is invalid or expired or already used.",
+    "user": "We can't find a user with that {credential}."
   }
 }

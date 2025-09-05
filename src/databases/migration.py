@@ -67,11 +67,11 @@ class Migration:
                         cls.run(migration, "up")  
                         Terminal.success(f"Applying migration '{migration}'.") 
                         Query().insert(cls.table, migration=migration,batch=batch).execute() 
-                        alert = {'info': 'Migrations applied successfully.'}
+                        # alert = {'info': 'Migrations applied successfully.'}
                     else:
                         alert = {'warning': 'Nothing to migrate...'}
             elif run == 'down':  
-                applied_migrations = cls.check()  
+                applied_migrations = cls.check()
                 migrations = cls.get()
                 if migrations is not None:
                     migrations.sort(reverse=True)
@@ -82,7 +82,7 @@ class Migration:
                             cls.run(migration, "down")   
                             Terminal.warning(f"Rollback of migration '{migration}'.")
                             Query().delete(cls.table).where(migration=migration, batch=batch).execute()  
-                            alert = {'info': 'Rollback of migrations executed successfully.'} 
+                            # alert = {'info': 'Rollback of migrations executed successfully.'} 
                     else:
                         alert = {'error': 'Migrations was not applied; cannot rollback.'}
             if alert:
@@ -101,6 +101,15 @@ class Migration:
         except Exception as e:
             Terminal.error(f"{e}") 
             exit()
+
+    # @classmethod
+    # def drop_all(cls):
+    #     Terminal.info("Droping all tables")
+    #     from src.databases import Query
+    #     tables = Query().show()
+    #     for table in tables:
+    #         Query().drop(table)
+
         
     @classmethod
     def check(cls): 

@@ -8,8 +8,7 @@
     "sqlite": "SQLite",
     "mysql": "MySQL",
     "postgresql": "PostgreSQL",
-    "sqlserver": "Microsoft SQL Server",
-    "mongodb": "MongoDB"
+    "sqlserver": "Microsoft SQL Server"
   },
   "packages": {
     "mysql-connector-python": "9.0.0",

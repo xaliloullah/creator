@@ -222,4 +222,10 @@ class Validator:
 
     def has_errors(self):
         return bool(self.errors)
+    
+    def get_errors(self):
+        errors = self.errors[:]
+        self.errors.clear()
+        return errors
+
             
