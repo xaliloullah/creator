@@ -184,8 +184,7 @@ class MakeCommand(Command):
                     Creator.version.suffix(args.suffix) 
                 source = Creator.path("").absolute() 
                      
-                Creator.settings.set("version", Creator.version.get())
-                Creator.settings.save()
+                Creator.settings.set("version", Creator.version.get()) 
 
                 destination = f"{Creator.name}_{Creator.version}" 
                 destination = Creator.path.storage(f"versions/{destination}.zip")
