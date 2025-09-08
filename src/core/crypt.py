@@ -1,7 +1,13 @@
 class Crypt: 
-    import base64
-    from cryptography.fernet import Fernet 
-    import hashlib
+    try:
+        import base64
+        from cryptography.fernet import Fernet 
+        import hashlib
+    except:
+        base64 = None
+        Fernet = None
+        hashlib = None
+
     from src.environment import env
     app_key:str = env("APP_KEY") 
     if not app_key:
