@@ -1,4 +1,4 @@
-from src.models import Structure
+from src.core import Structure
 
 class {name}(Structure): 
     path = '{table}'

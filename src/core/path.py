@@ -94,8 +94,8 @@ class Path:
     def exists(self):
         return os.path.exists(self.path)
 
-    def strip(self):
-        return os.path.splitext(self.path)
+    def strip(self, path=None):
+        return os.path.splitext(path or self.path)
     
     def split(self):
         return os.path.split(self.path)
@@ -114,13 +114,13 @@ class Path:
     
     def extension(self, **kwargs):
         with_dot = kwargs.get("with_dot", False)
-        ext = os.path.splitext(self.path)[1]
+        ext = self.strip()[1]
         if with_dot:
             return ext if ext else ''
         return ext[1:] if ext else ''
 
     def name(self):
-        return os.path.splitext(self.basename())[0] 
+        return self.strip(self.basename())[0] 
     
     def make(self, folder=False):  
         if folder:

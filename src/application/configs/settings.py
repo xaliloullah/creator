@@ -1,5 +1,5 @@
 from src.core import Path, File, Task
-from src.models import Structure
+from src.core import Structure
 import os 
 
 class Settings(Structure): 
@@ -117,3 +117,8 @@ class Settings(Structure):
         else:  # macOS / Linux
             deactivate = path.join("bin/deactivate") 
         Task.execute(deactivate, shell=True)
+
+
+    @classmethod
+    def env(cls):
+        return Structure(Path.env(), format='env', default={})

@@ -1,4 +1,4 @@
-from src.core import File, Path, Collection
+from src.core import File, Path, Collection, String
 
 class Storage:
 
@@ -6,8 +6,7 @@ class Storage:
         self.path = path if isinstance(path, Path) else Path(path)
         self.format = kwargs.get("format", None)
         self.default = kwargs.get("default", None)
-        self.absolute = kwargs.get("absolute", True)  
-        # self.disk = kwargs.get("disk", None)  
+        self.absolute = kwargs.get("absolute", True)     
         
         if self.absolute:
             self.path = Path.storage(self.path)
@@ -16,13 +15,14 @@ class Storage:
 
         if not self.format:
             self.format = self.file.get_extension(with_dot=False) 
-        self.file.set_extension(self.format)
+        
+        self.file.set_extension(self.format) 
 
         self.data = self.load()  
 
-    def load(self, **kwargs):
-        try:
-            return self.file.load(format=self.format, **kwargs)
+    def load(self):
+        try: 
+            return self.file.load(format=self.format)
         except Exception:
             return self.default
     
@@ -74,6 +74,9 @@ class Storage:
     
     def collect(self):
         return Collection(self.data)
+    
+    def string(self):
+        return String(self.data)
     
     def exists(self):
         return self.file.exists()

@@ -9,7 +9,7 @@ from src.commands.venv import VenvCommand
 from src.commands.seed import SeedCommand
 from src.commands.server import ServerCommand
 from src.commands.publish import PublishCommand
-from src.commands.settings import SettingCommand
+from src.commands.setting import SettingCommand
 
 Command.add(
     MakeCommand, 

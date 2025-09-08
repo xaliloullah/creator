@@ -275,10 +275,11 @@ class File:
     def get_extension(self, **kwargs):
         return self.path.extension(**kwargs)
 
-    def set_extension(self, extension, **kwargs):
+    def set_extension(self, extension:str, **kwargs): 
+        old = self.get_extension()
         if not extension.startswith("."):
             extension = f".{extension}"
-        self.path = Path(self.path.strip()[0] + extension)
+        self.path = Path(self.path.strip()[0], suffix=extension if old else None)
         return self
 
     def is_dir(self):

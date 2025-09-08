@@ -1,4 +1,4 @@
-from src.models import Structure
+from src.core import Structure
 from src.core import Path, Date
 from config import session 
 

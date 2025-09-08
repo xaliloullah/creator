@@ -13,6 +13,7 @@ from .string import String
 from .dict import Dict 
 from .debug import Debug 
 from .storage import Storage 
+from .structure import Structure 
 from .injector import Injector
 from .translator import Translator
 from .speaker import Speaker
@@ -23,4 +24,4 @@ from .request import Request
 
 # from .interface import Interface 
 
-__all__ = ['Path', 'Data', 'File', 'Task', 'Date', 'View' ,'Route', 'Lang', 'Hash', 'Crypt', 'String', 'Dict', 'Debug', 'Storage', 'Injector', 'Collection',  'Translator', 'Speaker', 'Http', 'Session', 'Response', 'Request'] 
+__all__ = ['Path', 'Data', 'File', 'Task', 'Date', 'View' ,'Route', 'Lang', 'Hash', 'Crypt', 'String', 'Dict', 'Debug', 'Storage', 'Structure', 'Injector', 'Collection',  'Translator', 'Speaker', 'Http', 'Session', 'Response', 'Request'] 

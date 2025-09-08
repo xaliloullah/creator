@@ -74,10 +74,10 @@ class Creator:
             cls.injector.register('session', cls.request.session) 
             cls.version.set(cls.settings.get("version"))   
             if cls.key:
-                if cls.key == cls.settings.get("key"):
-                    return cls
-                else:
-                    raise RuntimeError("Invalid key provided in the configuration.")
+                # if cls.key == cls.settings.get("key"):
+                return cls
+                # else:
+                #     raise RuntimeError("Invalid key provided in the configuration.")
             else:
                 cls.create()
         except KeyError as e:    
@@ -121,8 +121,8 @@ class Creator:
         cls.terminal.progress(2, 100, spinner="blocks")
         lang = cls.terminal.input(cls.lang.get("info.options", resource=f"lang"), type="select", options=cls.lang.languages, value="en", inline=False)
         cls.generate_lang(lang) 
-        try:
-            key = cls.hash.make("creator")
+        try: 
+            key = Creator.hash.generate_key()
             cls.settings.set("key", key) 
         except:
             key = cls.settings.get("key")
