@@ -135,7 +135,7 @@ class MakeCommand(Command):
                 
                 destination = args.destination
                 if not destination:
-                    destination = f"backup_{Creator.date.now().strftime('%Y%m%d_%H%M%S')}" 
+                    destination = f"backup_{Creator.date.now().to_string('%Y%m%d_%H%M%S')}" 
                 destination = Creator.path.backups(destination)
                 Creator.file(destination).ensure_exists()
                 all = args.all
@@ -189,9 +189,9 @@ class MakeCommand(Command):
                 destination = f"{Creator.name}_{Creator.version}" 
                 destination = Creator.path.storage(f"versions/{destination}.zip")
                 Creator.file(destination).ensure_exists()
-                ignore = ["__pycache__", "python"]  
+                ignore = ["__pycache__", "python", "creator.db"]  
                 
-                only = ['app',  'config', 'lang', 'resources', 'routes', 'src', 'creator', 'main.py']
+                only = ['app',  'config', 'databases', 'lang', 'resources', 'routes', 'src', 'creator', 'main.py', 'settings.json']
                         
                 Creator.file(source).save(destination, format="zip", only=only, ignore=ignore)   
 

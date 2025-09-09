@@ -138,6 +138,8 @@ class Creator:
         do_migrate = cls.terminal.input("Do you want to run migrations now ?", type="checkbox", value="no")
         if do_migrate:
             cls.terminal.info("Running database migrations...")
+            from src.databases.migration import Migration
+            Migration.migrate()
         starter_kit = cls.terminal.input("Do you want to install a starter kit ?", type="select", options=["none", "api", "web", "auth"], value="none")
         if starter_kit != "none":
             cls.terminal.info(f"Installing starter kit: {starter_kit}...")
