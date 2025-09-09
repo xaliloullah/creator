@@ -312,8 +312,8 @@ class Path:
 
     @staticmethod
     def settings(path="settings.json", **kwargs):
-        return Path.application("configs").join(path, **kwargs)
-
+        return Path(path, **kwargs) 
+    
     @staticmethod
     def cache(path, **kwargs):
         return Path.app("cache").join(path, **kwargs)

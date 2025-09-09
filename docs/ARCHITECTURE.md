@@ -1,19 +1,9 @@
 ├── .env
 ├── .gitignore
 ├── app
-│   ├── controllers
-│   │   ├── auth
-│   │   │   ├── LoginController.py
-│   │   │   └── RegisterController.py
-│   │   ├── RouteController.py
-│   │   └── UserController.py
-│   ├── middlewares
-│   │   ├── app.py
-│   │   └── auth.py
-│   └── models
-│       └── auth
-│           ├── auth.py
-│           └── user.py
+│   ├── controllers 
+│   ├── middlewares 
+│   └── models 
 ├── config
 │   ├── app.py
 │   ├── command.py
@@ -22,13 +12,9 @@
 │   ├── middleware.py
 │   └── session.py
 ├── creator
-├── databases
-│   ├── creator.db
-│   ├── migrations
-│   │   └── 2025_08_08_create_users_table.py
-│   └── seeds
-│       ├── test.py
-│       └── users.py
+├── databases 
+│   ├── migrations 
+│   └── seeds 
 ├── docs
 │   ├── ARCHITECTURE.md
 │   └── README.md
@@ -43,25 +29,9 @@
 │   │   └── images
 │   │       └── logo.png
 │   └── views
-│       ├── console
-│       │   ├── app.cre
-│       │   ├── auth
-│       │   │   ├── login.cre
-│       │   │   └── register.cre
-│       │   ├── components
-│       │   │   └── alert.cre
-│       │   ├── dashboard.cre
-│       │   ├── includes
-│       │   │   ├── footer.cre
-│       │   │   └── header.cre
-│       │   ├── layouts
-│       │   │   └── main.cre
-│       │   └── Test
+│       ├── console 
 │       ├── desktop
-│       └── web
-│           ├── index.jinja
-│           └── layouts
-│               └── main.html
+│       └── web 
 ├── routes
 │   ├── auth.py
 │   └── route.py
@@ -181,35 +151,20 @@
 │   │   │   └── __init__.py
 │   │   └── seeder.py
 │   ├── environment
-│   │   └── __init__.py
-│   ├── kits
-│   │   └── auth
+│   │   └── __init__.py 
 │   ├── middlewares
 │   │   ├── middleware.py
 │   │   └── __init__.py
-│   ├── servers
-│   │   ├── basic-server.py
-│   │   ├── flask.py
-│   │   ├── sever.py
-│   │   ├── utils.py
-│   │   └── __init__.py
+│   ├── servers 
+│   │   ├── sever.py 
 │   └── validators
 │       ├── password.py
 │       ├── rules.py
 │       ├── validator.py
 │       └── __init__.py
-├── storage
-│   ├── sessions
-│   │   └── creator.json
-│   └── versions
-│       ├── creator_0.2.26-beta.zip
-│       └── creator_0.2.27-beta.zip
-└── tests
-    ├── camera.py
-    ├── core.py
-    ├── devine.py
-    ├── devise.py
-    ├── model.py
-    ├── terminal.py
-    ├── test.py
-    └── __init__.py
+└── storage
+    ├── sessions
+    │   └── creator.json
+    └── versions
+        ├── creator_0.2.26-beta.zip
+        └── creator_0.2.27-beta.zip 

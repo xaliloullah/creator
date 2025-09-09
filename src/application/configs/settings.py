@@ -24,7 +24,7 @@ class Settings(Structure):
     #             # "oracle": "Oracle",
     #         } 
     #         cls.data["python"] = f"{sys.version.split()[0]}"
-    #         cls.data["packages"] = {
+    #         cls.data["required"] = {
     #             "mysql-connector-python": "9.0.0",
     #             "psycopg2": "2.9.10",
     #             "pymongo": "4.10.1",
@@ -46,15 +46,15 @@ class Settings(Structure):
     #         raise Exception(e) 
          
     def install_packages(self): 
-        for package, version in self.get("packages").items(): 
+        for package, version in self.get("required").items(): 
             Task.install(package, version=version, venv=self.get('venv', False))
  
     def uninstall_packages(self): 
-        for package in self.get("packages"): 
+        for package in self.get("required"): 
             Task.uninstall(package)
              
     def update_packages(self): 
-        for package in self.get("packages"): 
+        for package in self.get("required"): 
             Task.install(package, venv=self.get('venv', False))
             
     @staticmethod

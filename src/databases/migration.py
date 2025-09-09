@@ -51,7 +51,7 @@ class Migration:
     
     @classmethod
     def migrate(cls, run='up'):
-        cls.up()  
+        # cls.up()  
         from src.databases.query import Query
         alert = {}
         try:
@@ -102,13 +102,13 @@ class Migration:
             Terminal.error(f"{e}") 
             exit()
 
-    # @classmethod
-    # def drop_all(cls):
-    #     Terminal.info("Droping all tables")
-    #     from src.databases.query import Query
-    #     tables = Query().show()
-    #     for table in tables:
-    #         Query().drop(table)
+    @classmethod
+    def drop_all(cls):
+        Terminal.info("Droping all tables")
+        from src.databases.query import Query
+        tables = Query().select(cls.table, 'migration').get()  
+        # for table in tables:
+        #     Query().drop(table)
 
         
     @classmethod

@@ -40,7 +40,7 @@ class Task:
                 version = version_line.split(":")[1].strip()
               
             requirements = File(Path.settings().ensure_exists()).load(format="json")
-            requirements["packages"][package] = version
+            requirements["required"][package] = version
             
             File(Path.settings()).save(requirements, format="json", indent=2) 
         except Exception as e:
@@ -51,7 +51,7 @@ class Task:
         try:
             Task.execute('pip', 'uninstall', package, '-y', venv=venv) 
             requirements = File(Path.settings()).load(format="json")
-            del requirements["packages"][package]  
+            del requirements["required"][package]  
             File(Path.settings()).save(requirements, format="json", indent=2) 
         except Exception as e:
             raise Exception(e) 

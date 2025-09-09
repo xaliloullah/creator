@@ -50,7 +50,8 @@ class MigrateCommand(Command):
 
         elif args.fresh:
             Creator.terminal.info(Creator.lang.get("info.fresh", resource="migration"))
-            Migration.migrate('down')
+            # Migration.migrate('down')
+            Migration.drop_all()
             Migration.migrate()
             
         elif args.drop:

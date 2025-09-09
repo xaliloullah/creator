@@ -20,8 +20,8 @@ class Creator:
         cls.database = database.driver
         cls.lang = Lang(app.lang)
         cls.settings = Settings()
-        cls.version = Version(cls.settings.get("version", None))
-        cls.python = cls.settings.get("python", None)
+        cls.version = Version(cls.settings.get("version"))
+        cls.python = cls.settings.get("python")
         cls.packages = cls.settings.get("packages", {})
 
         cls.injector = Injector()

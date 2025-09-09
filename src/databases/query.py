@@ -142,7 +142,6 @@ class Query:
         self.script = f"{self.script} GROUP BY {cols}"
         return self
 
-    
     def raw(self, script, *values):
         self.script = script
         self.values = values

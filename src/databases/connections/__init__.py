@@ -1,4 +1,4 @@
 from .sqlite import Sqlite
 from .mysql_db import MySQL
-from .posgresql_db import PostgreSQL
+from .postgresql_db import PostgreSQL
 #  
