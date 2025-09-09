@@ -1,5 +1,4 @@
-from src.databases.connections import Connector 
-
+from src.databases.connections.connector import Connector
 class Database:
     def __init__(self):
         self.connection = Connector.connect()

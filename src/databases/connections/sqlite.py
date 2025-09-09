@@ -3,6 +3,7 @@ from .builder import DatabaseBuilder
 
 class Sqlite(DatabaseBuilder):
     """SQLite-specific implementation of the database connector."""
+    placeholder ='?'
     syntax = { 
         'ID' : 'INTEGER',
         'UUID' : 'TEXT',
@@ -41,17 +42,14 @@ class Sqlite(DatabaseBuilder):
         'SET_NULL': 'SET NULL',
         'CHECK': 'CHECK',
         'COMMENT': 'COMMENT',  
-        'TIMESTAMP': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',   
-        'UNSIGNED': '', 
-        'ON_UPDATE': 'ON UPDATE', 
-        'ON_DELETE': 'ON DELETE',      
+        'TIMESTAMP': 'TIMESTAMP',   
+        'UNSIGNED': '',       
     }
     def __init__(self, config):
         try:
             self.connection = sqlite3.connect(config['path'])
             self.connection.row_factory = sqlite3.Row
-            self.cursor = self.connection.cursor()
-            self.placeholder ='?'
+            self.cursor = self.connection.cursor() 
             self.master = 'sqlite_master'
         except sqlite3.Error as e:
             raise Exception(e)

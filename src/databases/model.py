@@ -1,19 +1,22 @@
-from src.databases import Query
 from src.core import Collection
+from src.databases.query import Query
 
 class Model:
     table = None 
-    attributes: dict | list = None
-    casts: dict = {}
-    provider = Query()
     primary_key = "id"  
-    protected = ['attributes', 'casts', 'provider', 'table', 'primary_key']
+    attributes: dict | list = None
+    casts: dict = {}  
+    use_uuid = False
+    provider = Query()
+    protected = ['table', 'primary_key', 'attributes', 'casts', 'provider', 'use_uuid']
 
     def __init__(self, attributes):
         self.attributes = attributes
-
     @classmethod
     def create(cls, **column):
+        import uuid
+        if cls.use_uuid and cls.primary_key not in column:
+            column[cls.primary_key] = str(uuid.uuid4())
         cls.provider.insert(cls.table, **column).execute()
         return cls.where(**column).first()
 
@@ -63,6 +66,16 @@ class Model:
     def take(cls, value:int):
         cls.attributes = cls.provider.select(cls.table).limit(value).fetchall()
         return cls(cls.attributes)
+    
+    @classmethod
+    def first(cls):  
+        cls.attributes = cls.provider.select(cls.table).first().fetchone()   
+        return cls(cls.attributes)
+    
+    @classmethod 
+    def last(cls):  
+        cls.attributes = cls.provider.select(cls.table).last().fetchone() 
+        return cls(cls.attributes)
  
     def order_by(self, column='id'):
         self.attributes = self.provider.order_by(column).fetchall()
@@ -75,14 +88,6 @@ class Model:
     def count(self, column='id'): 
         result = self.provider.count(column).fetchone()
         return next(iter(result.values())) if isinstance(result, dict) else result[0] if isinstance(result, tuple) else result
-    
-    def first(self):  
-        self.attributes = self.provider.first().fetchone()   
-        return self
-     
-    def last(self):  
-        self.attributes = self.provider.last().fetchone() 
-        return self
     
     def pluck(cls, column):
         return [row[column] for row in cls.all().get()]
@@ -131,6 +136,7 @@ class Model:
         if obj:
             return obj[0]
         return cls.create(**kwargs)
+    
     @classmethod
     def update_or_create(cls, search:dict, update:dict):
         obj = cls.where(**search).first().get()

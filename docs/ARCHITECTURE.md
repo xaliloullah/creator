@@ -2,31 +2,18 @@
 ├── .gitignore
 ├── app
 │   ├── controllers
-│   │   ├── games
-│   │   │   ├── CwarController.py
-│   │   │   └── DevineController.py
+│   │   ├── auth
+│   │   │   ├── LoginController.py
+│   │   │   └── RegisterController.py
 │   │   ├── RouteController.py
-│   │   ├── TestController.py
-│   │   ├── tools
-│   │   │   ├── CalculatorController.py
-│   │   │   └── DeviseController.py
 │   │   └── UserController.py
+│   ├── middlewares
+│   │   ├── app.py
+│   │   └── auth.py
 │   └── models
-│       ├── games
-│       │   ├── cwar
-│       │   │   ├── .md
-│       │   │   ├── building.py
-│       │   │   ├── entity.py
-│       │   │   ├── player.py
-│       │   │   ├── resource.py
-│       │   │   ├── unity.py
-│       │   │   └── world.py
-│       │   ├── cwg.py
-│       │   └── devine.py
-│       ├── tools
-│       │   ├── calculator.py
-│       │   └── devise.py
-│       └── user.py
+│       └── auth
+│           ├── auth.py
+│           └── user.py
 ├── config
 │   ├── app.py
 │   ├── command.py
@@ -46,17 +33,9 @@
 │   ├── ARCHITECTURE.md
 │   └── README.md
 ├── lang
-│   ├── en
-│   │   ├── alert.json
-│   │   ├── app.json
-│   │   ├── password.json
-│   │   ├── settings.json
-│   │   └── validation.json
-│   └── fr
+│   └── en
 │       ├── alert.json
 │       ├── app.json
-│       ├── password.json
-│       ├── settings.json
 │       └── validation.json
 ├── main.py
 ├── resources
@@ -68,20 +47,16 @@
 │       │   ├── app.cre
 │       │   ├── auth
 │       │   │   ├── login.cre
-│       │   │   ├── register.cre
-│       │   │   └── settings.cre
+│       │   │   └── register.cre
 │       │   ├── components
 │       │   │   └── alert.cre
 │       │   ├── dashboard.cre
 │       │   ├── includes
-│       │   │   ├── debug.cre
 │       │   │   ├── footer.cre
 │       │   │   └── header.cre
-│       │   └── layouts
-│       │       ├── main.cre
-│       │       └── tools
-│       │           ├── calculator.cre
-│       │           └── devise.cre
+│       │   ├── layouts
+│       │   │   └── main.cre
+│       │   └── Test
 │       ├── desktop
 │       └── web
 │           ├── index.jinja
@@ -118,7 +93,9 @@
 │   │   │   │   └── session.template
 │   │   │   ├── middleware.template
 │   │   │   ├── migration.template
-│   │   │   ├── model.template
+│   │   │   ├── models
+│   │   │   │   ├── model.template
+│   │   │   │   └── structure.template
 │   │   │   ├── readme.template
 │   │   │   ├── seed.template
 │   │   │   ├── trash
@@ -144,7 +121,7 @@
 │   │   ├── publish.py
 │   │   ├── seed.py
 │   │   ├── server.py
-│   │   ├── settings.py
+│   │   ├── setting.py
 │   │   ├── uninstall.py
 │   │   ├── venv.py
 │   │   └── __init__.py
@@ -154,13 +131,8 @@
 │   │   ├── icons.py
 │   │   ├── terminal.py
 │   │   └── __init__.py
-│   ├── controllers
-│   │   ├── auth
-│   │   │   ├── LoginController.py
-│   │   │   └── RegisterController.py
-│   │   ├── controller.py
-│   │   └── __init__.py
 │   ├── core
+│   │   ├── cache.py
 │   │   ├── collection.py
 │   │   ├── crypt.py
 │   │   ├── data.py
@@ -184,6 +156,7 @@
 │   │   ├── speaker.py
 │   │   ├── storage.py
 │   │   ├── string.py
+│   │   ├── structure.py
 │   │   ├── task.py
 │   │   ├── test.py
 │   │   ├── translator.py
@@ -191,14 +164,16 @@
 │   │   └── __init__.py
 │   ├── databases
 │   │   ├── connections
+│   │   │   ├── builder.py
 │   │   │   ├── connector.py
-│   │   │   ├── mogo_db.py
 │   │   │   ├── mysql_db.py
-│   │   │   ├── posgreSQL.py
+│   │   │   ├── posgresql_db.py
 │   │   │   ├── sqlite.py
 │   │   │   └── __init__.py
 │   │   ├── database.py
 │   │   ├── migration.py
+│   │   ├── model.py
+│   │   ├── query.py
 │   │   ├── relation.py
 │   │   ├── schema
 │   │   │   ├── column.py
@@ -210,21 +185,7 @@
 │   ├── kits
 │   │   └── auth
 │   ├── middlewares
-│   │   ├── auth.py
-│   │   ├── log.py
 │   │   ├── middleware.py
-│   │   └── __init__.py
-│   ├── models
-│   │   ├── auth.py
-│   │   ├── collections
-│   │   │   ├── array.py
-│   │   │   ├── collections.py
-│   │   │   └── list.py
-│   │   ├── drivers
-│   │   │   ├── database.py
-│   │   │   ├── file.py
-│   │   │   └── __init__.py
-│   │   ├── model.py
 │   │   └── __init__.py
 │   ├── servers
 │   │   ├── basic-server.py
@@ -241,20 +202,14 @@
 │   ├── sessions
 │   │   └── creator.json
 │   └── versions
-│       ├── creator_0.2.1-beta.zip
-│       └── creator_0.2.2-beta.zip
+│       ├── creator_0.2.26-beta.zip
+│       └── creator_0.2.27-beta.zip
 └── tests
     ├── camera.py
     ├── core.py
-    ├── cwar.py
     ├── devine.py
     ├── devise.py
-    ├── index.html
-    ├── interfaces
-    │   ├── console
-    │   ├── desktop
-    │   ├── mobile
-    │   └── web
+    ├── model.py
     ├── terminal.py
     ├── test.py
     └── __init__.py

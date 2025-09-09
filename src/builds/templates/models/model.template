@@ -1,4 +1,4 @@
-from src.databases import Model
+from src.databases.model import Model
 
 class {name}(Model): 
     table = '{table}'

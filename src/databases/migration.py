@@ -42,7 +42,7 @@ class Migration:
     
     @classmethod
     def get_last_batch(cls): 
-        from src.databases import Query
+        from src.databases.query import Query
         result = Query().select(cls.table, 'batch').last().fetchone()
         if result is not None:
             return result['batch']
@@ -52,7 +52,7 @@ class Migration:
     @classmethod
     def migrate(cls, run='up'):
         cls.up()  
-        from src.databases import Query
+        from src.databases.query import Query
         alert = {}
         try:
             if run == 'up':
@@ -105,7 +105,7 @@ class Migration:
     # @classmethod
     # def drop_all(cls):
     #     Terminal.info("Droping all tables")
-    #     from src.databases import Query
+    #     from src.databases.query import Query
     #     tables = Query().show()
     #     for table in tables:
     #         Query().drop(table)
@@ -113,7 +113,7 @@ class Migration:
         
     @classmethod
     def check(cls): 
-        from src.databases import Query 
+        from src.databases.query import Query 
         results = Query().select(cls.table, 'migration').get() 
         migrations = cls.get()
         applied_migrations = []

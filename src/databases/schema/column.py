@@ -1,4 +1,4 @@
-from src.databases.connections import Connector
+from src.databases.connections.connector import Connector
 from src.core import String
 syntax = Connector.database().syntax
 
@@ -15,12 +15,17 @@ class Column:
     def get(self):
         return ", ".join(self.definition + (self.foreign_keys if self.use_foreign_keys else []))
 
+    def add(self, arg):
+        if self.definition:
+            self.definition[-1] += arg
+
     # --- Column Types ---
     def id(self, name:str="id", size:int=20):
-        self.definition.append(f"{name} {syntax['ID']} {syntax['UNSIGNED']} {syntax['PRIMARY_KEY']} {syntax['AUTO_INCREMENT']}")
+        self.definition.append(f"{name} {syntax['ID']}")
+        self.unsigned().primary().auto_increment()
         return self
 
-    def uuid(self, name: str = "uuid", default=True): 
+    def uuid(self, name: str = "uuid"): 
         self.definition.append(f"{name} {syntax['UUID']}") 
         return self
 
@@ -86,7 +91,7 @@ class Column:
         return self
 
     def comment(self, text):
-        self.definition[-1] += f" {syntax['COMMENT']} '{text}'"
+        self.add(f" {syntax['COMMENT']} '{text}'")
         return self
 
     def real(self, name:str, size:int=10):
@@ -135,26 +140,29 @@ class Column:
         return self
     
     def timestamp(self, name:str):
-        self.definition.append(f"{name} {syntax['TIMESTAMP']}")
-        return self
-
-    def timestamps(self):
-        self.definition.append(f"created_at {syntax['TIMESTAMP']}")
-        self.definition.append(f"updated_at {syntax['TIMESTAMP']}")
+        self.definition.append(f"{name} {syntax['TIMESTAMP']} {syntax['DEFAULT']} CURRENT_TIMESTAMP")
         return self
     
+    def timestamps(self):
+        self.timestamp("created_at")
+        self.timestamp("updated_at") 
+        return self
+
     # --- Constraints & Foreign Keys ---
     def primary(self):
-        self.definition.append(f"{syntax['PRIMARY_KEY']}")
+        if self.definition:
+            self.add(f" {syntax['PRIMARY_KEY']}")
         return self
 
     def auto_increment(self):
-        self.definition.append(f"{syntax['AUTO_INCREMENT']}")
+        if self.definition:
+            self.add(f" {syntax['AUTO_INCREMENT']}")
         return self
     
     def foreign_id(self, name:str):
         self._name_ = name
-        self.definition.append(f"{name} {syntax['ID']} {syntax['UNSIGNED']}") 
+        self.definition.append(f"{name} {syntax['ID']}") 
+        self.unsigned()
         return self
     
     def constrained(self, parent:str="", id='id'):
@@ -165,43 +173,43 @@ class Column:
         return self
 
     def unique(self):
-        self.definition[-1] += f" {syntax['UNIQUE']}"
+        self.add(f" {syntax['UNIQUE']}")
         return self
     
     def on_update(self, arg="SET NULL"):
-        self.foreign_keys[-1] += f" {syntax['ON_UPDATE']} {arg}"
+        if syntax.get('ON_UPDATE'):
+            self.foreign_keys[-1] += f" {syntax['ON_UPDATE']} {arg}"
         return self
 
     def on_delete(self, arg="SET NULL"):
-        self.foreign_keys[-1] += f" {syntax['ON_DELETE']} {arg}"
+        if syntax.get('ON_DELETE'):
+            self.foreign_keys[-1] += f" {syntax['ON_DELETE']} {arg}"
         return self
 
     def check(self, name, condition):
-        self.definition[-1] += f" {syntax['CHECK']} ({name} {condition})"
+        self.add(f" {syntax['CHECK']} ({name} {condition})")
         return self
 
     def index(self, name):
-        self.definition[-1] += f" {syntax['INDEX']} ({name})"
+        self.add(f" {syntax['INDEX']} ({name})")
         return self
 
     def default(self, default):
-        self.definition[-1] += f" {syntax['DEFAULT']} {default}"
+        self.add(f" {syntax['DEFAULT']} {default}")
         return self
 
     def nullable(self):
-        self.definition[-1] += f" {syntax['NULL']}"
+        self.add(f" {syntax['NULL']}")
         return self
 
     def not_null(self):
-        self.definition[-1] += f" {syntax['NOT_NULL']}"
+        self.add(f" {syntax['NOT_NULL']}")
         return self
 
     def unsigned(self): 
-        if self.definition:
-            self.definition[-1] += f" {syntax['UNSIGNED']}"
+        self.add(f" {syntax['UNSIGNED']}")
         return self
     
     def charset(self, name='utf8mb4', collation='utf8mb4_unicode_ci'):
-        if self.definition:
-            self.definition[-1] += f" CHARACTER SET {name} COLLATE {collation}"
+        self.add(f" CHARACTER SET {name} COLLATE {collation}")
         return self

@@ -84,7 +84,7 @@ class Command(argparse.ArgumentParser):
         elif args.refresh: 
             Creator.terminal.progress_bar(10, 100) 
             Creator.terminal.highlight(Creator.build.creator())  
-            Creator.settings.refresh()
+            Creator.settings.make_architecture(all=True)
 
         elif args.run:
             Creator.run()  

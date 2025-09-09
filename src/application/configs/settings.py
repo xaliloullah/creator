@@ -75,10 +75,8 @@ class Settings(Structure):
         ignore:list = kwargs.get("ignore", []) 
         all = kwargs.get("all", False) 
         
-        if '__pycache__' not in ignore:
-            ignore.append('__pycache__')
-        if '.vscode' not in ignore:
-            ignore.append('.vscode')
+        ignore.append('__pycache__')
+        ignore.append('.vscode')
         ignore.append('python')
         ignore.append('.git')
         if not all:
@@ -99,19 +97,17 @@ class Settings(Structure):
                 print(f"Virtual environment created at {path}")
         except Exception as e:
             raise Exception(e) 
-        
-    @classmethod
-    def activate_venv(cls, path=Path.environment("python").absolute()): 
-        cls.set("venv", True)   
+ 
+    def activate_venv(self, path=Path.environment("python").absolute()): 
+        self.set("venv", True)   
         if os.name == "nt":  # Windows
             activate = path.join("Scripts\\activate.bat")
         else:  # macOS / Linux
             activate = path.join("bin/activate")
         Task.execute(activate, shell=True)
-
-    @classmethod
-    def deactivate_venv(cls, path=Path.environment("python").absolute()):
-        cls.set("venv", False)    
+ 
+    def deactivate_venv(self, path=Path.environment("python").absolute()):
+        self.set("venv", False)    
         if os.name == "nt":  # Windows
             deactivate = path.join("Scripts\\deactivate.bat")
         else:  # macOS / Linux

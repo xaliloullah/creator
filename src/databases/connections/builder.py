@@ -1,12 +1,12 @@
 class DatabaseBuilder:
     """Generic base class for database connectors."""
     syntax = {}
+    placeholder ='?'
     
     def __init__(self, config):
         self.connection = None
         self.cursor = None
-        self.config = config
-        self.placeholder = '?'
+        self.config = config 
         self.master = '' 
 
     # def connect(self):

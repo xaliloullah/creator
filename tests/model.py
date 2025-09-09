@@ -7,7 +7,11 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from app.models.auth.user import User
  
 
-users = User.all()
-print(users)
+# users = User.all()
+# print(users)
 # for user in users:
 #     print(user)
+
+user = User.first()
+user.update(name="eer")
+print(user)

@@ -1,4 +1,4 @@
-from src.databases import Query
+from src.databases.query import Query
 from src.databases.schema import Column 
 
 class Table(Column):

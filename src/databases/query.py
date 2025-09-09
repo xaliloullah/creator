@@ -1,43 +1,38 @@
 from src.databases.database import Database 
+from src.databases.connections.connector import Connector
 
 class Query:
-    def __init__(self, database=Database()): 
-        self.database = database 
+    def __init__(self):  
         self.script = ""
         self.values = ()
         self.conditions = ""
         self.attributes = "" 
-        self.placeholder = self.database.connection.placeholder 
+        self.placeholder = Connector.database().placeholder 
         
     def execute(self):
-        self.database.execute(self.script, self.values) 
+        Database().execute(self.script, self.values) 
+        # self.reset_script()
 
     def get(self):
-        return self.database.fetchall(self.script, self.values)
+        return Database().fetchall(self.script, self.values)
     
     def fetchall(self):
-        return self.database.fetchall(self.script, self.values)
+        return Database().fetchall(self.script, self.values)
     
     def fetchone(self):
-        return self.database.fetchone(self.script, self.values)
+        return Database().fetchone(self.script, self.values)
     
     def transaction(self):
-        self.database.transaction()
+        Database().transaction()
         return self
     
     def commit(self):
-        self.database.commit()
+        Database().commit()
         return self
     
     def rollback(self):
-        self.database.rollback()
-        return self
-    
-    # def show(self ):
-    #     self.values = ()
-    #     self.script = f"SHOW TABLES" 
-    #     tables = self.fetchall()
-    #     return [t[0] for t in tables]
+        Database().rollback()
+        return self 
 
     def create(self, table, columns, if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
         self.values = ()
@@ -219,23 +214,23 @@ class Query:
         return self.script
     
     def __call__(self):
-        return self.database.fetchall(self.script, self.values) 
+        return Database().fetchall(self.script, self.values) 
     
     def has_one(self, related_table, foreign_key, foreign_id):
         conditions = {f"{foreign_key}":f"{foreign_id}"}
         self.select(related_table).where(**conditions) 
-        self.attributes = self.database.fetchone(self.script,self.values)
+        self.attributes = Database().fetchone(self.script,self.values)
         return self
 
     def has_many(self, related_table, foreign_key, foreign_id): 
         conditions = {f"{foreign_key}":f"{foreign_id}"}
         self.select(related_table).where(**conditions) 
-        self.attributes = self.database.fetchall(self.script, self.values)
+        self.attributes = Database().fetchall(self.script, self.values)
         return self
 
 
     def belongs_to(self, related_table,table, foreign_key=None, foreign_id=None):
         query = f"""SELECT * FROM {related_table} WHERE id = (SELECT {foreign_key} FROM {table} WHERE id = ?)"""
-        self.attributes = self.database.fetchall(query, (foreign_id,))    
+        self.attributes = Database().fetchall(query, (foreign_id,))    
         return self
  

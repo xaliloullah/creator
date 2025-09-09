@@ -6,9 +6,10 @@ from .builder import DatabaseBuilder
 
 class MySQL(DatabaseBuilder):
     """MySQL-specific implementation of the database connector."""
+    placeholder = '%s'
     syntax = {
         'ID' : 'BIGINT(20)',
-        'UUID' : 'CHAR',
+        'UUID' : 'VARCHAR',
         'VARCHAR': 'VARCHAR',
         'BIGINT': 'BIGINT',
         'INT': 'INT',
@@ -44,7 +45,7 @@ class MySQL(DatabaseBuilder):
         'SET_NULL': 'SET NULL',
         'CHECK': 'CHECK',
         'COMMENT': 'COMMENT', 
-        'TIMESTAMP': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',  
+        'TIMESTAMP': 'TIMESTAMP',  
         'UNSIGNED': 'UNSIGNED', 
         'ON_UPDATE': 'ON UPDATE', 
         'ON_DELETE': 'ON DELETE', 
@@ -57,8 +58,7 @@ class MySQL(DatabaseBuilder):
                 password=config['password'],
                 database=config['database']
             )
-            self.cursor = self.connection.cursor(dictionary=True, buffered=True)  
-            self.placeholder ='%s'
+            self.cursor = self.connection.cursor(dictionary=True, buffered=True)
             self.master = 'mysql_master'
             
         except mysql.connector.Error as e: 

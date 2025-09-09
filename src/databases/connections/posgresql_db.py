@@ -1,9 +1,13 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+try:    
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except: 
+    ImportError("PostgreSQL connector is not installed. Please install it using 'py creator install psycopg2'")
 from .builder import DatabaseBuilder
 
 class PostgreSQL(DatabaseBuilder):
     """PostgreSQL-specific implementation of the database connector."""
+    placeholder = '%s'
     syntax = {
         'ID': 'SERIAL',
         'UUID': 'UUID',
@@ -42,7 +46,7 @@ class PostgreSQL(DatabaseBuilder):
         'SET_NULL': 'SET NULL',
         'CHECK': 'CHECK',
         'COMMENT': '--',  # PostgreSQL COMMENT handled differently
-        'TIMESTAMP': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'TIMESTAMP': 'TIMESTAMP',
         'UNSIGNED': '',  # PostgreSQL does not support UNSIGNED natively
         'ON_UPDATE': 'ON UPDATE',
         'ON_DELETE': 'ON DELETE',
@@ -58,8 +62,7 @@ class PostgreSQL(DatabaseBuilder):
                 port=config['port']
             )
             self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
-            self.master = 'information_schema.tables'
-            self.placeholder = '%s'
+            self.master = 'information_schema.tables' 
 
         except psycopg2.Error as e:
             raise Exception(f"PostgreSQL connection error: {e}")
