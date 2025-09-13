@@ -1,9 +1,19 @@
 ├── .env
 ├── .gitignore
 ├── app
-│   ├── controllers 
-│   ├── middlewares 
-│   └── models 
+│   ├── controllers
+│   │   ├── auth
+│   │   │   ├── LoginController.py
+│   │   │   └── RegisterController.py
+│   │   ├── RouteController.py
+│   │   └── UserController.py
+│   ├── middlewares
+│   │   ├── app.py
+│   │   └── auth.py
+│   └── models
+│       └── auth
+│           ├── auth.py
+│           └── user.py
 ├── config
 │   ├── app.py
 │   ├── command.py
@@ -12,9 +22,13 @@
 │   ├── middleware.py
 │   └── session.py
 ├── creator
-├── databases 
-│   ├── migrations 
-│   └── seeds 
+├── databases
+│   ├── creator.db
+│   ├── migrations
+│   │   └── 2025_08_08_create_users_table.py
+│   └── seeds
+│       ├── test.py
+│       └── users.py
 ├── docs
 │   ├── ARCHITECTURE.md
 │   └── README.md
@@ -29,16 +43,28 @@
 │   │   └── images
 │   │       └── logo.png
 │   └── views
-│       ├── console 
+│       ├── console
+│       │   ├── app.cre
+│       │   ├── auth
+│       │   │   ├── login.cre
+│       │   │   └── register.cre
+│       │   ├── components
+│       │   │   └── alert.cre
+│       │   ├── dashboard.cre
+│       │   ├── includes
+│       │   │   ├── footer.cre
+│       │   │   └── header.cre
+│       │   └── layouts
+│       │       └── main.cre
 │       ├── desktop
-│       └── web 
+│       └── web
 ├── routes
 │   ├── auth.py
 │   └── route.py
+├── settings.json
 ├── src
 │   ├── application
 │   │   ├── configs
-│   │   │   ├── settings.json
 │   │   │   ├── settings.py
 │   │   │   ├── version.py
 │   │   │   └── __init__.py
@@ -137,7 +163,7 @@
 │   │   │   ├── builder.py
 │   │   │   ├── connector.py
 │   │   │   ├── mysql_db.py
-│   │   │   ├── posgresql_db.py
+│   │   │   ├── postgresql_db.py
 │   │   │   ├── sqlite.py
 │   │   │   └── __init__.py
 │   │   ├── database.py
@@ -151,20 +177,32 @@
 │   │   │   └── __init__.py
 │   │   └── seeder.py
 │   ├── environment
-│   │   └── __init__.py 
+│   │   └── __init__.py
+│   ├── kits
+│   │   └── auth
 │   ├── middlewares
 │   │   ├── middleware.py
 │   │   └── __init__.py
-│   ├── servers 
-│   │   ├── sever.py 
+│   ├── servers
+│   │   ├── basic-server.py
+│   │   ├── sever.py
+│   │   └── __init__.py
 │   └── validators
 │       ├── password.py
 │       ├── rules.py
 │       ├── validator.py
 │       └── __init__.py
-└── storage
-    ├── sessions
-    │   └── creator.json
-    └── versions
-        ├── creator_0.2.26-beta.zip
-        └── creator_0.2.27-beta.zip 
+├── storage
+│   ├── sessions
+│   │   └── creator.json
+│   └── versions
+│       └── creator_0.2.30.zip
+└── tests
+    ├── camera.py
+    ├── core.py
+    ├── devine.py
+    ├── devise.py
+    ├── model.py
+    ├── terminal.py
+    ├── test.py
+    └── __init__.py

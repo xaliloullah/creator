@@ -6,7 +6,7 @@ def view():
 
     Creator.view.include('includes.header') 
 
-    Creator.view.include('components.alert') 
+    Creator.view.include('includes.alert') 
     
     Creator.view.generate("content") 
 

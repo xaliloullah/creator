@@ -49,8 +49,7 @@ class MigrateCommand(Command):
             Creator.terminal.list(migrations, icon = Creator.terminal.icon.arrow_right(), margin=3, color = Creator.terminal.color.black, display=True) 
 
         elif args.fresh:
-            Creator.terminal.info(Creator.lang.get("info.fresh", resource="migration"))
-            # Migration.migrate('down')
+            Creator.terminal.info(Creator.lang.get("info.fresh", resource="migration")) 
             Migration.drop_all()
             Migration.migrate()
             

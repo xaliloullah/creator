@@ -2,35 +2,33 @@ class Validator:
     def __init__(self) -> None:   
         self.errors = [] 
     
-    def validate(self, validate: dict, data: dict): 
-        from src.application import Creator 
+    def validate(self, validate: dict, data: dict):
         for field, rules in validate.items():
             value = data.get(field)
             for rule in rules:
                 rule = str(rule)
                 if rule == "required":
-                    if value is None or value == "": 
-                        self.errors.append(Creator.lang.get("validation.required", attribute=field))
+                    if not value: 
+                        self.set_error(rule, field) 
                 
                 if rule == "nullable":
-                    if value is None:
-                        continue
+                    pass
                     
                 if rule == "numeric":
                     if value and not isinstance(value, (int, float)):
-                        self.errors.append(Creator.lang.get("validation.numeric", attribute=field)) 
+                        self.set_error(rule, field) 
                 
                 if rule == "boolean":
                     if value and not isinstance(value, bool):
-                        self.errors.append(Creator.lang.get("validation.boolean", attribute=field))
+                        self.set_error(rule, field) 
                         
                 if rule == "string":
                     if value and not isinstance(value, str):
-                        self.errors.append(Creator.lang.get("validation.string", attribute=field))
+                        self.set_error(rule, field) 
                
                 if rule == "email":
                     if value and (not isinstance(value, str) or "@" not in value or "." not in value):
-                        self.errors.append(Creator.lang.get("validation.email", attribute=field))
+                        self.set_error(rule, field) 
                                                            
                 if rule == "password": 
                     from src.validators import Password
@@ -43,180 +41,158 @@ class Validator:
                     if value:
                         min_val = int(rule.split(":")[1]) 
                         if int(value) < min_val:
-                            self.errors.append(Creator.lang.get("validation.min", attribute=field, min=min_val))
+                            self.set_error("min", field, min=min_val) 
 
                 if rule.startswith("max") and "integer" in rules:
                     if value:
                         max_val = int(rule.split(":")[1])
                         if int(value) > max_val:
-                            self.errors.append(Creator.lang.get("validation.max", attribute=field, max=max_val))
+                            self.set_error("max", field, max=max_val) 
 
-                        
                 if rule.startswith("minlength"):
                     if value:
                         min_len = int(rule.split(":")[1])
                         if len(str(value)) < min_len:
-                            self.errors.append(Creator.lang.get("validation.minlength", attribute=field, min=min_len))
+                            self.set_error("minlength", field, min=min_len)
 
                 if rule.startswith("maxlength"):
                     if value:
                         max_len = int(rule.split(":")[1])
                         if len(str(value)) > max_len:
-                            self.errors.append(Creator.lang.get("validation.maxlength", attribute=field, max=max_len))
+                            self.set_error("maxlength", field, max=max_len) 
                 
-
                 if rule == "integer":
                     if value:
                         try:
                             int(value)
                         except ValueError:
-                            self.errors.append(Creator.lang.get("validation.integer", attribute=field))  
+                            self.set_error(rule, field) 
                  
                 if rule == "decimal":
                     if value:
                         try:
                             float(value)
-                        except ValueError:
-                            self.errors.append(f"The '{field}' field must be a valid real.")
+                        except ValueError: 
+                            self.set_error(rule, field) 
                         
                 if rule == "array":
                     if value:
                         if not isinstance(value, list):
-                            self.errors.append(f"The '{field}' field must be a valid array.")
+                            self.set_error(rule, field) 
                             
                 if rule == "object":
                     if value:
                         if not isinstance(value, object):
-                            self.errors.append(f"The '{field}' field must be a valid object.")
+                            self.set_error(rule, field) 
                             
                 if rule == "phone":
                     if value and (not isinstance(value, str) or len(value) < 10):
-                        self.errors.append(Creator.lang.get("validation.phone", attribute=field)) 
+                        self.set_error(rule, field)
                         
                 if rule == "date":
                     if value:
                         try:
-                            # Date(value)
-                            pass
+                            from src.core import Date
+                            Date(value).to_string() 
                         except ValueError:
-                            self.errors.append(f"The '{field}' field must be a valid date.") 
+                            self.set_error(rule, field) 
                             
                 if rule == "file":
                     if value:
                         if not isinstance(value, dict):
-                            self.errors.append(f"The '{field}' field must be a valid file.")
+                            self.set_error(rule, field) 
                             
                 if rule == "image":
                     if value:
                         if not isinstance(value, dict):
-                            self.errors.append(f"The '{field}' field must be a valid image.")
+                            self.set_error(rule, field) 
                             
                 if rule == "video":
                     if value:
                         if not isinstance(value, dict):
-                            self.errors.append(f"The '{field}' field must be a valid video.")
+                            self.set_error(rule, field)
+
                 if rule == "audio":
                     if value:
                         if not isinstance(value, dict):
-                            self.errors.append(f"The '{field}' field must be a valid audio.")
+                            self.set_error(rule, field)
                             
                 if rule == "document":
                     if value:
                         if not isinstance(value, dict):
-                            self.errors.append(f"The '{field}' field must be a valid document.")
+                            self.set_error(rule, field)
 
                 if rule == "url":
                     if value:
                         if not isinstance(value, str) or not value.startswith("http"):
-                            self.errors.append(f"The '{field}' field must be a valid URL.")
+                            self.set_error(rule, field)
                             
                 if rule == "ip":
                     if value:
                         if not isinstance(value, str) or not value.count(".") == 3:
-                            self.errors.append(f"The '{field}' field must be a valid IP address.")
+                            self.set_error(rule, field)
                             
                 if rule == "ipv4":
                     if value:
                         if not isinstance(value, str) or not value.count(".") == 3:
-                            self.errors.append(f"The '{field}' field must be a valid IPv4 address.")
+                            self.set_error(rule, field)
                             
                 if rule == "ipv6":
                     if value:
                         if not isinstance(value, str) or not value.count(":") == 7:
-                            self.errors.append(f"The '{field}' field must be a valid IPv6 address.")
+                            self.set_error(rule, field)
                              
                 if rule == "mac":
                     if value:
                         if not isinstance(value, str) or not value.count(":") == 5:
-                            self.errors.append(f"The '{field}' field must be a valid MAC address.")
-                            
+                            self.set_error(rule, field)
                             
                 if rule == "uuid":
                     if value:
                         try:
-                            # uuid.UUID(value)
-                            pass
+                            import uuid 
+                            uuid.UUID(value, version=4)
                         except ValueError:
-                            self.errors.append(f"The '{field}' field must be a valid UUID.")
+                            self.set_error(rule, field)
                             
                 if rule == "json":
                     if value:
                         try:
-                            # json.loads(value)
+                            import json
+                            json.loads(value)
                             pass
                         except ValueError:
-                            self.errors.append(f"The '{field}' field must be a valid JSON.")
+                            self.set_error(rule, field)
                              
                 if rule == "alpha":
                     if value and not value.isalpha():
-                        self.errors.append(f"The '{field}' field must be alphabetic characters.")
+                        self.set_error(rule, field)
                 
                 if rule == "alphanumeric":
                     if value and not value.isalnum():
-                        self.errors.append(f"The '{field}' field must be alphanumeric characters.")
-                
-                if rule == "alpha_dash":
-                    if value and not value.replace("-", "").replace("_", "").isalnum():
-                        self.errors.append(f"The '{field}' field must be alphanumeric characters with dashes and underscores.")
-                        
-                if rule == "alpha_space":
-                    if value and not value.replace(" ", "").isalpha():
-                        self.errors.append(f"The '{field}' field must be alphabetic characters with spaces.")
-                        
-                if rule == "alpha_num":
-                    if value and not value.isalnum():
-                        self.errors.append(f"The '{field}' field must be alphanumeric characters.")
-                        
-                if rule == "alpha_num_dash":
-                    if value and not value.replace("-", "").replace("_", "").isalnum():
-                        self.errors.append(f"The '{field}' field must be alphanumeric characters with dashes and underscores.")
-                        
-                        
-                if rule == "alpha_num_space":
-                    if value and not value.replace(" ", "").isalnum():
-                        self.errors.append(f"The '{field}' field must be alphanumeric characters with spaces.")
+                        self.set_error(rule, field)  
                        
                 if rule.startswith("unique"):
                     params = rule.split(":")[1].split(",")
                     table = str(params[0])
                     ignore = params[1] if len(params) > 1 else None 
                     if table:
-                        from src.models import Model
+                        from src.databases.model import Model
                         Model.table = table
+                        # .where_not(ignore)
                         row = Model.where(**{field: value}).count()
                         if row:
-                            self.errors.append(Creator.lang.get("validation.unique", attribute=field))  
+                            self.set_error("unique", field) 
                                     
-                # if rule.startswith("exists"):
-                #     from src.models.model import Model
-                #     if value:
-                #         params = rule.split(":")[1].split(",")
-                #         table = params[0]
-                #         if table:
-                #             rows = Model(table).where(**{field: value})
-                #             if not rows.exists():
-                #                 self.errors.append(f"The value of the '{field}' field does not exist.")
-    
+                if rule.startswith("exist"):
+                    if value:
+                        params = rule.split(":")[1].split(",")
+                        table = params[0]
+                        if table:
+                            from src.databases.model import Model
+                            rows = Model(table).where(**{field: value})
+                            if not rows.exists():
+                                self.set_error("exist", field) 
 
         return not self.has_errors()
 
@@ -227,5 +203,9 @@ class Validator:
         errors = self.errors[:]
         self.errors.clear()
         return errors
+    
+    def set_error(self, key, field, **kwargs):
+        from src.application import Creator 
+        self.errors.append(Creator.lang.get(f"validation.{key}", attribute=field, **kwargs))
 
             

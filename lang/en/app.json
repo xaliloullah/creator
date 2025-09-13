@@ -2,7 +2,7 @@
   "messages": {
     "welcome": "Welcome to the application {app}!",
     "goodbye": "Thank you for using the application. Goodbye!",
-    "maintenance": "The system will be down for maintenance from {startto {end}.",
+    "maintenance": "The system will be down for maintenance from {start} to {end}.",
     "announcement": "New features have been added. Check them out!",
     "reminder": "Don't forget to complete your profile for a better experience.",
     "promotion": "Special promotion: Get 20% off on your next purchase!",

@@ -1,4 +1,5 @@
 from src.core import Path
+
 class Route:
     data = {}
     routes = {} 
@@ -7,22 +8,19 @@ class Route:
     @classmethod
     def register(cls, uri: Path, action, **kwargs): 
         kwargs = {**cls.data, **kwargs}
-
         prefix = kwargs.get("prefix") or cls.data.get("prefix")
         uri = Path(uri, prefix=prefix)
-        middleware = ['app'] + kwargs.get("middleware", [])
-
-        cls.routes[uri.get()] = {
+        middleware = ['app', *kwargs.get("middleware", [])]
+        method:str = kwargs.get("method", "GET")
+        name = kwargs.get("name", uri.name())
+        cls.routes[name] = {
             "uri": uri.get(),
+            "name": name,
+            "method": method.upper(),
             "action": action, 
-            "name": kwargs.get("name", uri.name()),
-            "method": kwargs.get("method", "GET").upper(),
+            "controller": kwargs.get("controller"),
             "middleware": middleware,
-            "controller": kwargs.get("controller"), 
-            # "description": kwargs.get("description"),
-            # "tags": kwargs.get("tags", []), 
         }   
-
         return cls
     
     @classmethod
@@ -59,8 +57,7 @@ class Route:
     @classmethod
     def connect(cls, uri, action, **kwargs):
         return cls.register(uri, action, method="CONNECT", **kwargs)
-
-    # Méthode pour plusieurs méthodes HTTP
+ 
     @classmethod
     def any(cls, uri, action, methods=None, **kwargs):
         if methods is None:
@@ -72,12 +69,12 @@ class Route:
     @classmethod
     def resource(cls, name: str, controller, **kwargs):
         actions = {
-            "index":   {"method": "GET",    "uri": f"/{name}"},
-            "create":  {"method": "GET",    "uri": f"/{name}/create"},
-            "store":   {"method": "POST",   "uri": f"/{name}"},
-            "show":    {"method": "GET",    "uri": f"/{name}/<id>"},
-            "edit":    {"method": "GET",    "uri": f"/{name}/<id>/edit"},
-            "update":  {"method": "PUT",    "uri": f"/{name}/<id>"},
+            "index":{"method": "GET", "uri": f"/{name}"},
+            "create": {"method": "GET", "uri": f"/{name}/create"},
+            "store":{"method": "POST", "uri": f"/{name}"},
+            "show": {"method": "GET", "uri": f"/{name}/<id>"},
+            "edit": {"method": "GET", "uri": f"/{name}/<id>/edit"},
+            "update": {"method": "PUT", "uri": f"/{name}/<id>"},
             "destroy": {"method": "DELETE", "uri": f"/{name}/<id>"},
         }
         for action, meta in actions.items():
@@ -121,11 +118,11 @@ class Route:
         route:dict = cls.resolve(name)
         if not route: 
             raise ValueError(f"Route '{name}' not found")
-        
+        cls.log(name)
         action = route.get("action")
         controller = route.get("controller")
         middlewares = route.get("middleware", []) 
- 
+        # kwargs
         def handler():
             if callable(action):
                 return action
@@ -134,7 +131,7 @@ class Route:
                 return getattr(controller, action)
             else:
                 raise ValueError(f"invalide action for route '{name}'") 
-        from src.middlewares.middleware import Middleware 
+        from src.middlewares import Middleware 
         return Middleware.run(middlewares, handler, kwargs) 
         
     @classmethod
@@ -143,5 +140,5 @@ class Route:
         cls.history.clear() 
 
     @classmethod
-    def log(cls, uri: str):
-        cls.history.append(uri)
+    def log(cls, name: str):
+        cls.history.append(name)

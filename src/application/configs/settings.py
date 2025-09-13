@@ -101,7 +101,7 @@ class Settings(Structure):
     def activate_venv(self, path=Path.environment("python").absolute()): 
         self.set("venv", True)   
         if os.name == "nt":  # Windows
-            activate = path.join("Scripts\\activate.bat")
+            activate = path.join("Scripts/activate.bat")
         else:  # macOS / Linux
             activate = path.join("bin/activate")
         Task.execute(activate, shell=True)
@@ -109,7 +109,7 @@ class Settings(Structure):
     def deactivate_venv(self, path=Path.environment("python").absolute()):
         self.set("venv", False)    
         if os.name == "nt":  # Windows
-            deactivate = path.join("Scripts\\deactivate.bat")
+            deactivate = path.join("Scripts/deactivate.bat")
         else:  # macOS / Linux
             deactivate = path.join("bin/deactivate") 
         Task.execute(deactivate, shell=True)

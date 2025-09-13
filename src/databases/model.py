@@ -10,20 +10,31 @@ class Model:
     provider = Query()
     protected = ['table', 'primary_key', 'attributes', 'casts', 'provider', 'use_uuid']
 
+    @classmethod
+    def query(cls): 
+        if not cls.provider.script:
+           return cls.provider.select(cls.table)
+        return cls.provider
+
     def __init__(self, attributes):
         self.attributes = attributes
+ 
     @classmethod
     def create(cls, **column):
-        import uuid
         if cls.use_uuid and cls.primary_key not in column:
+            import uuid
             column[cls.primary_key] = str(uuid.uuid4())
         cls.provider.insert(cls.table, **column).execute()
         return cls.where(**column).first()
+    
+    def save(self):
+        return self.create(**self.attributes)
 
-    def update(self, **kwargs):
+    def update(self, **kwargs): 
         if self.primary_key not in self.attributes:
             raise ValueError(f"Cannot update model without {self.primary_key}") 
-        self.provider.update(self.table, **kwargs).where(id=self.attributes[self.primary_key]).execute()
+        self.provider.update(self.table, **kwargs).where(id=self.attributes[self.primary_key]).execute()  
+
 
     def delete(self): 
         self.provider.delete(self.table).where(id=self.attributes[self.primary_key]).execute()
@@ -39,62 +50,62 @@ class Model:
 
     @classmethod
     def find(cls, id): 
-        cls.attributes = cls.provider.select(cls.table).where(id=id).fetchone()
+        cls.attributes = cls.query().where(id=id).fetchone()
         return cls(cls.attributes)     
 
     @classmethod
     def where(cls, **kwargs): 
-        cls.attributes = cls.provider.select(cls.table).where(**kwargs).fetchall()
+        cls.attributes = cls.query().where(**kwargs).fetchall()
         return cls(cls.attributes) 
 
     @classmethod
     def where_not(cls, **kwargs):
-        cls.attributes = cls.provider.select(cls.table).where_not(**kwargs).fetchall()
+        cls.attributes = cls.query().where_not(**kwargs).fetchall()
         return cls(cls.attributes)
 
     @classmethod
     def or_where(cls, **kwargs):
-        cls.attributes = cls.provider.select(cls.table).or_where(**kwargs).fetchall()
+        cls.attributes = cls.query().or_where(**kwargs).fetchall()
         return cls(cls.attributes)
 
     @classmethod
     def like(cls, **kwargs):
-        cls.attributes = cls.provider.select(cls.table).like(**kwargs).fetchall()
+        cls.attributes = cls.query().like(**kwargs).fetchall()
         return cls(cls.attributes)
 
     @classmethod
     def take(cls, value:int):
-        cls.attributes = cls.provider.select(cls.table).limit(value).fetchall()
+        cls.attributes = cls.query().limit(value).fetchall()
         return cls(cls.attributes)
     
     @classmethod
     def first(cls):  
-        cls.attributes = cls.provider.select(cls.table).first().fetchone()   
+        cls.attributes = cls.query().first().fetchone()   
         return cls(cls.attributes)
     
     @classmethod 
     def last(cls):  
-        cls.attributes = cls.provider.select(cls.table).last().fetchone() 
+        cls.attributes = cls.query().last().fetchone() 
         return cls(cls.attributes)
  
     def order_by(self, column='id'):
-        self.attributes = self.provider.order_by(column).fetchall()
+        self.attributes = self.query().order_by(column).fetchall()
         return self
  
     def order_by_desc(self, column='id'):
-        self.attributes = self.provider.order_by(column, "DESC").fetchall()
+        self.attributes = self.query().order_by(column, "DESC").fetchall()
         return self
  
     def count(self, column='id'): 
-        result = self.provider.count(column).fetchone()
+        result = self.query().count(column).fetchone()
         return next(iter(result.values())) if isinstance(result, dict) else result[0] if isinstance(result, tuple) else result
     
     def pluck(cls, column):
-        return [row[column] for row in cls.all().get()]
+        return [row[column] for row in cls.get()]
     
     @classmethod
     def paginate(cls, per_page:int, page:int=1):
-        cls.attributes = cls.provider.select(cls.table).paginate(page, per_page).fetchall()
+        cls.attributes = cls.query().paginate(page, per_page).fetchall()
         return cls(cls.attributes)
 
     def fill(self, **kwargs):
@@ -104,10 +115,7 @@ class Model:
         return self
     
     def soft_delete(self):
-        self.update(deleted_at="CURRENT_TIMESTAMP")
-
-    def clone(self):
-        return self.__class__(self.attributes.copy())
+        self.update(deleted_at="CURRENT_TIMESTAMP") 
 
     def get(self): 
         if isinstance(self.attributes, list):

@@ -10,8 +10,7 @@ class Query:
         self.placeholder = Connector.database().placeholder 
         
     def execute(self):
-        Database().execute(self.script, self.values) 
-        # self.reset_script()
+        Database().execute(self.script, self.values)
 
     def get(self):
         return Database().fetchall(self.script, self.values)
@@ -213,23 +212,5 @@ class Query:
         return self.script
     
     def __call__(self):
-        return Database().fetchall(self.script, self.values) 
-    
-    def has_one(self, related_table, foreign_key, foreign_id):
-        conditions = {f"{foreign_key}":f"{foreign_id}"}
-        self.select(related_table).where(**conditions) 
-        self.attributes = Database().fetchone(self.script,self.values)
-        return self
-
-    def has_many(self, related_table, foreign_key, foreign_id): 
-        conditions = {f"{foreign_key}":f"{foreign_id}"}
-        self.select(related_table).where(**conditions) 
-        self.attributes = Database().fetchall(self.script, self.values)
-        return self
-
-
-    def belongs_to(self, related_table,table, foreign_key=None, foreign_id=None):
-        query = f"""SELECT * FROM {related_table} WHERE id = (SELECT {foreign_key} FROM {table} WHERE id = ?)"""
-        self.attributes = Database().fetchall(query, (foreign_id,))    
-        return self
+        return Database().fetchall(self.script, self.values)  
  

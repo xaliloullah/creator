@@ -8,7 +8,7 @@ debug = env("APP_DEBUG", False)
 mode = env("APP_MODE", "console") 
 author = "Ibrahima Khaliloullah Thiam"
 description = "Creator is a Python project designed to help you build and manage your creative projects efficiently."
-# packages= {
+# required = {
 #     "mysql-connector-python": "9.0.0",
 #     "psycopg2": "2.9.10",
 #     "pymongo": "4.10.1",

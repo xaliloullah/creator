@@ -1,9 +1,10 @@
+
 class Creator:
 
     @classmethod
     def setup(cls):
         from src.console import Terminal  
-        from src.core import Path, Data, File, Task, Date, View ,Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection,  Translator, Speaker, Http, Session, Response, Request 
+        from src.core import Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection, Translator, Speaker, Http, Session, Response, Request 
         # , Interface 
         from src.builds import Build
         from src.application.configs import Settings, Version
@@ -44,7 +45,7 @@ class Creator:
         cls.http = Http 
         cls.view = View 
         cls.routes = Route  
-        # cls.interface =Interface
+        # cls.interface = Interface
         # cls.auth = Auth
         cls.request = Request 
         cls.session = Session 
@@ -128,7 +129,8 @@ class Creator:
             key = cls.settings.get("key")
         
         name = cls.terminal.input("name", value="creator") 
-        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=cls.settings.get("databases"), value="sqlite", inline=False) 
+        from config import database
+        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options= database.supported, value="sqlite", inline=False) 
         mode = cls.terminal.input(cls.lang.get("info.options", resource=f"mode"), type="select", options=['console', 'web', 'desktop'], value="console", inline=False) 
         debug = cls.terminal.input("Activate debug app", type="checkbox", value="no")
         env = cls.build.Env.app(name=name, lang=lang, key=key, mode=mode, debug=debug)
