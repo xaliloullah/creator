@@ -1,8 +1,5 @@
-import sqlite3 
-from .rdbms import RDBMS
-
-class Sqlite(RDBMS):
-    """SQLite-specific implementation of the database connector."""
+class RDBMS:
+    """Generic base class for database connectors."""
     placeholder ='?'
     syntax = { 
         'ID' : 'INTEGER',
@@ -28,7 +25,7 @@ class Sqlite(RDBMS):
         'BIT': 'INTEGER',           
         'BOOLEAN': 'INTEGER',       
         'DATETIME': 'TEXT',         
-        'NUMERIC': 'INTEGER',           
+        'NUMERIC': 'INTEGER',            
         'TIME': 'TEXT',
         'AUTO_INCREMENT':'AUTOINCREMENT',   
         'FOREIGN_KEY': 'FOREIGN KEY',        
@@ -42,33 +39,38 @@ class Sqlite(RDBMS):
         'CHECK': 'CHECK',
         'COMMENT': 'COMMENT',  
         'TIMESTAMP': 'TIMESTAMP',   
-        'UNSIGNED': '', 
-        'INDEX': 'INDEX',
+        'UNSIGNED': '',      
         # 
-        'ADD_COLUMN':'ADD COLUMN',
+        'ADD_COLUMN':'',
         'MODIFY_COLUMN': '',
         'CHANGE': '',
-        'DROP_COLUMN': 'DROP COLUMN',
-        'RENAME_COLUMN': 'RENAME COLUMN',
-        'VERSION': 'SELECT sqlite_version()'      
+        'DROP_COLUMN': '',
+        'RENAME_COLUMN': '',
+        'VERSION': ''   
     }
-    def __init__(self, config):
-        try:
-            self.connection = sqlite3.connect(config['path'])
-            self.connection.row_factory = sqlite3.Row
-            self.cursor = self.connection.cursor() 
-            self.master = 'sqlite_master'
-        except sqlite3.Error as e:
-            raise Exception(e)
-            
-    def execute(self, query, params=None):
-        try: 
-            if params:
-                self.cursor.execute(query, params)
-            else:
-                self.cursor.execute(query)
-            self.connection.commit()
-        except sqlite3.Error as e:
-            self.connection.rollback()
-            raise Exception(e) 
     
+    def __init__(self, config):
+        self.connection = None
+        self.cursor = None
+        self.config = config 
+        self.master = '' 
+
+    # def connect(self):
+    #     """Establish the database connection."""
+    #     raise NotImplementedError("The 'connect' method must be implemented in the child class.")
+
+    def execute(self, query, params=None):
+        """Execute a SQL query."""
+        raise NotImplementedError("The 'execute' method must be implemented in the child class.")
+
+    # def fetchall(self):
+    #     """Fetch all rows from the last executed query."""
+    #     raise NotImplementedError("The 'fetchall' method must be implemented in the child class.")
+
+    # def fetchone(self):
+    #     """Fetch a single row from the last executed query."""
+    #     raise NotImplementedError("The 'fetchone' method must be implemented in the child class.")
+
+    # def close(self):
+    #     """Close the cursor and connection."""
+    #     raise NotImplementedError("The 'close' method must be implemented in the child class.")

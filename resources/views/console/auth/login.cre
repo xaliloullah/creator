@@ -8,8 +8,8 @@ def view():
     Creator.terminal.input(Creator.lang.get("confirm.continue"), type="confirm", value="yes", reject_action=Creator.view.back)
 
     Creator.form(
-        name = Creator.terminal.input(type="", placeholder = 'name'),
-        password = Creator.terminal.input(placeholder ='password', type="password") 
-    ) 
+        name = Creator.terminal.input(type="", placeholder='name'),
+        password = Creator.terminal.input(placeholder='password', type="password") 
+    )
 
     Creator.route("login.store")

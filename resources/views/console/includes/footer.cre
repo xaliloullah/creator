@@ -1,2 +1,2 @@
 from main import Creator  
-Creator.terminal.box(Creator.view.generate("title"))
+Creator.terminal.subtitle(Creator.view.generate("title"))

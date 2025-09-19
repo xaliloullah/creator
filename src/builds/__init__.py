@@ -37,6 +37,10 @@ class Build:
     @staticmethod
     def seed(name: str):
         return Template("seed").render(name=name) 
+
+    @staticmethod
+    def test(name: str):
+        return Template("test").render(name=name) 
     
     @staticmethod
     def middleware(name: str):
@@ -49,9 +53,10 @@ class Build:
             key = kwargs.get("key", False)
             lang = kwargs.get("lang", "en")
             mode = kwargs.get("mode", "console")
-            url = kwargs.get("url", "http://localhost")
+            host = kwargs.get("host", "127.0.0.1")
+            port = kwargs.get("port", "5000")
             debug = kwargs.get("debug", False)
-            return Template("env.app").render(name=name, key=key, lang=lang, url=url, mode=mode, debug=debug)
+            return Template("env.app").render(name=name, key=key, lang=lang, host=host, port=port, mode=mode, debug=debug)
 
         @staticmethod
         def database(**kwargs):

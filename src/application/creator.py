@@ -4,8 +4,7 @@ class Creator:
     @classmethod
     def setup(cls):
         from src.console import Terminal  
-        from src.core import Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection, Translator, Speaker, Http, Session, Response, Request 
-        # , Interface 
+        from src.core import Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection, Translator, Speaker, Http, Session, Response, Request # , Interface 
         from src.builds import Build
         from src.application.configs import Settings, Version
         from src.validators.validator import Validator  
@@ -25,7 +24,7 @@ class Creator:
         cls.python = cls.settings.get("python")
         cls.packages = cls.settings.get("packages", {})
 
-        cls.injector = Injector()
+        cls.injector = Injector
         cls.terminal = Terminal
         cls.path = Path
         cls.file = File
@@ -53,32 +52,20 @@ class Creator:
 
     @classmethod
     def configure(cls, **kwargs):
+        cls.setup()
         try:
-            cls.setup()
             cls.retry = kwargs.get("retry", True)
             cls.main = kwargs.get("main", "main")   
-            cls.debug.printer = cls.terminal.debug
-            # cls.name = app.name
-            # cls.mode = app.mode
-            # cls.author = app.author
-            # cls.description = app.description
-            # cls.key = app.key 
-            # cls.database = database.driver
-            # cls.lang = Lang(app.lang)
-            # cls.settings = Settings.first()
-            # cls.version = Version(cls.settings.get("version", None))
+            cls.debug.printer = cls.terminal.debug 
             cls.python = cls.settings.get("python", None)
             cls.packages = cls.settings.get("packages", {})
-            cls.request = cls.request(session=cls.session(), validator=cls.validator()) 
-            # cls.auth.config(request = cls.request) 
+            cls.request = cls.request(session=cls.session(), validator=cls.validator())
             cls.injector.register('request', cls.request)
-            cls.injector.register('session', cls.request.session) 
+            cls.injector.register('session', cls.request.session)
+            cls.injector.register('validator', cls.request.validator)
             cls.version.set(cls.settings.get("version"))   
-            if cls.key:
-                # if cls.key == cls.settings.get("key"):
+            if cls.key: 
                 return cls
-                # else:
-                #     raise RuntimeError("Invalid key provided in the configuration.")
             else:
                 cls.create()
         except KeyError as e:    
@@ -176,7 +163,7 @@ class Creator:
         return uri
     
     @classmethod
-    def route(cls, name, intended=None, **kwargs): 
+    def route(cls, name, intended=None, **kwargs):  
         from routes.route import Route 
         Route.dispatch(name, **kwargs) 
 

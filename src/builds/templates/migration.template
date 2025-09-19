@@ -4,9 +4,9 @@ from src.databases.schema import Table
 # Up function for {name} table
 def up():
     table = Table('{name}')
-    table.id()
+    table.column.id()
     #
-    table.timestamps()
+    table.column.timestamps()
     table.create()
 
 

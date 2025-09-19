@@ -4,6 +4,7 @@ class Route:
     data = {}
     routes = {} 
     history = []
+    current = ""
     
     @classmethod
     def register(cls, uri: Path, action, **kwargs): 
@@ -115,6 +116,7 @@ class Route:
 
     @classmethod
     def dispatch(cls, name: str, **kwargs):  
+        cls.current = name
         route:dict = cls.resolve(name)
         if not route: 
             raise ValueError(f"Route '{name}' not found")

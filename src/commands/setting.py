@@ -24,22 +24,16 @@ class SettingCommand(Command):
     def handle(args):
          
         if args.database: 
-            driver = Creator.terminal.input(Creator.lang.get("info.options", resource=f"database"), type="select", options=Creator.settings.get("databases"), value=Creator.database, inline=False) 
-            # databases = Creator.data(Creator.build.Env.database(driver=driver, name=Creator.name, path=Creator.path.databases()), "env").get()
-            # env = Creator.storage('.env', absolute=False, format="env")
-            # collect = Creator.collection(env)  
-         
-            # print(collect.get())
-            # for key, value in databases.items(): 
-            #     collect.set(key, value) 
-            # print(collect.get())
-            # env.save(collect.get()) 
-            # if args.driver: 
-            #     if args.driver in Creator.settings.get("databases"): 
-            # else:
-            #     Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"database"))
+            from config import app, database
+            driver = Creator.terminal.input(Creator.lang.get("info.options", resource=f"database"), type="select", options=database.supported, value=Creator.database, inline=False)
+            env_database = Creator.build.Env.database(driver=driver, name=app.name, path=Creator.path.databases())  
+            from src.core import Data 
+            env_database = Data(env_database, format='env').get()
+            for key, value in env_database.items():
+                Creator.settings.env().set(key, value)    
+            Creator.terminal.success(Creator.lang.get("success.process"))
 
-        elif args.lang: 
+        elif args.lang:
             if args.set:
                 if args.set in Creator.settings.get("langs"): 
                     Creator.settings.env().set("APP_LANG", args.set)    

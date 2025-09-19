@@ -1,14 +1,17 @@
-import sys
-import os
- 
-sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
-
 from src.console import Terminal
 
-terminal = Terminal() 
+terminal = Terminal
 
-while True:
-    terminal.input(type="select", options={"test":"Test", "name":"Khalil", "key":"value"}, value="key", inline=False)
+# while True:
+terminal.table({
+"Nom": "Alice",
+"Âge": 25,
+"Ville": "Paris",
+"Email": "alice@example.com",
+"Téléphone": "+33 6 12 34 56 78",
+"Statut": "Actif"
+}, keys=['Nom', 'Ville']
+, display=True)
     # event = keyboard.read_event()  # lit un évènement clavier
     # if event.event_type == keyboard.KEY_DOWN:  # quand une touche est pressée
     #     print(event.scan_code)

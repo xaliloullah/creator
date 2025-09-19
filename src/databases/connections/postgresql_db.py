@@ -3,9 +3,9 @@ try:
     from psycopg2.extras import RealDictCursor
 except: 
     ImportError("PostgreSQL connector is not installed. Please install it using 'py creator install psycopg2'")
-from .builder import DatabaseBuilder
+from .rdbms import RDBMS
 
-class PostgreSQL(DatabaseBuilder):
+class PostgreSQL(RDBMS):
     """PostgreSQL-specific implementation of the database connector."""
     placeholder = '%s'
     syntax = {
@@ -26,16 +26,15 @@ class PostgreSQL(DatabaseBuilder):
         'VARBINARY': 'BYTEA',
         'BINARY': 'BYTEA',
         'BLOB': 'BYTEA',
-        'ENUM': 'TEXT',  # PostgreSQL uses CHECK or ENUM types separately
+        'ENUM': 'TEXT',
         'TEXT': 'TEXT',
         'JSON': 'JSONB',
         'BIT': 'BIT',
         'BOOLEAN': 'BOOLEAN',
         'DATETIME': 'TIMESTAMP',
-        'NUMERIC': 'NUMERIC',
-        'STRING': 'TEXT',
+        'NUMERIC': 'NUMERIC', 
         'TIME': 'TIME',
-        'AUTO_INCREMENT': '',  # handled via SERIAL
+        'AUTO_INCREMENT': '',
         'PRIMARY_KEY': 'PRIMARY KEY',
         'FOREIGN_KEY': 'FOREIGN KEY',
         'REFERENCES': 'REFERENCES',
@@ -45,11 +44,19 @@ class PostgreSQL(DatabaseBuilder):
         'UNIQUE': 'UNIQUE',
         'SET_NULL': 'SET NULL',
         'CHECK': 'CHECK',
-        'COMMENT': '--',  # PostgreSQL COMMENT handled differently
+        'COMMENT': '',  
         'TIMESTAMP': 'TIMESTAMP',
-        'UNSIGNED': '',  # PostgreSQL does not support UNSIGNED natively
+        'UNSIGNED': '',
         'ON_UPDATE': 'ON UPDATE',
         'ON_DELETE': 'ON DELETE',
+        'INDEX': 'INDEX',
+        # 
+        'ADD_COLUMN':'ADD COLUMN',
+        'MODIFY_COLUMN':'ALTER COLUMN',
+        'CHANGE': '',
+        'DROP_COLUMN': 'DROP COLUMN',
+        'RENAME_COLUMN': 'RENAME COLUMN',
+        'VERSION': 'SHOW server_version'
     }
     
     def __init__(self, config):

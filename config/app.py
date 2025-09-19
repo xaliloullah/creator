@@ -1,7 +1,8 @@
 from src.environment import env
 
-name = env('APP_NAME', 'creator')
-url = env("APP_URL",'http://localhost')
+name = env("APP_NAME", 'creator')
+host = env("APP_HOST", '127.0.0.1')
+port = env("APP_PORT", '5000')
 lang = env("APP_LANG",'en')
 key = env("APP_KEY", None)
 debug = env("APP_DEBUG", False) 

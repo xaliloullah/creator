@@ -23,7 +23,8 @@ connections = database.connections
 config = connections[driver]
 
 class Connector:
-
+    driver = database.driver
+    
     @staticmethod
     def connect(): 
         if driver == sqlite:

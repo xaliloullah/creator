@@ -1,48 +1,83 @@
-import threading 
-from routes.route import Route
-from main import Creator
+import socket
+import threading
+from config import app
+
 class Server:
-    def __init__(self, host="127.0.0.1", port=8000):
-        from flask import Flask, request, Response
+
+    def __init__(self, host=app.host, port=app.port):
         self.host = host
-        self.port = port
-        self.app = Flask(__name__)
-        self.httpd = None
-        self.thread = None 
-        self.debug = Creator.debug 
-        self.setup()
+        self.port = int(port)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.settimeout(1.0)
+        self.clients = []
+        self.running = True
+        self.queue = 10
 
+    # def connect(self):
+    #     self.server.connect((self.host, self.port))
+    #     receive_thread = threading.Thread(target=self.response)
+    #     receive_thread.start()
+    #     while True:
+    #         msg = input("✏️ Vous : ")
+    #         self.server.sendall(msg.encode("utf-8"))
 
-    def setup(self):
-        for uri, meta in Route.list().items():
-            methods = [meta["method"]]
-            def view_func(meta=meta):
-                # controller_kwargs = {k: v for k, v in meta.items() if k not in ["uri", "name", "method"]}
-                return Route.dispatch(meta["name"])
-            
-            self.app.add_url_rule(
-                meta["uri"],
-                endpoint=meta["name"],
-                view_func=view_func,
-                methods=methods
-            )
+    # def response(self): 
+    #     while True:
+    #         try:
+    #             msg = self.server.recv(1024).decode("utf-8")
+    #             if msg:
+    #                 print("\n📩 Nouveau message :", msg)
+    #         except:
+    #             print("❌ Déconnecté du serveur")
+    #             self.server.close()
+    #             break
 
+    def start(self):
+        self.server.bind((self.host, self.port))
+        self.server.listen(self.queue) 
+        try:
+            while self.running:
+                try:
+                    client, address = self.server.accept()
+                except socket.timeout:
+                    continue
+                print(f"🔗 Nouveau client : {address} {client}")
+                self.clients.append(client)
+                thread = threading.Thread(target=self.handle, args=(client,))
+                thread.daemon = True
+                thread.start()
+        except KeyboardInterrupt: 
+            self.stop()
 
-        
+    def broadcast(self, message, sender):
+        for client in self.clients:
+            if client != sender:
+                try:
+                    client.sendall(message.encode("utf-8"))
+                except:
+                    self.clients.remove(client)
 
-    def run(self): 
-        if self.thread is not None and self.thread.is_alive():
-            # print("Le serveur est déjà en cours d'exécution.")
-            return
+    def handle(self, client):
+        while True:
+            try:
+                data = client.recv(1024).decode("utf-8")
+                if not data:
+                    break
+                print(f"📥 : {data}")
+                self.broadcast(data, client)
+            except:
+                break
 
-        def serve():
-            self.app.run(host=self.host, port=self.port, debug=self.debug, use_reloader=False)
+        client.close()
+        if client in self.clients:
+            self.clients.remove(client)
+        print("❌ Client déconnecté")
 
-        self.thread = threading.Thread(target=serve, daemon=True)
-        self.thread.start()
-
-    def stop(self):    
-        if self.httpd: 
-            self.thread.join()
-            self.httpd = None
-            self.thread = None
+    def stop(self):
+        self.running = False 
+        for client in self.clients:
+            try:
+                client.close()
+            except:
+                pass
+        self.server.close() 

@@ -84,12 +84,20 @@ class Task:
             raise Exception(e)
     
     @staticmethod
-    def run(source:str, *functions, **kwargs):
+    def run(source:str, **kwargs):
         namespace=kwargs.get("namespace", {})
+        functions=kwargs.get("functions", [])
+        only=kwargs.get("only", None)
+        ignore=kwargs.get("ignore", None)
+
         try:  
             with open(source, 'r', encoding='utf-8') as file:
                 code = compile(file.read(), source, 'exec') 
-                exec(code, namespace)
+                exec(code, namespace) 
+
+                if functions == '*' or functions == ["*"]:
+                    functions = [func for func in namespace if callable(namespace[func])]
+
                 for function in functions:
                     if function in namespace:
                         namespace[function]() 

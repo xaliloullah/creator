@@ -1,0 +1,8 @@
+from src.core import Test
+
+class {name}(Test):
+    
+    # function for {name}
+    
+    pass
+    

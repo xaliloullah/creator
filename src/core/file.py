@@ -270,16 +270,20 @@ class File:
                     structure += File.make_structure(folder, level + 1, new_prefix, ignore=ignore)
             return structure
         except Exception as e:
-            raise Exception(f"Error making structure: {e}")
+            raise Exception(e)
         
     def get_extension(self, **kwargs):
         return self.path.extension(**kwargs)
-
-    def set_extension(self, extension:str, **kwargs): 
-        old = self.get_extension()
+ 
+    def set_extension(self, extension: str) -> str:  
         if not extension.startswith("."):
-            extension = f".{extension}"
-        self.path = Path(self.path.strip()[0], suffix=extension if old else None)
+            extension = "." + extension 
+        dot_index = self.path.get().rfind(".")
+
+        if dot_index == -1 or "/" in self.path.get()[dot_index:] or "\\" in self.path.get()[dot_index:]: 
+            self.path = Path(self.path.get(), suffix=extension)
+        else: 
+            self.path = Path(self.path.get()[:dot_index], suffix=extension)
         return self
 
     def is_dir(self):

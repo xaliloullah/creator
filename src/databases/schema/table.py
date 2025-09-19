@@ -1,27 +1,26 @@
 from src.databases.query import Query
 from src.databases.schema import Column 
 
-class Table(Column):
+class Table:
+
     def __init__(self, name):
-        super().__init__()
         self.name = name 
+        self.column = Column(self.name)
         
-    def __str__(self):
-        return self.get_definition()
-
-    def generate_script(self, multiline=False):
-        sep = ",\n" if multiline else ", "
-        return sep.join(self.definition + self.foreign_keys)
-
-    def get_definition(self):
-        return self.generate_script(multiline=False)
-
-    def get_script(self):
-        return self.generate_script(multiline=True)
-
+    def create(self, if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
+        Query().create(self.name, self.column.generate()).execute()
     
-    def create(self , if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
-        Query().create(self.name, self.get_definition(), if_not_exists=True, engine="InnoDB", charset="utf8mb4").execute()
+    def update(self):
+        for definition in self.column.generate(command=True):
+            Query().alter(self.name, definition).execute() 
 
     def drop(self): 
         Query().drop(self.name).execute() 
+
+    # def truncate(self):
+    #     Query().truncate(self.name).execute()
+
+    # def rename(self, name):
+    #     Query().rename(self.name, name).execute()
+    #     self.name = name
+

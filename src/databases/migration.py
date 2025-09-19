@@ -20,16 +20,16 @@ class Migration:
             Terminal.success(f"Migration {self.file.name} created successfully.")
         except Exception as e:
             Terminal.error(f"{e}") 
-            exit()
+            exit(1)
             
     @classmethod
     def run(cls, name, action='up'): 
         try:
             path = Path(cls.path).join(name)
-            Task.run(path, action) 
+            Task.run(path, functions=[action]) 
         except Exception as e:
             Terminal.error(f"{e}") 
-            exit()
+            exit(1)
 
     @classmethod
     def get(cls):
@@ -38,7 +38,7 @@ class Migration:
             return sorted(migrations)
         except Exception as e: 
             Terminal.error(f"{e}") 
-            exit()
+            exit(1)
     
     @classmethod
     def get_last_batch(cls): 
@@ -100,21 +100,21 @@ class Migration:
 
         except Exception as e:
             Terminal.error(f"{e}") 
-            exit()
+            exit(1)
 
     @classmethod
     def drop_all(cls):
         Terminal.info("Droping all tables")
-        from src.databases.query import Query
-        tables = Query().select(cls.table, 'migration').get()  
-        # for table in tables:
-        #     Query().drop(table)
+        # from src.databases.query import Query
+        # tables = Query().select(cls.table, 'migration').fetchall()  
+        # # for table in tables:
+        # #     Query().drop(table)
 
         
     @classmethod
     def check(cls): 
         from src.databases.query import Query 
-        results = Query().select(cls.table, 'migration').get() 
+        results = Query().select(cls.table, 'migration').fetchall() 
         migrations = cls.get()
         applied_migrations = []
         for result in results: 
@@ -127,9 +127,9 @@ class Migration:
     def up(cls):
         from src.databases.schema.table import Table 
         table = Table(cls.table) 
-        table.id()
-        table.string('migration').unique().not_null()
-        table.tinyint('batch').default(1) 
+        table.column.id()
+        table.column.string('migration').unique().not_null()
+        table.column.tinyint('batch').default(1) 
         table.create()
 
     @classmethod

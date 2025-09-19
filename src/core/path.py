@@ -56,7 +56,7 @@ class Path:
     def set(self, path:str):
         self.path = path 
 
-    def get(self) -> str: 
+    def get(self, index=None) -> str:  
         return str(self.path)
 
     def join(self, path, **kwargs):   
@@ -266,6 +266,12 @@ class Path:
         if path and not path.endswith(".py"):
             path += ".py"
         return Path.databases("seeds").join(path, **kwargs) 
+    
+    @staticmethod
+    def tests(path:str=None, **kwargs):
+        if path and not path.endswith(".py"):
+            path += ".py"
+        return Path("tests").join(path, **kwargs) 
 
     @staticmethod
     def architecture():

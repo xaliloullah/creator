@@ -2,9 +2,10 @@ try:
     import mysql.connector
 except: 
     ImportError("MySQL connector is not installed. Please install it using 'py creator install mysql-connector-python'")
-from .builder import DatabaseBuilder
+    
+from .rdbms import RDBMS
 
-class MySQL(DatabaseBuilder):
+class MySQL(RDBMS):
     """MySQL-specific implementation of the database connector."""
     placeholder = '%s'
     syntax = {
@@ -31,8 +32,7 @@ class MySQL(DatabaseBuilder):
         'BIT': 'BIT',
         'BOOLEAN': 'BOOLEAN',
         'DATETIME': 'DATETIME', 
-        'NUMERIC': 'NUMERIC', 
-        'STRING': 'STRING',  
+        'NUMERIC': 'NUMERIC',
         'TIME': 'TIME',
         'AUTO_INCREMENT': 'AUTO_INCREMENT',
         'PRIMARY_KEY': 'PRIMARY KEY',   
@@ -48,7 +48,16 @@ class MySQL(DatabaseBuilder):
         'TIMESTAMP': 'TIMESTAMP',  
         'UNSIGNED': 'UNSIGNED', 
         'ON_UPDATE': 'ON UPDATE', 
-        'ON_DELETE': 'ON DELETE', 
+        'ON_DELETE': 'ON DELETE',
+        'INDEX': 'INDEX',
+        'CHARACTER_SET':'CHARACTER SET',
+        # 
+        'ADD_COLUMN':'ADD COLUMN',
+        'MODIFY_COLUMN':'MODIFY COLUMN',
+        'CHANGE': 'CHANGE',
+        'DROP_COLUMN': 'DROP COLUMN',
+        'RENAME_COLUMN': 'RENAME COLUMN',
+        'VERSION': 'SELECT VERSION()'
     }
     def __init__(self, config):
         try:
@@ -75,3 +84,16 @@ class MySQL(DatabaseBuilder):
         except mysql.connector.Error as e:
             self.connection.rollback()
             raise Exception(e) 
+        
+    def fetchone(self):
+        return self.cursor.fetchone()
+
+    def fetchall(self):
+        return self.cursor.fetchall()
+
+        
+    def close(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.connection:
+            self.connection.close()

@@ -4,11 +4,11 @@ from src.databases.schema import Table
 # Up function for users table
 def up():
     table = Table('users')
-    table.id()
-    table.string("name")
-    table.string("email").unique()
-    table.string("password")
-    table.timestamps()
+    table.column.id()
+    table.column.string("name")
+    table.column.string("email").unique()
+    table.column.string("password")
+    table.column.timestamps()
     table.create()
 
 

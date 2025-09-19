@@ -1,31 +1,36 @@
 class Injector:
-    def __init__(self):
-        self.dependencies = {}
+    dependencies = {}
 
-    def __str__(self):
-        return str(self.dependencies)
+    
+    @classmethod
+    def __str__(cls):
+        return str(cls.dependencies)
+    
+    @classmethod
+    def register(cls, name: str, value):
+        cls.dependencies[name] = value
+    
+    @classmethod
+    def update(cls, name: str, value):
+        cls.dependencies[name] = value
 
-    def register(self, name: str, value):
-        self.dependencies[name] = value
-
-    def update(self, name: str, value):
-        self.dependencies[name] = value
-
-    def inject(self, name: str):
-        if name in self.dependencies:
-            dependency = self.dependencies[name]
+    @classmethod
+    def inject(cls, name: str):
+        if name in cls.dependencies:
+            dependency = cls.dependencies[name]
             if isinstance(dependency, type):
                 return dependency()
             return dependency
         return None
 
-    def resolve(self, func, **kwargs):
+    @classmethod
+    def resolve(cls, func, **kwargs):
         from inspect import signature
         sig = signature(func)
 
         for name, param in sig.parameters.items():
             if name not in kwargs:
-                dependency = self.inject(name)
+                dependency = cls.inject(name)
                 if dependency is not None:
                     kwargs[name] = dependency
                 else:

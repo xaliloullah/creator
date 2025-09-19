@@ -10,6 +10,7 @@ from src.commands.seed import SeedCommand
 from src.commands.server import ServerCommand
 from src.commands.publish import PublishCommand
 from src.commands.route import RouteCommand
+from src.commands.test import TestCommand
 from src.commands.setting import SettingCommand
 
 Command.add(
@@ -23,5 +24,6 @@ Command.add(
     ServerCommand, 
     PublishCommand, 
     RouteCommand,
+    TestCommand,
     SettingCommand
 ) 

@@ -32,7 +32,7 @@ class RegisterController:
         #     if Auth.regenerate(user):
         #         return Creator.route('dashboard')
         # return Creator.view.back()
-
+        return Creator.route('register')
     @staticmethod
     def edit(id):
         #

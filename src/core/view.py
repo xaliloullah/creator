@@ -4,6 +4,7 @@ from src.core import Path, Task
 class View:
     data = {}
     history = [] 
+    current = ""
     
     def __init__(self, path:str=None, *args):
         try: 
@@ -22,11 +23,11 @@ class View:
     
     @staticmethod
     def show(view:str): 
-        from config import app 
-        if app.mode == 'web':
-            from flask import render_template
-            return render_template(View.path(view), **View.data)
-        return Task.run(View.path(view), "view")
+        # from config import app 
+        # if app.mode == 'web':
+        #     from flask import render_template
+        #     return render_template(View.path(view), **View.data)
+        return Task.run(View.path(view), functions=["view"])
     
     @staticmethod
     def path(path):
@@ -50,6 +51,7 @@ class View:
 
     @classmethod
     def set_history(cls, arg):
+        cls.current = str(arg)
         cls.history.append(arg)
 
     @classmethod

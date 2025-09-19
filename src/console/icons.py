@@ -12,7 +12,7 @@ class Icon:
     ARROW_LEFT = "◀"
     BORDER = "≖"
     LIGHT_STAR = "⋆"
-    CHECK = "✔️"
+    CHECK = "✔️ "
     ERROR = "❌"
     PLUS = "➕"
     MOIN = "➖"

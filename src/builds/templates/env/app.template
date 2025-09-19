@@ -1,0 +1,7 @@
+APP_NAME={name}  
+APP_KEY={key}
+APP_LANG={lang}  
+APP_HOST={host}
+APP_PORT={port}
+APP_MODE={mode}
+APP_DEBUG={debug} 

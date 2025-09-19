@@ -1,31 +1,32 @@
-import unittest
+from src.core import File, Path, Task
+from src.console import Terminal 
 
-class Test(unittest.TestCase):
-    """
-    Classe de base pour tous les tests de l'application.
-    Fournit setup et teardown automatiques, et peut être étendue.
-    """
+
+class Test:
+    path = Path.tests()
+    file = File(path) 
+
+    def __init__(self, name=None):
+        self.name = name 
+             
+    def run(self, action='test_*'): 
+        path = Path(self.path).join(self.name)
+        Terminal.info(f"Running test: {path}")
+        try:
+            Task.run(path, functions=[action])
+            Terminal.success(f"Test succeeded: {path}")
+        except Exception as e:
+            Terminal.error(f"Error running test: {path} {e}") 
 
     @classmethod
-    def setUpClass(cls):
-        """Exécuté une seule fois avant tous les tests de la classe"""
-        print(f"\n>>> Démarrage des tests pour {cls.__name__}")
-
-    @classmethod
-    def tearDownClass(cls):
-        """Exécuté une seule fois après tous les tests de la classe"""
-        print(f">>> Fin des tests pour {cls.__name__}")
-
-    def setUp(self):
-        """Exécuté avant chaque test"""
-        print(f"--- Préparation du test {self._testMethodName}")
-
-    def tearDown(self):
-        """Exécuté après chaque test"""
-        print(f"--- Fin du test {self._testMethodName}")
-
-    # Méthodes d'assertions supplémentaires si nécessaire
-    def assertNotEmpty(self, value, msg=None):
-        """Vérifie que la valeur n'est pas vide"""
-        if not value:
-            self.fail(msg or f"Valeur vide détectée : {value}")
+    def get(cls, name=None):
+        try:
+            tests = cls.file.list(endswith=".py")       
+            if name:
+                from src.core import String
+                name = Path(String(name).snakecase() , suffix=".py") 
+                return name 
+            return sorted(tests)
+        except Exception as e: 
+            Terminal.error(f"{e}") 
+            exit(1) 

@@ -1,0 +1,3 @@
+SESSION_NAME={name}
+SESSION_DRIVER={driver}
+SESSION_LIFETIME={lifetime}

@@ -8,11 +8,10 @@
 #
 # --------------------------------------------------------- 
 
-# Main of Creator
-
 from src.application import Creator
 
-Creator.configure(main="main")
+Creator.configure(main="main", host="127.0.0.1", port=8000)
+
 if __name__ == '__main__':
     
     while True:

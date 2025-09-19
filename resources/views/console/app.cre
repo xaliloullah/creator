@@ -10,4 +10,4 @@ def view():
     
     Creator.view.generate("content") 
 
-    Creator.view.include('includes.footer')
+    # Creator.view.include('includes.footer')

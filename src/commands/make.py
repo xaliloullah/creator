@@ -30,6 +30,7 @@ class MakeCommand(Command):
         parser.add_argument('--view', help="Create a new view")
         parser.add_argument('--command', help="Create a new command")
         parser.add_argument('--seeder', help="Create a new seeder")
+        parser.add_argument('--test', help="Create a new test")
         
         cache_parser = parser.add_argument_group("cache")
         cache_parser.add_argument('--cache', type=str, nargs='?', help="cache app") 
@@ -116,6 +117,17 @@ class MakeCommand(Command):
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"seed '{args.seeder}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.seed(Creator.file(name).name)) 
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"seed '{args.seeder}'"))
+            except Exception:
+                Creator.terminal.error(f"{traceback.format_exc()}") 
+
+        elif args.test:
+            name = Creator.string(args.test).pascalcase() 
+            try: 
+                filename = Creator.path.tests(name.snakecase())
+                if Creator.file(filename).exists():
+                    return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"test '{args.test}'"))
+                Creator.file(filename).ensure_exists().save(Creator.build.test(Creator.file(name).name)) 
+                Creator.terminal.success(Creator.lang.get("success.create", resource=f"test '{args.test}'"))
             except Exception:
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 

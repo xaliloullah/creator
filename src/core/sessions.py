@@ -12,10 +12,7 @@ class Session(Structure):
         self.set(key, value)
 
     def is_active(self):
-        if self.get("expires_at"):
-            if Date.now() < Date(self.get("expires_at")):
-                return True 
-        return False
+        return not self.is_expired()
 
     def is_expired(self):
         if self.get("expires_at"):

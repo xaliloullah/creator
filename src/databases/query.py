@@ -2,24 +2,23 @@ from src.databases.database import Database
 from src.databases.connections.connector import Connector
 
 class Query:
-    def __init__(self):  
-        self.script = ""
-        self.values = ()
-        self.conditions = ""
-        self.attributes = "" 
+    def __init__(self, script="", values=()):  
+        self.script = script
+        self.values = values
+        self.conditions = "" 
         self.placeholder = Connector.database().placeholder 
         
+    def get(self): 
+        return self.generate(reset=False)
+    
     def execute(self):
-        Database().execute(self.script, self.values)
+        Database().execute(*self.generate())    
 
-    def get(self):
-        return Database().fetchall(self.script, self.values)
-    
     def fetchall(self):
-        return Database().fetchall(self.script, self.values)
-    
+        return Database().fetchall(*self.generate()) 
+
     def fetchone(self):
-        return Database().fetchone(self.script, self.values)
+        return Database().fetchone(*self.generate()) 
     
     def transaction(self):
         Database().transaction()
@@ -33,11 +32,16 @@ class Query:
         Database().rollback()
         return self 
 
-    def create(self, table, columns, if_not_exists=True, engine="InnoDB", charset="utf8mb4"):  
+    def create(self, table, columns):  
         self.values = ()
         self.script = f"CREATE TABLE IF NOT EXISTS {table} ({columns})" 
         return self
-        
+    
+    def alter(self, table, definition:str): 
+        self.values = ()
+        self.script = f"ALTER TABLE {table} {definition}"
+        return self 
+
     def drop(self, table, if_exists=True):
         self.values = ()
         self.script = f"DROP TABLE IF EXISTS {table}"
@@ -54,7 +58,7 @@ class Query:
         columns = ', '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
         self.values = tuple(kwargs.values())
         # if add_timestamp:
-        columns += ', updated_at=CURRENT_TIMESTAMP'
+        # columns += ', updated_at=CURRENT_TIMESTAMP'
         self.script = f"UPDATE {table} SET {columns}"
         return self 
     
@@ -121,18 +125,35 @@ class Query:
             self.script = f"{self.script} WHERE {column} IS NOT NULL"
         return self
 
-    def in_clause(self, column, values):
-        placeholders = ', '.join([self.placeholder for _ in values])
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {column} IN ({placeholders})"
-        else:
-            self.script = f"{self.script} WHERE {column} IN ({placeholders})"
-        self.values += tuple(values)
+    def clause(self, clause='IN', **kwargs):
+        for column, values in kwargs.items():
+            if not isinstance(values, (list, tuple)) or not values:
+                continue
+            placeholders = ', '.join([self.placeholder for _ in values])
+            condition = f"{column} {clause} ({placeholders})"
+            if 'WHERE' in self.script:
+                self.script = f"{self.script} AND {condition}"
+            else:
+                self.script = f"{self.script} WHERE {condition}"
+            self.values += tuple(values)
+        return self
+    
+    def or_clause(self, clause='IN', **kwargs):
+        for column, values in kwargs.items():
+            if not isinstance(values, (list, tuple)) or not values:
+                continue
+            placeholders = ', '.join([self.placeholder for _ in values])
+            condition = f"{column} {clause} ({placeholders})"
+            if 'WHERE' in self.script:
+                self.script = f"{self.script} OR {condition}"
+            else:
+                self.script = f"{self.script} WHERE {condition}"
+            self.values += tuple(values)
         return self
     
     def having(self, **kwargs):
-        conditions = ' AND '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
-        self.script = f"{self.script} HAVING {conditions}"
+        self.conditions = ' AND '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
+        self.script = f"{self.script} HAVING {self.conditions}"
         self.values += tuple(kwargs.values())
         return self
     
@@ -187,30 +208,38 @@ class Query:
     
     def last(self):  
         self.order_by(option="DESC").limit(1) 
-        return self
+        return self 
     
-    def generate_script(self):
-        return self.script, self.values
+    def generate(self, reset=True): 
+        result = (self.script, self.values or None)
+        if reset:
+            self.reset()
+        return result
     
-    def debug(self):
-        script_with_values = self.script
-        for value in self.values:
-            script_with_values = script_with_values.replace(self.placeholder, repr(value), 1)
-        return f"SQL Query: {script_with_values}"
-    
-    def generate_script(self):
-        return self.script, self.values
-    
-    def reset_script(self):
+    def reset(self):
         self.script=""
         self.values=() 
+        self.conditions=""
+
+    def debug(self):
+        sql = self.script
+        for value in self.values:
+            sql = sql.replace(self.placeholder, repr(value), 1)
+        return sql
         
     def __str__(self):
-        return f"{self.script}, {self.values}"
+        return f"{self.script}, {self.values}" if self.values else f"{self.script}"
+
     
     def __repr__(self):
         return self.script
     
-    def __call__(self):
-        return Database().fetchall(self.script, self.values)  
+    def __call__(self, script, values):
+        return Query(script, values)  
+    
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.reset()
  
