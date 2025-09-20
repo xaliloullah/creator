@@ -3,22 +3,20 @@ from src.databases.query import Query
 
 class Model:
     table: str= None 
-    primary_key: str= "id"   
+    primary_key: str= "id"
+    attributes: dict | list = []
     casts: dict = {}  
     use_uuid: bool= False 
     connection: str= None 
-    provider = Query()
-    _items_ = None
+    provider = Query() 
     protected: list = ['table', 'primary_key', 'attributes', '_items_', 'casts', 'use_uuid', 'connection', 'provider', 'protected']
 
-    def __init__(self, attributes): 
-        self.attributes: dict | list = attributes 
+    def __init__(self, attributes: dict | list):
+        self.attributes = attributes 
         if isinstance(attributes, list):
             self._items_ = [self.__class__(attribute) for attribute in attributes]
-        elif isinstance(attributes, dict):
-            self._items_ = attributes.items()
         else:
-            self._items_ = []
+            self._items_ = attributes.items() 
         
     @classmethod
     def query(cls): 
@@ -49,9 +47,9 @@ class Model:
     def update(self, **column):
         if self.primary_key not in self.attributes:
             raise ValueError(f"Cannot update model without {self.primary_key}") 
-        if column:
-            self.attributes:dict = column
-        self.provider.update(self.table, **self.attributes).where(**{self.primary_key : self.attributes[self.primary_key]}).execute()
+        if not column:
+            column:dict = self.attributes
+        self.provider.update(self.table, **column).where(**{self.primary_key : self.attributes[self.primary_key]}).execute()
         return self
 
     def delete(self): 
@@ -107,8 +105,8 @@ class Model:
         return cls
      
     @classmethod
-    def find(cls, primary_key):  
-        return cls(cls.query().where(**{primary_key:primary_key}).fetchone())  
+    def find(cls, id):  
+        return cls(cls.query().where(id=id).fetchone())  
 
     @classmethod
     def like(cls, **kwargs):
@@ -165,22 +163,29 @@ class Model:
                 self.attributes[key] = value
         return self 
     
+    def foreign_key(self):
+        return self.__class__.__name__.lower() + f"_{self.primary_key}"
+
     def belongs_to(self, related:'Model', foreign_key, primary_key=primary_key): 
         value = self.attributes.get(foreign_key)
         if not value:
             return None
         return related.where(**{primary_key: value}).first()
     
-    def has_many(self, related:'Model', foreign_key, primary_key=primary_key): 
+    def has_many(self, related:'Model', foreign_key=None, primary_key=primary_key): 
         value = self.attributes.get(primary_key)
         if not value:
             return []
+        if foreign_key is None:
+            foreign_key = self.foreign_key()
         return related.where(**{foreign_key: value}).get()
     
-    def has_one(self, related:'Model', foreign_key, primary_key=primary_key):
+    def has_one(self, related:'Model', foreign_key=None, primary_key=primary_key):
         value = self.attributes.get(primary_key)
         if not value:
             return None
+        if foreign_key is None:
+            foreign_key = self.foreign_key()
         return related.where(**{foreign_key: value}).first()
     
     def belongs_to_many(self, related:'Model', pivot_table, foreign_key, related_key, primary_key=primary_key, owner_key=primary_key):
@@ -218,7 +223,7 @@ class Model:
     def __setitem__(self, key, value): 
         try:
             return self.fill(**{key:value})
-        except (KeyError, ValueError):
+        except (ValueError, KeyError, TypeError):
             raise ValueError
         
     def __setattr__(self, key, value):

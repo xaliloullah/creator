@@ -1,15 +1,31 @@
 from src.builds.templates import Template
-from src.core import String
+from src.core import String, Path
 class Build:
 
     @staticmethod
     def creator():
         return Template("creator").render()
     
-    @staticmethod
-    def plu():
-        pass
-
+    @staticmethod   
+    def importing(packages, *modules, alias: str = None) -> str:
+        try: 
+            package = Path(packages, separator='.')
+            if modules:
+                imported = f"from {package} import {', '.join(module for module in [*modules])}" 
+            else:  
+                parts = package.parts('.')
+                if len(parts) > 1:
+                    package = '.'.join(parts[:-1])
+                    module = parts[-1]
+                    imported = f"from {package} import {module}"
+                else: 
+                    imported = f"import {package}"
+                if alias:
+                    imported+=f" as {alias}"
+            return imported
+        except Exception as e:
+            raise Exception(e)
+    
     @staticmethod
     def model(name: str, table: str, driver:str):
         if driver in ["file", "structure", ]:

@@ -10,4 +10,4 @@ class User(Model):
 
     def abonnements(self):
         from app.models.abonnement import Abonnement
-        return self.has_many(Abonnement, 'user_id')
+        return self.has_many(Abonnement)

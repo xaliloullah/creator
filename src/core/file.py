@@ -295,3 +295,15 @@ class File:
             File(output).save(content, format=format)
         else:
             self.set_extension(format).save(content, format=format)
+
+    def info(self):
+        import os, datetime
+        try:
+            stats = os.stat(self.path)
+            return {
+                "size": stats.st_size,
+                "modified": datetime.datetime.fromtimestamp(stats.st_mtime),
+                "created": datetime.datetime.fromtimestamp(stats.st_ctime), 
+            }
+        except Exception as e:
+            raise Exception(e)

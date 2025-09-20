@@ -1,4 +1,4 @@
-import os
+import os 
 
 class Path:
     def __init__(self, path, **kwargs):
@@ -12,10 +12,8 @@ class Path:
     
     def __fspath__(self): 
         return str(self.path)
-    
 
-    @staticmethod
-    def format(path:str, **kwargs):
+    def format(self, path:str, **kwargs):
         prefix = kwargs.get("prefix")
         suffix = kwargs.get("suffix")
         lower = kwargs.get("lower", False)
@@ -23,6 +21,8 @@ class Path:
         capitalize = kwargs.get("capitalize", False) 
         replace = kwargs.get("replace")
         safe = kwargs.get("safe", False)
+        self.separator = kwargs.get("separator", "/")
+        
 
         if isinstance(path, Path):
             path = path.get()
@@ -50,11 +50,13 @@ class Path:
         elif capitalize:
             path = path.capitalize()
         path = str(path).rstrip("/\\")
-        path = os.path.normpath(path).replace("\\", "/") 
+        path = os.path.normpath(path).replace("\\", "/")
+        if self.separator != "/":
+            path = path.replace("/", self.separator)
         return path
     
     def set(self, path:str):
-        self.path = path 
+        self.path = path
 
     def get(self, index=None) -> str:  
         return str(self.path)
@@ -136,14 +138,14 @@ class Path:
     def remove(self):
         return os.remove(self.path)
     
-    def parts(self):
-        return self.path.split("/")
+    def parts(self, separator="/"):
+        return self.path.split(self.separator or separator)
     
     @staticmethod
     def cd(path: str):
         return os.chdir(os.path.dirname(path))
     
-    # Domain-specific shortcuts (factory methods)
+    # shortcuts 
     @staticmethod
     def app(path:str=None, **kwargs):
         return Path("app").join(path, **kwargs)
@@ -173,6 +175,7 @@ class Path:
     @staticmethod
     def resources(path:str=None, **kwargs):
         return Path("resources").join(path, **kwargs)
+    
     @staticmethod
     def interfaces(path:str=None, **kwargs):
         return Path("interfaces").join(path, **kwargs)
@@ -209,7 +212,7 @@ class Path:
     def python(path:str=None, **kwargs):
         return Path("python").join(path, **kwargs)
 
-    # Files
+    # Files shortcuts
     @staticmethod
     def env():
         return Path(".env")

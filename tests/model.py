@@ -2,12 +2,12 @@ from app.models.auth.user import User
 # from src.databases.model import Model
 # from main import Creator
 
-users = User.last() 
-print(users.delete())
+users = User.all()
+# print(users.delete())
 # print(users.query().generate())
-# exit()
-# for user in users.get():
-#     print(user.abonnements())
+# exit() 
+for user in users:
+    user.abonnements()
 # Creator.terminal.table(users, keys=['prenom', 'nom', 'statut'])
 
 # from src.databases.query import Query

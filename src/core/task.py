@@ -56,6 +56,47 @@ class Task:
         except Exception as e:
             raise Exception(e) 
             
+    @staticmethod
+    def update(package, **kwargs):
+        venv = kwargs.get("venv", False)
+        try:
+            Task.execute("pip", "install", "--upgrade", package, **kwargs)
+
+            result = Task.execute("pip", "show", package, capture_output=True, text=True, venv=venv)
+            version_line = next(line for line in result.stdout.splitlines() if line.startswith("Version:"))
+            version = version_line.split(":")[1].strip()
+
+            requirements = File(Path.settings()).load(format="json")
+            requirements["required"][package] = version
+            File(Path.settings()).save(requirements, format="json", indent=2)
+
+        except Exception as e:
+            raise Exception(e)
+
+    @staticmethod
+    def list_installed(venv=False):
+        try:
+            result = Task.execute("pip", "list", capture_output=True, text=True, venv=venv)
+            return result.stdout
+        except Exception as e:
+            raise Exception(e)
+        
+    @staticmethod
+    def freeze(output_file="requirements.txt", venv=False):
+        try:
+            result = Task.execute("pip", "freeze", capture_output=True, text=True, venv=venv)
+            File(output_file).save(result.stdout, format="text")
+        except Exception as e:
+            raise Exception(e)
+        
+    @staticmethod
+    def check_updates(venv=False):
+        try:
+            result = Task.execute("pip", "list", "--outdated", capture_output=True, text=True, venv=venv)
+            return result.stdout
+        except Exception as e:
+            raise Exception(e)
+
     @staticmethod        
     def execute(*command, **kwargs):
         import os 
@@ -104,20 +145,44 @@ class Task:
         except Exception as e:
             raise Exception(e)
          
-    @staticmethod   
-    def build_import(source:str, *modules) -> str:
-        from src.core import String
-        try: 
-            source = String(source).replace(['/','\\'], '.') 
-            if modules:
-                return f"from {source} import {', '.join(File(m).path.strip() for m in modules)}"
-            if '.' in source:
-                path, module = source.rsplit('.', 1)
-                return f"from {path} import {module}"
-            return f"import {source}"
-        except Exception as e:
-            raise Exception(e)
-
     @staticmethod
     def cleans(directory = '.', file= '__pycache__'): 
         File(directory).clean(file)
+
+    @staticmethod
+    def schedule(func, delay=5, *args, **kwargs):
+        import time, threading
+        try:
+            def wrapper():
+                time.sleep(delay)
+                func(*args, **kwargs)
+            threading.Thread(target=wrapper).start()
+        except Exception as e:
+            raise Exception(e)
+        
+    @staticmethod
+    def system_info():
+        import platform, sys
+        try:
+            return {
+                "os": platform.system(),
+                "os_version": platform.version(),
+                "machine": platform.machine(),
+                "python_version": sys.version,
+                "python_executable": sys.executable,
+            }
+        except Exception as e:
+            raise Exception(e)
+        
+    @staticmethod
+    def timer(func, *args, **kwargs):
+        import time
+        try:
+            start = time.time()
+            result = func(*args, **kwargs)
+            duration = time.time() - start
+            return {"result": result, "time": duration}
+        except Exception as e:
+            raise Exception(e)
+
+
