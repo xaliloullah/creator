@@ -1,6 +1,7 @@
 from .terminal import Terminal
 from .icons import Icon
 from .colors import Color 
-from .formats import Format
+from .fonts import Font
+from .animation import Animation
 
-__all__ = ['Terminal', 'Icon', 'Color', 'Format']
+__all__ = ['Terminal', 'Icon', 'Color', 'Font', 'Animation']

@@ -3,10 +3,11 @@ from src.core import Storage, Collection
 
 class Structure: 
     def __init__(self, path, **kwargs):   
-        format = kwargs.get("format", 'json')
-        default = kwargs.get("default", {})
-        absolute = kwargs.get("absolute", False)  
-        self.provider = Storage(path, format=format, absolute=absolute, default=default)
+        self.path = path
+        self.format = kwargs.get("format", 'json')
+        self.default = kwargs.get("default", {})
+        self.absolute = kwargs.get("absolute", False)  
+        self.provider = Storage(self.path, format=self.format, absolute=self.absolute, default=self.default)
         self.data = self.provider.load()
 
     def all(self):
@@ -47,4 +48,4 @@ class Structure:
         return Collection(self.data) 
     
     def __str__(self):
-        return self.data
+        return str(self.data)

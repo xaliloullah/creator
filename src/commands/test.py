@@ -23,9 +23,7 @@ class TestCommand(Command):
                 test = Test.get(args.name) 
                 Test(test).run()
             else:
-                tests = Test.get()
-                for test in tests:
-                    Test(test).run()  
+                Test.execute() 
 
         elif args.list: 
             tests = Test.get()

@@ -1,7 +1,6 @@
-from src.databases.connections.connector import Connector
+from src.databases.connections import Connector
 from src.core import String
-syntax = Connector.database().syntax
-engine = Connector.driver
+syntax = Connector.database().syntax 
 
 class Column:
     def __init__(self, table=None):
@@ -14,7 +13,7 @@ class Column:
         
 
     # --- Column Types ---
-    def id(self, name:str="id", size:int=20):
+    def id(self, name:str="id"):
         self.add_definition(f"{name} {syntax['ID']}")
         self.unsigned()
         self.primary()
@@ -233,8 +232,8 @@ class Column:
     # alters
     def add(self): 
         self.add_definition(syntax["ADD_COLUMN"], mode="prepend")
-        self.add_constraint("ADD", mode="prepend")
-        self.add_index("ADD", mode="prepend")
+        self.add_constraint(syntax["ADD"], mode="prepend")
+        self.add_index(syntax["ADD"], mode="prepend")
         return self
     
     def modify(self):
@@ -286,20 +285,21 @@ class Column:
         return self._add(self.constraints, sql, mode)
 
     def add_index(self, sql, mode="append"):
-        if not engine == "sqlite": 
-            return self._add(self.indexes, sql, mode)
+        return self._add(self.indexes, sql, mode)
 
     def generate(self, **kwargs):
         separator:str=kwargs.get('separator', ",")
         multiline:bool=kwargs.get('multiline', False)
         command:bool=kwargs.get('command', False)
+        reverse:bool=kwargs.get('reverse', False)
 
-        if multiline:
-            separator+="\n" 
-        else:
-            separator+=" "
+        separator+=("\n" if multiline else " ")
 
-        sql = self.definitions + self.constraints + self.indexes
+        sql = self.definitions + self.constraints
+        if reverse: 
+            sql = self.constraints + self.definitions
+
+        sql.extend(self.indexes)
 
         if command: 
             sql = [script if str(script).endswith(";") else script + ";" for script in sql]

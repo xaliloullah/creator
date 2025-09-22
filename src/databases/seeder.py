@@ -1,12 +1,13 @@
 from src.builds import Build
 from src.console import Terminal 
-from src.core import File, Path,Task
+from src.core import File, Path, Task
 
 class Seeder:
+    path = Path.seeds()
+    file = File(path)  
+
     def __init__(self, name=None):
         self.name = name
-        self.path = Path.seeds()
-        self.file = File(self.path)  
 
     def create(self):
         try: 
@@ -17,31 +18,35 @@ class Seeder:
             Terminal.error(f"{e}") 
             exit()
 
-    def get(self):
+    @classmethod
+    def get(cls):
         try:
-            seeds = self.file.list(endswith=".py")       
+            seeds = cls.file.list(endswith=".py")
+            seeds = [seed.replace(".py", "") for seed in seeds]          
             return sorted(seeds) 
         except Exception as e: 
             Terminal.error(f"{e}") 
             exit()
 
-    def run(self, name, action='up'): 
+    @classmethod
+    def run(cls, name, action='up'): 
         try:
-            path = self.file.path.seeds(name)
+            Terminal.info(f"Applying seed '{name}'.")
+            path = cls.file.path.seeds(name)
             Task.run(path, action) 
         except Exception as e:
             Terminal.error(f"{e}") 
             exit()
 
-    def seed(self, run='up'):  
+    @classmethod
+    def seed(cls, run='up'):  
         alert = {}
         try:
             if run == 'up': 
-                seeds = self.get() 
+                seeds = cls.get() 
                 if seeds:
-                    for seed in seeds: 
-                        Terminal.info(f"Applying seed '{seed}'.")  
-                        self.run(seed, "up")  
+                    for seed in seeds:   
+                        cls.run(seed, "up")  
                     alert = {'success': 'seeds applied successfully.'}
                 else:
                     alert = {'warning': 'Nothing to seed...'} 

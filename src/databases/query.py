@@ -7,7 +7,8 @@ class Query:
         self.values = values
         self.conditions = "" 
         self.placeholder = Connector.database().placeholder 
-        
+
+    # --- Execution Methods ---    
     def get(self): 
         return self.generate(reset=False)
     
@@ -32,9 +33,10 @@ class Query:
         Database().rollback()
         return self 
 
-    def create(self, table, columns):  
+    # --- DDL Methods ---
+    def create(self, table, columns, if_not_exists=True):  
         self.values = ()
-        self.script = f"CREATE TABLE IF NOT EXISTS {table} ({columns})" 
+        self.script = f"CREATE TABLE {"IF NOT EXISTS " if if_not_exists else ""}{table} ({columns})" 
         return self
     
     def alter(self, table, definition:str): 
@@ -43,10 +45,11 @@ class Query:
         return self 
 
     def drop(self, table, if_exists=True):
-        self.values = ()
-        self.script = f"DROP TABLE IF EXISTS {table}"
+        self.values = () 
+        self.script = f"DROP TABLE {"IF EXISTS " if if_exists else ""}{table}"
         return self
     
+    # --- DML Methods ---
     def insert(self, table, **kwargs):
         columns = ', '.join(kwargs.keys())
         self.values = tuple(kwargs.values())
@@ -75,55 +78,74 @@ class Query:
         self.script = f"SELECT {columns} FROM {table}"  
         return self
     
+    # --- Condition Methods ---
     def where(self, **kwargs):
         self.conditions = ' AND '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {self.conditions}"
-        else:
-            self.script = f"{self.script} WHERE {self.conditions}"
+        self._add_condition(self.conditions, "AND") 
         return self
     
     def where_not(self, **kwargs):
         self.conditions = ' AND '.join([f'{key}!={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {self.conditions}"
-        else:
-            self.script = f"{self.script} WHERE {self.conditions}" 
-        return self
-    
-    def like(self, **kwargs):
-        self.conditions = ' AND '.join([f'{key} LIKE {self.placeholder}' for key in kwargs.keys()])
-        self.values += tuple(f"%{value}%" for value in kwargs.values())
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {self.conditions}"
-        else:
-            self.script = f"{self.script} WHERE {self.conditions}" 
+        self._add_condition(self.conditions, "AND")
         return self
     
     def or_where(self, **kwargs):
         self.conditions = ' OR '.join([f'{key}={self.placeholder}' for key in kwargs.keys()])
         self.values += tuple(kwargs.values())
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} OR {self.conditions}"
-        else:
-            self.script = f"{self.script} WHERE {self.conditions}" 
+        self._add_condition(self.conditions, "OR")
         return self
     
     def where_null(self, column):
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {column} IS NULL"
-        else:
-            self.script = f"{self.script} WHERE {column} IS NULL"
+        self._add_condition(f"{column} IS NULL", "AND") 
         return self
 
     def where_not_null(self, column):
-        if 'WHERE' in self.script:
-            self.script = f"{self.script} AND {column} IS NOT NULL"
-        else:
-            self.script = f"{self.script} WHERE {column} IS NOT NULL"
+        self._add_condition(f"{column} IS NOT NULL", "AND")  
         return self
+    
+    def like(self, **kwargs):
+        self.conditions = ' AND '.join([f'{key} LIKE {self.placeholder}' for key in kwargs.keys()])
+        self.values += tuple(f"%{value}%" for value in kwargs.values())
+        self._add_condition(self.conditions, "AND")
+        return self
+    
+    def between(self, column, start, end):
+        self._add_condition(f"{column} BETWEEN {self.placeholder} AND {self.placeholder}", "AND")
+        self.values += (start, end)
+        return self
+
+    def not_between(self, column, start, end):
+        self._add_condition(f"{column} NOT BETWEEN {self.placeholder} AND {self.placeholder}", "AND")
+        self.values += (start, end)
+        return self
+    
+    def exists(self):
+        return self.subquery(f"EXISTS", alias="exists_alias", with_from=False)
+    
+    def not_exists(self):
+        return self.subquery(f"NOT EXISTS", alias="exists_alias", with_from=False)
+
+    def raw(self, script, values=(), prefix=False): 
+        if prefix:
+            self.script = f"{script} {self.script}"
+        else:
+            self.script += f" {script}"
+        if values:
+            self.values += tuple(values)
+        
+        return self
+
+    def union(self, subquery):
+        self.script = f"{self.script} UNION {subquery.script}"
+        self.values += subquery.values
+        return self
+
+    # def union_all(self): 
+    #     self.script = f"{self.script} UNION ALL {subquery.script}"
+    #     self.values += subquery.values
+    #     return self
 
     def clause(self, clause='IN', **kwargs):
         for column, values in kwargs.items():
@@ -131,10 +153,7 @@ class Query:
                 continue
             placeholders = ', '.join([self.placeholder for _ in values])
             condition = f"{column} {clause} ({placeholders})"
-            if 'WHERE' in self.script:
-                self.script = f"{self.script} AND {condition}"
-            else:
-                self.script = f"{self.script} WHERE {condition}"
+            self._add_condition(condition, "AND")
             self.values += tuple(values)
         return self
     
@@ -144,10 +163,7 @@ class Query:
                 continue
             placeholders = ', '.join([self.placeholder for _ in values])
             condition = f"{column} {clause} ({placeholders})"
-            if 'WHERE' in self.script:
-                self.script = f"{self.script} OR {condition}"
-            else:
-                self.script = f"{self.script} WHERE {condition}"
+            self._add_condition(condition, "OR")
             self.values += tuple(values)
         return self
     
@@ -160,16 +176,7 @@ class Query:
     def group_by(self, *columns):
         cols = ', '.join(columns)
         self.script = f"{self.script} GROUP BY {cols}"
-        return self
-
-    def raw(self, script, *values):
-        self.script = script
-        self.values = values
-        return self
-    
-    def subquery(self, subquery_script, alias):
-        self.script = f"({subquery_script}) AS {alias}"
-        return self
+        return self 
     
     def paginate(self, page, per_page):
         offset = (page - 1) * per_page
@@ -188,19 +195,32 @@ class Query:
         self.script = f"{self.script} AS {alias}"  
         return self
     
-    def join(self, table, option=""):
-        self.script = f"{self.script} {option} JOIN {table}"  
+    def join(self, table, type="INNER"):
+        self.script = f"{self.script} {type.upper()} JOIN {table}"  
         return self
     
+    def left_join(self, table):
+        return self.join(table, "LEFT")
+
+    def right_join(self, table):
+        return self.join(table, "RIGHT")
+
+    def full_join(self, table):
+        return self.join(table, "FULL")
+    
     def on(self, **kwargs): 
-        self.conditions = [f"{key} = {value}" for key, value in kwargs.items()] 
-        conditions_str = ' AND '.join(self.conditions) 
-        self.script = f"{self.script} ON {conditions_str}" 
+        conditions = [f"{k}={self.placeholder}" for k in kwargs.keys()]
+        self.script = f"{self.script} ON {' AND '.join(conditions)}"
+        self.values += tuple(kwargs.values())
+        return self
+    
+    def subquery(self, query, alias="subquery", with_from=True):   
+        self.script = f"SELECT {query} {"FROM " if with_from else ""}({self.script})"
+        self.alias(alias) 
         return self
     
     def count(self, column='*'):
-        self.script = f"SELECT COUNT({column}) FROM ({self.script}) AS alias" 
-        return self
+        return self.subquery(f"COUNT({column})", alias="count_alias")
     
     def first(self):  
         self.order_by().limit(1) 
@@ -210,10 +230,11 @@ class Query:
         self.order_by(option="DESC").limit(1) 
         return self 
     
+    # --- Generate / Reset ---
     def generate(self, reset=True): 
         result = (self.script, self.values or None)
         if reset:
-            self.reset()
+            self.reset() 
         return result
     
     def reset(self):
@@ -221,15 +242,22 @@ class Query:
         self.values=() 
         self.conditions=""
 
-    def debug(self):
+    def resolve(self):
         sql = self.script
         for value in self.values:
             sql = sql.replace(self.placeholder, repr(value), 1)
         return sql
         
+    # --- Utility Methods ---
+    def _add_condition(self, condition, operator="AND"):
+        if 'WHERE' in self.script:
+            self.script = f"{self.script} {operator} {condition}"
+        else:
+            self.script = f"{self.script} WHERE {condition}"
+
+    # --- Dunder Methods ---
     def __str__(self):
         return f"{self.script}, {self.values}" if self.values else f"{self.script}"
-
     
     def __repr__(self):
         return self.script

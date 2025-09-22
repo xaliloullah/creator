@@ -16,7 +16,7 @@ class Session(Structure):
 
     def is_expired(self):
         if self.get("expires_at"):
-            if Date.now() > Date(self.get("expires_at")):
+            if Date.now() > Date.parse(self.get("expires_at")):
                 return True
         return False
 
@@ -71,9 +71,9 @@ class Session(Structure):
  
     def create(self, user_id: str=None, remember_me: bool=False): 
         return super().create(
-            user_id= user_id,
-            expires_at= f"{Date.add_minutes(Date.now(), int(session.lifetime)).timestamp()}",
-            last_activity= f"{Date.now().timestamp()}",
+            user_id= user_id, 
+            expires_at = str(Date.now().add_minutes(int(session.lifetime)).timestamp()),
+            last_activity = str(Date.now().timestamp()),
             remember_me= remember_me
         ) 
     

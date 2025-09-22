@@ -1,5 +1,7 @@
+from src.databases.schema import Table
+
 # Up function for {name} seeder
 def up(): 
-    # 
-    pass
- 
+    Table('{name}').insert(
+        #  
+    ) 

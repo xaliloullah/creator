@@ -1,4 +1,4 @@
-class Format:
+class Font:
     BOLD = '\033[1m'         
     UNDERLINE = '\033[4m'     
     ITALIC = '\033[3m'        

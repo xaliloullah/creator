@@ -31,7 +31,7 @@ class Version:
         return str(self)
      
     def set(self, version:str): 
-        try:
+        try: 
             major, minor, patch = version.split(".")
             if "-" in patch:
                 patch, suffix = patch.split("-")

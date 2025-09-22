@@ -121,9 +121,9 @@ class MakeCommand(Command):
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 
         elif args.test:
-            name = Creator.string(args.test).pascalcase() 
+            name = Creator.string(args.test).snakecase() 
             try: 
-                filename = Creator.path.tests(name.snakecase())
+                filename = Creator.path.tests(name)
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"test '{args.test}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.test(Creator.file(name).name)) 

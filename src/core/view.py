@@ -27,7 +27,7 @@ class View:
         # if app.mode == 'web':
         #     from flask import render_template
         #     return render_template(View.path(view), **View.data)
-        return Task.run(View.path(view), functions=["view"])
+        return Task.run(View.path(view), "view")
     
     @staticmethod
     def path(path):

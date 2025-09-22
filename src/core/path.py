@@ -13,7 +13,8 @@ class Path:
     def __fspath__(self): 
         return str(self.path)
 
-    def format(self, path:str, **kwargs):
+    @staticmethod
+    def format(path:str, **kwargs):
         prefix = kwargs.get("prefix")
         suffix = kwargs.get("suffix")
         lower = kwargs.get("lower", False)
@@ -21,28 +22,24 @@ class Path:
         capitalize = kwargs.get("capitalize", False) 
         replace = kwargs.get("replace")
         safe = kwargs.get("safe", False)
-        self.separator = kwargs.get("separator", "/")
+        separator = kwargs.get("separator", "/")
+        ensure_endwith = kwargs.get("ensure_endwith")
         
 
         if isinstance(path, Path):
             path = path.get()
-
         if prefix:
             if isinstance(prefix, Path):
                 prefix = prefix.get()
             path = os.path.join(str(prefix), path)
-
         if suffix:
             path += str(suffix)
-
         if replace and isinstance(replace, (tuple, list)):
             old, new = replace
             path = path.replace(str(old), str(new))
-
         if safe:
             import re
             path = re.sub(r"[^a-zA-Z0-9/_\-]", "_", path)
-
         if lower:
             path = path.lower()
         elif upper:
@@ -51,8 +48,11 @@ class Path:
             path = path.capitalize()
         path = str(path).rstrip("/\\")
         path = os.path.normpath(path).replace("\\", "/")
-        if self.separator != "/":
-            path = path.replace("/", self.separator)
+        if separator != "/":
+            path = path.replace("/", separator)
+        if ensure_endwith:
+            if path and not path.endswith(ensure_endwith):
+                path += ensure_endwith
         return path
     
     def set(self, path:str):
@@ -156,9 +156,10 @@ class Path:
 
     @staticmethod
     def databases(path:str=None, sqlite=False, **kwargs):
-        if sqlite and not path.endswith(".db"):
-            path += ".db"
-        return Path("databases").join(path, **kwargs)  
+        if sqlite: 
+            kwargs["ensure_endwith"] = ".db"
+        from config import database
+        return Path(database.path).join(path, **kwargs)  
 
     @staticmethod
     def docs(path:str=None, **kwargs):
@@ -236,44 +237,38 @@ class Path:
     # Nested
     @staticmethod
     def controllers(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
+        kwargs["ensure_endwith"] = ".py"
         return Path.app("controllers").join(path, **kwargs)
 
     @staticmethod
     def models(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py" 
+        kwargs["ensure_endwith"] = ".py"
         return Path.app("models").join(path, **kwargs)
 
     @staticmethod
     def middlewares(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
+        kwargs["ensure_endwith"] = ".py"
         return Path.app("middlewares").join(path, **kwargs)
 
     @staticmethod
     def commands(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
+        kwargs["ensure_endwith"] = ".py"
         return Path.app("commands").join(path, **kwargs)
 
     @staticmethod
     def migrations(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
-        return Path.databases("migrations").join(path, **kwargs)
+        kwargs["ensure_endwith"] = ".py"
+        from config import database
+        return Path.databases(database.migrations['name']).join(path, **kwargs)
 
     @staticmethod
     def seeds(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
+        kwargs["ensure_endwith"] = ".py"
         return Path.databases("seeds").join(path, **kwargs) 
     
     @staticmethod
     def tests(path:str=None, **kwargs):
-        if path and not path.endswith(".py"):
-            path += ".py"
+        kwargs["ensure_endwith"] = ".py"
         return Path("tests").join(path, **kwargs) 
 
     @staticmethod
@@ -286,15 +281,12 @@ class Path:
 
     @staticmethod
     def views(path:str=None, **kwargs):
-        from config import app
-        if path:
-            path = path.replace(".", "/")
-            if app.mode == 'web':
-                if not path.endswith(".html"):
-                    path += ".html" 
-            else:
-                if not path.endswith(".cre"):
-                    path += ".cre" 
+        kwargs["ensure_endwith"] = ".cre"
+        kwargs["replace"] = (".", "/")
+        from config import app 
+        if app.mode == 'web':
+            if not path.endswith(".html"):
+                path += ".html" 
         return Path.resources(f"views/{app.mode}").join(path, **kwargs)
 
     @staticmethod

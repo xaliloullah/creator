@@ -19,7 +19,7 @@ class Creator:
         cls.key = app.key 
         cls.database = database.driver
         cls.lang = Lang(app.lang)
-        cls.settings = Settings()
+        cls.settings = Settings() 
         cls.version = Version(cls.settings.get("version"))
         cls.python = cls.settings.get("python")
         cls.packages = cls.settings.get("packages", {})
@@ -55,15 +55,13 @@ class Creator:
         cls.setup()
         try:
             cls.retry = kwargs.get("retry", True)
-            cls.main = kwargs.get("main", "main")   
-            cls.debug.printer = cls.terminal.debug 
+            cls.main = kwargs.get("main", "main")    
             cls.python = cls.settings.get("python", None)
             cls.packages = cls.settings.get("packages", {})
             cls.request = cls.request(session=cls.session(), validator=cls.validator())
             cls.injector.register('request', cls.request)
             cls.injector.register('session', cls.request.session)
-            cls.injector.register('validator', cls.request.validator)
-            cls.version.set(cls.settings.get("version"))   
+            cls.injector.register('validator', cls.request.validator) 
             if cls.key: 
                 return cls
             else:
@@ -89,7 +87,7 @@ class Creator:
         
     @classmethod
     def create(cls):
-        cls.terminal.progress_bar(10, 100, 50)
+        cls.terminal.progress()
         cls.terminal.highlight(cls.build.creator())   
         use_venv = cls.terminal.input("Do you want to create a virtual environment ?", type="checkbox", value="yes")
         if use_venv:
@@ -103,10 +101,10 @@ class Creator:
         if use_vscode:
             cls.settings.vscode()
 
-        cls.terminal.progress(5, 100, spinner="dots")
+        cls.terminal.loader(spinner="dots")
         cls.terminal.info(cls.lang.get("info.install", resource="packages"))
         cls.settings.install_packages()
-        cls.terminal.progress(2, 100, spinner="blocks")
+        cls.terminal.loader(step=2, spinner="blocks")
         lang = cls.terminal.input(cls.lang.get("info.options", resource=f"lang"), type="select", options=cls.lang.languages, value="en", inline=False)
         cls.generate_lang(lang) 
         try: 
@@ -136,7 +134,7 @@ class Creator:
 
     @classmethod
     def clean(cls): 
-        cls.terminal.progress_bar(10, 100) 
+        cls.terminal.progress(10, 100) 
         cls.terminal.highlight(cls.build.creator())  
         cls.file(".").clean() 
         

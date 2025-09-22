@@ -19,14 +19,7 @@ class MigrateCommand(Command):
     @staticmethod
     def handle(args):
         from src.databases.migration import Migration
-        if not any([
-            args.run,
-            args.rollback,
-            args.check,
-            args.list,
-            args.fresh,
-            args.drop
-        ]):
+        if not any([args.run, args.rollback, args.check, args.list, args.fresh, args.drop]):
             args.run = True
         """Execute migration actions.""" 
         
@@ -40,8 +33,11 @@ class MigrateCommand(Command):
 
         elif args.check:
             Creator.terminal.info(Creator.lang.get("info.check", resource="migration")) 
-            migrations = Migration.check()
-            Creator.terminal.list(migrations, icon = Creator.terminal.icon.light_check(), margin=3, display=True) 
+            applied_migrations, no_applied_migrations = Migration.check()
+            if applied_migrations:
+                Creator.terminal.list(applied_migrations, icon = Creator.terminal.icon.light_check(), margin=3, display=True, color=Creator.terminal.color.light_green) 
+            if no_applied_migrations:
+                Creator.terminal.list(no_applied_migrations, icon = Creator.terminal.icon.light_error(), margin=3, display=True, color=Creator.terminal.color.light_red) 
 
         elif args.list:
             Creator.terminal.info(Creator.lang.get("info.list", resource="migration"))
@@ -50,7 +46,8 @@ class MigrateCommand(Command):
 
         elif args.fresh:
             Creator.terminal.info(Creator.lang.get("info.fresh", resource="migration")) 
-            Migration.drop_all()
+            # Migration.drop()
+            Migration.migrate('down')
             Migration.migrate()
             
         elif args.drop:

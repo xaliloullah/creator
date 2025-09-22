@@ -26,9 +26,9 @@ class Command(argparse.ArgumentParser):
     
     @classmethod
     def listen(cls):  
-        parser = cls(prog=f"{Creator.terminal.style(f"{Creator.name} v{Creator.version} :", Creator.terminal.color.cyan, Creator.terminal.format.bold)}", description=f"{Creator.terminal.style(f"CLI tool for managing creator.", Creator.terminal.color.cyan, Creator.terminal.format.bold)}")
+        parser = cls(prog=f"{Creator.terminal.style(f"{Creator.name} v{Creator.version} :", Creator.terminal.color.cyan, Creator.terminal.font.bold)}", description=f"{Creator.terminal.style(f"CLI tool for managing creator.", Creator.terminal.color.cyan, Creator.terminal.font.bold)}")
         subparsers = parser.add_subparsers(dest='command', help="Available Commands")
-        parser.add_argument("-v", "--version", action='version', version=f'{Creator.terminal.style(Creator.version, Creator.terminal.color.cyan, Creator.terminal.format.bold)}', help="Show the version of the creator tool.") 
+        parser.add_argument("-v", "--version", action='version', version=f'{Creator.terminal.style(Creator.version, Creator.terminal.color.cyan, Creator.terminal.font.bold)}', help="Show the version of the creator tool.") 
         parser.add_argument("--author", action="store_true", help="Show the author of the creator tool.") 
         parser.add_argument("--description", action="store_true", help="Show the description of the creator tool.") 
         parser.add_argument("--python", action="store_true", help="Show the programming language used in the creator tool.") 
@@ -67,22 +67,22 @@ class Command(argparse.ArgumentParser):
             Creator.clean() 
 
         elif args.reinstall: 
-            Creator.terminal.progress_bar(10, 100) 
+            Creator.terminal.progress() 
             Creator.terminal.highlight(Creator.build.creator())  
             Creator.settings.install_packages()
 
         elif args.uninstall: 
-            Creator.terminal.progress_bar(10, 100) 
+            Creator.terminal.progress() 
             Creator.terminal.highlight(Creator.build.creator())  
             Creator.settings.uninstall_packages()
 
         elif args.update: 
-            Creator.terminal.progress_bar(10, 100) 
+            Creator.terminal.progress() 
             Creator.terminal.highlight(Creator.build.creator())  
             Creator.settings.update()
 
         elif args.refresh: 
-            Creator.terminal.progress_bar(10, 100) 
+            Creator.terminal.progress() 
             Creator.terminal.highlight(Creator.build.creator())  
             Creator.settings.make_architecture(all=True)
 

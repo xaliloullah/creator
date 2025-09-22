@@ -21,7 +21,7 @@ try:
 except ImportError:
     PyPDF2 = None
 
-from src.core import Path
+from src.core import Path, List
 
 class File:
     def __init__(self, path=".", **kwargs):
@@ -30,10 +30,7 @@ class File:
         self.format = kwargs.get('format', "txt")
         self.mode = kwargs.get("mode", "r")
         self.content = kwargs.get("content", None) 
-        self.encoding = kwargs.get("encoding", 'utf-8') 
-
-        # if not self.format:
-        #     self.format = self.file.get_extension(with_dot=False) 
+        self.encoding = kwargs.get("encoding", 'utf-8')
 
     @property
     def name(self):
@@ -213,13 +210,13 @@ class File:
             return os.path.getsize(self.path)
         return 0
     
-    def walk_path(self, **kwargs):
+    def walk_path(self, *args, **kwargs):
         endswith = kwargs.get("endswith", None)
         ignore = kwargs.get("ignore", [])
         only = kwargs.get("only", [])
         topdown = kwargs.get("topdown", True)
 
-        for root, dirs, files in os.walk(self.path, topdown=topdown):
+        for root, dirs, files in os.walk(self.path, topdown=topdown): 
             if only:
                 dirs[:] = [d for d in dirs if d in only]
                 files = [f for f in files if f in only]
@@ -237,10 +234,11 @@ class File:
                     path = Path(root).join(name).get()
                     File(path).delete()
 
-    def list(self, **kwargs):
+    def list(self, *args,**kwargs):
         endswith = kwargs.get("endswith", None)
         ignore = kwargs.get("ignore", [])
         files = os.listdir(self.path)
+        files = List(files).filter(*args)
         if endswith:
             files = [f for f in files if f.endswith(endswith)]
         return [f for f in files if f not in ignore]

@@ -1,8 +1,6 @@
-from src.core import Test
+# Auto-generated test for {name}
 
-class {name}(Test):
-    
-    # function for {name}
-    
+def test_{name}():
+    # Test '{name}' functionality.
+    # TODO: Add assertions here
     pass
-    

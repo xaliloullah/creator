@@ -2,64 +2,89 @@ try:
     import psycopg2
     from psycopg2.extras import RealDictCursor
 except: 
-    ImportError("PostgreSQL connector is not installed. Please install it using 'py creator install psycopg2'")
+    raise ImportError("PostgreSQL connector is not installed. Please install it using 'py creator install psycopg2'")
 from .rdbms import RDBMS
 
 class PostgreSQL(RDBMS):
     """PostgreSQL-specific implementation of the database connector."""
     placeholder = '%s'
     syntax = {
-        'ID': 'SERIAL',
+        # Customs
+        'ID': 'BIGSERIAL',       # BIGINT with auto-increment
         'UUID': 'UUID',
-        'VARCHAR': 'VARCHAR',
+
+        # Types
         'BIGINT': 'BIGINT',
         'INT': 'INTEGER',
         'SMALLINT': 'SMALLINT',
-        'MEDIUMINT': 'INTEGER',
-        'CHAR': 'CHAR',
+        'MEDIUMINT': 'INTEGER',  # PostgreSQL has no MEDIUMINT, use INTEGER
+        'TINYINT': 'SMALLINT',   # No TINYINT, use SMALLINT
         'FLOAT': 'REAL',
-        'DATE': 'DATE',
-        'DECIMAL': 'DECIMAL',
         'DOUBLE': 'DOUBLE PRECISION',
-        'TINYTEXT': 'TEXT',
-        'TINYINT': 'SMALLINT',
-        'VARBINARY': 'BYTEA',
-        'BINARY': 'BYTEA',
-        'BLOB': 'BYTEA',
-        'ENUM': 'TEXT',
-        'TEXT': 'TEXT',
-        'JSON': 'JSONB',
+        'DECIMAL': 'DECIMAL',
+        'NUMERIC': 'NUMERIC',
         'BIT': 'BIT',
         'BOOLEAN': 'BOOLEAN',
-        'DATETIME': 'TIMESTAMP',
-        'NUMERIC': 'NUMERIC', 
+        'UNSIGNED': 'NOT SUPPORTED',  # PostgreSQL does not have UNSIGNED
+        'CHAR': 'CHAR',
+        'VARCHAR': 'VARCHAR',
+        'TINYTEXT': 'TEXT',          # No TINYTEXT, use TEXT
+        'TEXT': 'TEXT',
+        'MEDIUMTEXT': 'TEXT',
+        'LONGTEXT': 'TEXT',
+        'BINARY': 'BYTEA',           # Binary data stored as BYTEA
+        'VARBINARY': 'BYTEA',
+        'BLOB': 'BYTEA',
+        'TINYBLOB': 'BYTEA',
+        'MEDIUMBLOB': 'BYTEA',
+        'LONGBLOB': 'BYTEA',
+        'ENUM': 'CREATE TYPE ... AS ENUM',  # Needs explicit type creation
+        'SET': 'NOT SUPPORTED',       # PostgreSQL has no SET type
+        'JSON': 'JSON',
+        'DATE': 'DATE',
+        'DATETIME': 'TIMESTAMP',     # PostgreSQL uses TIMESTAMP
         'TIME': 'TIME',
-        'AUTO_INCREMENT': '',
+        'TIMESTAMP': 'TIMESTAMP',
+        'YEAR': 'SMALLINT',          # No YEAR type, use SMALLINT or INT
+
+        # Constraints / Keys
         'PRIMARY_KEY': 'PRIMARY KEY',
         'FOREIGN_KEY': 'FOREIGN KEY',
         'REFERENCES': 'REFERENCES',
-        'DEFAULT': 'DEFAULT',
         'NOT_NULL': 'NOT NULL',
         'NULL': 'NULL',
         'UNIQUE': 'UNIQUE',
-        'SET_NULL': 'SET NULL',
         'CHECK': 'CHECK',
-        'COMMENT': '',  
-        'TIMESTAMP': 'TIMESTAMP',
-        'UNSIGNED': '',
-        'ON_UPDATE': 'ON UPDATE',
+        'DEFAULT': 'DEFAULT',
+        'SET_NULL': 'SET NULL',
+        'ON_UPDATE': 'NOT SUPPORTED',  # PostgreSQL only supports ON UPDATE for foreign keys
         'ON_DELETE': 'ON DELETE',
-        'INDEX': 'INDEX',
-        # 
-        'ADD_COLUMN':'ADD COLUMN',
-        'MODIFY_COLUMN':'ALTER COLUMN',
-        'CHANGE': '',
+        'INDEX': 'CREATE INDEX',
+        'AUTO_INCREMENT': 'SERIAL / BIGSERIAL', # Use SERIAL/BIGSERIAL type instead
+        'COMMENT': 'COMMENT ON COLUMN ... IS ...', # PostgreSQL uses COMMENT statements
+        'CHARACTER_SET': 'NOT SUPPORTED',  # Character sets are defined at database level
+        'COLLATE': 'COLLATE',
+
+        # Operations
+        'ADD': 'ADD',
+        'ADD_COLUMN': 'ADD COLUMN',
+        'MODIFY_COLUMN': 'ALTER COLUMN',  # Use ALTER TABLE ... ALTER COLUMN
+        'CHANGE': 'ALTER COLUMN',         # Similar to MODIFY
         'DROP_COLUMN': 'DROP COLUMN',
         'RENAME_COLUMN': 'RENAME COLUMN',
-        'VERSION': 'SHOW server_version'
+        'ADD_INDEX': 'CREATE INDEX',
+        'DROP_INDEX': 'DROP INDEX',
+        'ALTER_TABLE': 'ALTER TABLE',
+        'RENAME_TABLE': 'RENAME TO',
+        'DROP_TABLE': 'DROP TABLE',
+        'CREATE_TABLE': 'CREATE TABLE',
+
+        # Functions
+        'VERSION': 'SELECT version()'
     }
+
     
-    def __init__(self, config):
+    def __init__(self, config): 
         try:
             self.connection = psycopg2.connect(
                 host=config['host'],
@@ -74,13 +99,32 @@ class PostgreSQL(RDBMS):
         except psycopg2.Error as e:
             raise Exception(f"PostgreSQL connection error: {e}")
 
-    def execute(self, query, params=None):
+    def execute(self, query, params=None, autocommit=True):
         try:
             if params:
                 self.cursor.execute(query, params)
             else:
                 self.cursor.execute(query)
-            self.connection.commit()
+            if autocommit:
+                self.commit()
         except psycopg2.Error as e:
-            self.connection.rollback()
+            self.rollback()
             raise Exception(f"PostgreSQL execution error: {e}") 
+        
+    def fetchall(self):
+        return self.cursor.fetchall()
+    
+    def fetchone(self):
+        return self.cursor.fetchone()
+
+    def commit(self):
+        return self.connection.commit()
+    
+    def rollback(self):
+        self.connection.rollback()
+
+    def close(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.connection:
+            self.connection.close()

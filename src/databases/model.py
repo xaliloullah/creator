@@ -1,4 +1,4 @@
-from src.core import Collection
+from src.core import Collection, Date
 from src.databases.query import Query
 
 class Model:
@@ -7,7 +7,7 @@ class Model:
     attributes: dict | list = []
     casts: dict = {}  
     use_uuid: bool= False 
-    connection: str= None 
+    # connection: str= None
     provider = Query() 
     protected: list = ['table', 'primary_key', 'attributes', '_items_', 'casts', 'use_uuid', 'connection', 'provider', 'protected']
 
@@ -15,8 +15,10 @@ class Model:
         self.attributes = attributes 
         if isinstance(attributes, list):
             self._items_ = [self.__class__(attribute) for attribute in attributes]
+        elif isinstance(attributes, dict):
+            self._items_ = [self]
         else:
-            self._items_ = attributes.items() 
+            self._items_ = []
         
     @classmethod
     def query(cls): 
@@ -129,7 +131,7 @@ class Model:
     @classmethod
     def order_by(cls, column='id'):
         cls.query().order_by(column)
-        return cls.get()
+        return cls
     
     @classmethod
     def order_by_desc(cls, column='id'):
@@ -139,8 +141,82 @@ class Model:
     @classmethod
     def count(cls, column='id'): 
         result = cls.query().count(column).fetchone()
-        return next(iter(result.values())) if isinstance(result, dict) else result[0] if isinstance(result, tuple) else result
-    
+        if isinstance(result, dict):
+            return next(iter(result.values()))
+        elif isinstance(result, tuple):
+            return result[0]
+        return result
+
+    @classmethod
+    def raw(cls, sql, values=()):
+        cls.query().raw(sql, values)
+        return cls
+
+    @classmethod
+    def union(cls, subquery):
+        cls.query().union(subquery.query())
+        return cls
+
+    @classmethod
+    def union_all(cls, subquery):
+        cls.query().union_all(subquery.query())
+        return cls
+
+    @classmethod
+    def between(cls, column, start, end):
+        cls.query().between(column, start, end)
+        return cls
+
+    @classmethod
+    def not_between(cls, column, start, end):
+        cls.query().not_between(column, start, end)
+        return cls
+
+    @classmethod
+    def having(cls, **kwargs):
+        cls.query().having(**kwargs)
+        return cls
+
+    @classmethod
+    def group_by(cls, *columns):
+        cls.query().group_by(*columns)
+        return cls.get()
+
+    @classmethod
+    def alias(cls, name):
+        cls.query().alias(name)
+        return cls
+
+    @classmethod
+    def join(cls, table, type="INNER"):
+        cls.query().join(table, type)
+        return cls
+
+    @classmethod
+    def left_join(cls, table):
+        cls.query().left_join(table)
+        return cls
+
+    @classmethod
+    def right_join(cls, table):
+        cls.query().right_join(table)
+        return cls
+
+    @classmethod
+    def full_join(cls, table):
+        cls.query().full_join(table)
+        return cls
+
+    @classmethod
+    def on(cls, **kwargs):
+        cls.query().on(**kwargs)
+        return cls
+
+    @classmethod
+    def subquery(cls, query, alias="subquery"):
+        cls.query().subquery(query, alias)
+        return cls
+
     @classmethod
     def paginate(cls, per_page:int, page:int=1):
         cls.query().paginate(page, per_page)
@@ -153,6 +229,41 @@ class Model:
     def exists(cls, **kwargs):
         return cls.where(**kwargs).count() > 0
     
+    def to_dict(self):
+        from datetime import datetime
+        return {
+            k: (v.isoformat() if isinstance(v, datetime) else v)
+            for k, v in self.attributes.items()
+        }
+
+    def to_json(self):
+        import json
+        return json.dumps(self.to_dict())
+
+    @classmethod
+    def pluck(cls, column): 
+        rows = cls.query().subquery(f"SELECT {column}").fetchall()
+        return [row[column] for row in rows]
+
+    @classmethod
+    def value(cls, column):
+        row = cls.query().subquery(f"SELECT {column}").fetchone()
+        return row[column] if row else None
+
+    @classmethod
+    def first_or_create(cls, **kwargs):
+        instance = cls.where(**kwargs).first()
+        return instance if instance else cls.create(**kwargs)
+
+    @classmethod
+    def update_or_create(cls, lookup: dict, defaults: dict = {}):
+        instance = cls.where(**lookup).first()
+        if instance:
+            instance.update(**defaults)
+            return instance
+        else:
+            return cls.create(**{**lookup, **defaults})
+
     @classmethod
     def get(cls):
         return cls(cls.query().fetchall())

@@ -1,7 +1,11 @@
 # coding python 
 
-from src.commands import Command 
+# from src.commands import Command 
 
-Command.setup()
+# Command.setup()
 
-Command.listen()
+# Command.listen() 
+
+from src.core import Debug
+
+Debug.search("clean", display=True)

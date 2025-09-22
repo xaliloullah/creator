@@ -1,13 +1,14 @@
 from src.environment import env
 
 
+path = env('DB_PATH', 'databases')
 driver =  env('DB_CONNECTION', 'sqlite')  #driver
 
 connections =  {
     # SQLite Config 
     'sqlite': {
         'driver': 'sqlite',
-        'path': f"{env('DB_PATH', 'databases')}/{env('DB_DATABASE', f"{env('APP_NAME')}")}.db", 
+        'path': f"{path}/{env('DB_DATABASE', f"{env('APP_NAME')}")}.db", 
     },
 
     # MySQL Config 
@@ -48,30 +49,19 @@ connections =  {
         'database': env('DB_DATABASE', 'ORCLCDB'),
         'username': env('DB_USERNAME', 'system'),
         'password': env('DB_PASSWORD', ''),
-    },
-    # mariadb Config
-    'mariadb': {
-        'driver': 'mariadb',
-        'host': env('DB_HOST', '127.0.0.1'),
-        'port': env('DB_PORT', '3306'),
-        'database': env('DB_DATABASE', env('APP_NAME', 'creator')),
-        'username': env('DB_USERNAME', 'root'),
-        'password': env('DB_PASSWORD', ''),
     }
 }
 
-migrations = {
-    'name': 'migrations',
-    'path': f"{env('DB_PATH', 'databases')}/migrations/"
-} 
+migrations = {'name': 'migrations'} 
+migrations['path'] = f"{path}/{migrations['name']}/"
 
 supported = {
     "sqlite": "SQLite",
     "mysql": "MySQL",
-    "postgresql": "PostgreSQL",
-    # "mongodb": "MongoDB",
-    # "oracle": "Oracle",
-    # "mssql": "Microsoft SQL Server",
+    "postgresql": "PostgreSQL", 
+    "oracle": "Oracle",
+    "sqlserver": "Microsoft SQL Server"
+    # 
     # "redis": "Redis",
     # "cassandra": "Cassandra",
     # "dynamodb": "DynamoDB",

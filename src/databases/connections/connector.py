@@ -1,54 +1,36 @@
 from config import database
-from src.databases.connections import Sqlite, MySQL, PostgreSQL #, SQLServer, Oracle, MariaDB
 
-
-sqlite = 'sqlite'
-mysql = 'mysql'
-postgresql = 'postgresql'
-# sqlserver = 'sqlserver'
-# oracle = 'oracle'
-# mariadb = 'mariadb'
-
-# PROVIDER = {
-#     sqlite: Sqlite,
-#     mysql: MySQL,
-#     postgresql: PostgreSQL,
-#     # sqlserver: SQLServer,
-#     # oracle: Oracle,
-#     # mariadb: MariaDB,
-# }
-
-driver = database.driver
-connections = database.connections
-config = connections[driver]
-
-class Connector:
-    driver = database.driver
-    
-    @staticmethod
-    def connect(): 
-        if driver == sqlite:
-            return Sqlite(config)
-        elif driver == mysql: 
-            return MySQL(config) 
-        elif driver == postgresql:
-            return PostgreSQL(config)
-        # elif driver == sqlserver:
-        #     return SQLServer(config)
-        # elif driver == oracle:
-        #     return Oracle(config)
-        # elif driver == mariadb:
-        #     return MariaDB(config)
-        else: 
-            raise Exception(f"Unsupported database driver: {driver}")
-    
-    @staticmethod
-    def database():
-        if driver == sqlite:  
+class Connector: 
+    driver = database.driver 
+    @classmethod
+    def database(cls, driver:str=driver): 
+        
+        # Dynamically import the corresponding Database
+        if driver == 'sqlite':  
+            from .sqlite_db import Sqlite
             return Sqlite
-        elif driver == mysql:
+        elif driver == 'mysql':
+            from .mysql_db import MySQL
             return MySQL 
-        elif driver == postgresql:
+        elif driver == 'postgresql':
+            from .postgresql_db import PostgreSQL
             return PostgreSQL
+        elif driver == 'sqlserver':
+            from .sqlserver_db import SQLServer
+            return SQLServer
+        elif driver == 'oracle':
+            from .oracle_db import Oracle
+            return Oracle 
         else:
-            raise Exception(f"The database driver '{driver}' is not supported.")
+            raise Exception(f"Unsupported database driver: {driver}")
+        
+    @classmethod
+    def connect(cls, driver:str=driver): 
+        # Fetch connection configuration for the driver
+        connections = database.connections
+        if driver not in connections:
+            raise Exception(f"No connection configuration found for driver: {driver}")
+        config = connections[driver]
+        # Return an instance of the database class
+        db = Connector.database(driver)
+        return db(config)

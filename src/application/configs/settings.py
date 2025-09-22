@@ -1,61 +1,58 @@
-from src.core import Path, File, Task
-from src.core import Structure
+
+import sys
+from src.core import Path, Date, File, Task, Structure
 import os 
 
 class Settings(Structure): 
 
-    def __init__(self):  
-        self.path = Path.settings()
-        super().__init__(self.path)
+    def __init__(self, path=Path.settings()):  
+        super().__init__(path)
 
-    # @classmethod
-    # def create(cls):
-    #     try:  
-    #         cls.data = cls.load()
-    #         cls.data["name"] = "creator"
-    #         cls.data["version"] = "1.0.0" 
-    #         cls.data["langs"] = ['en']
-    #         cls.data["databases"] = {
-    #             "sqlite": "SQLite",
-    #             "mysql": "MySQL",
-    #             "postgresql": "PostgreSQL",
-    #             "sqlserver": "Microsoft SQL Server",
-    #             "mongodb": "MongoDB",
-    #             # "oracle": "Oracle",
-    #         } 
-    #         cls.data["python"] = f"{sys.version.split()[0]}"
-    #         cls.data["required"] = {
-    #             "mysql-connector-python": "9.0.0",
-    #             "psycopg2": "2.9.10",
-    #             "pymongo": "4.10.1",
-    #             "cryptography": "44.0.0",
-    #             "bcrypt": "4.2.1",
-    #             "argparse": "1.4.0",
-    #             "keyboard": "0.13.5",
-    #             "markdown": "3.7",
-    #             "pyyaml": "6.0.2",
-    #             "PyPDF2": "3.0.1",
-    #             "pillow": "11.1.0",
-    #             "deep-translator": "1.11.4", 
-    #             "pyttsx3": "2.99"
-    #             }
-    #         cls.data["created_at"] = "2024-09-22 00:00:00"
-    #         cls.data["updated_at"] = f"{Date.now()}"
-    #         cls.save()
-    #     except Exception as e:
-    #         raise Exception(e) 
-         
+
+    def create(self, **kwargs):
+        kwargs["name"] = "creator"
+        kwargs["version"] = "1.0.0" 
+        kwargs["langs"] = ['en']
+        kwargs['required-dev'] = {"python": f"{sys.version.split()[0]}"}
+        kwargs["required"] = {
+            "mysql-connector-python": "9.0.0",
+            "psycopg2": "2.9.10",
+            "pymongo": "4.10.1",
+            "cryptography": "44.0.0",
+            "bcrypt": "4.2.1",
+            "argparse": "1.4.0",
+            "keyboard": "0.13.5",
+            "markdown": "3.7",
+            "pyyaml": "6.0.2",
+            "PyPDF2": "3.0.1",
+            "pillow": "11.1.0",
+            "deep-translator": "1.11.4",
+            "pyttsx3": "2.99",
+            "PyQt5": "5.15.11"
+        }
+        kwargs['created_at'] = "2024-09-22 00:00:00"
+        kwargs["updated_at"] = f"{Date.now()}"
+        return super().create(**kwargs)
+
+    def update(self, **kwargs):
+        kwargs["updated_at"] = f"{Date.now()}"
+        return super().update(**kwargs) 
+    
     def install_packages(self): 
         for package, version in self.get("required").items(): 
             Task.install(package, version=version, venv=self.get('venv', False))
  
     def uninstall_packages(self): 
-        for package in self.get("required"): 
+        for package in self.get("required", venv=self.get('venv', False)): 
             Task.uninstall(package)
              
-    def update_packages(self): 
+    def upgrade_packages(self): 
         for package in self.get("required"): 
             Task.install(package, venv=self.get('venv', False))
+
+    def update_packages(self): 
+        for package in self.get("required"): 
+            Task.update(package, venv=self.get('venv', False))
             
     @staticmethod
     def vscode(path = Path.vscode()):

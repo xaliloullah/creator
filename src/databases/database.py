@@ -1,8 +1,8 @@
 class Database:
-    
-    def __init__(self):
-        from src.databases.connections.connector import Connector
-        self.connection = Connector.connect()
+    from config import database 
+    def __init__(self, engine=database.driver):
+        from src.databases.connections import Connector
+        self.connection = Connector.connect(engine)
 
     def execute(self, query, params=None):
         if not params: 
@@ -10,26 +10,25 @@ class Database:
         return self.connection.execute(query, params) 
 
     def commit(self):
-        self.connection.connection.commit()
+        self.connection.commit()
 
     def rollback(self):
-        self.connection.connection.rollback()
+        self.connection.rollback()
 
     def fetchall(self, query, params=None):
         self.execute(query, params)
-        rows = self.connection.cursor.fetchall() 
+        rows = self.connection.fetchall() 
         return [dict(row) for row in rows] if rows else []
 
     def fetchone(self, query, params=None):
         self.execute(query, params)
-        row = self.connection.cursor.fetchone()
+        row = self.connection.fetchone()
         return dict(row) if row else None
 
     def close(self):
-        self.connection.cursor.close() 
+        self.connection.close() 
 
     from contextlib import contextmanager
-
     @contextmanager
     def transaction(self):
         try:

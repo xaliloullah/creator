@@ -1,34 +1,40 @@
 import sys
-import subprocess 
-from src.core import File, Path
+import subprocess  
+from src.core import File, Path, List
+import threading
 
 class Task:
+
+    @classmethod
+    def thread(cls, target, *args, **kwargs):
+        thread = threading.Thread(target=target, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
     
     @staticmethod    
     def install(package, **kwargs): 
         try:
+            upgrade = kwargs.get('upgrade', False)  
             version = kwargs.get('version', "")  
             extra_args = kwargs.get('extra_args', []) 
             user = kwargs.get('user', False) 
             quiet = kwargs.get('quiet', False)  
-            force_reinstall = kwargs.get('force_reinstall', False)  
+            force = kwargs.get('force', False)  
             venv = kwargs.get("venv", False)
             command = ['pip', 'install']
             
+            if upgrade:
+                command.append("--upgrade")
             if version:
                 command.append(f"{package}=={version}")
             else:
                 command.append(package)
-            
             if quiet:
                 command.append('--quiet')
-            
             if user:
                 command.append('--user')
-            
-            if force_reinstall:
+            if force:
                 command.append('--force-reinstall')
-            
             if extra_args:
                 command.extend(extra_args)
                 
@@ -58,20 +64,8 @@ class Task:
             
     @staticmethod
     def update(package, **kwargs):
-        venv = kwargs.get("venv", False)
-        try:
-            Task.execute("pip", "install", "--upgrade", package, **kwargs)
-
-            result = Task.execute("pip", "show", package, capture_output=True, text=True, venv=venv)
-            version_line = next(line for line in result.stdout.splitlines() if line.startswith("Version:"))
-            version = version_line.split(":")[1].strip()
-
-            requirements = File(Path.settings()).load(format="json")
-            requirements["required"][package] = version
-            File(Path.settings()).save(requirements, format="json", indent=2)
-
-        except Exception as e:
-            raise Exception(e)
+        kwargs['upgrade'] = True
+        Task.install(package, **kwargs)
 
     @staticmethod
     def list_installed(venv=False):
@@ -125,23 +119,18 @@ class Task:
             raise Exception(e)
     
     @staticmethod
-    def run(source:str, **kwargs):
-        namespace=kwargs.get("namespace", {})
-        functions=kwargs.get("functions", [])
-        only=kwargs.get("only", None)
-        ignore=kwargs.get("ignore", None)
-
+    def run(source:str, *filters, **kwargs):
+        namespace:dict=kwargs.get("namespace", {})  
         try:  
             with open(source, 'r', encoding='utf-8') as file:
                 code = compile(file.read(), source, 'exec') 
                 exec(code, namespace) 
 
-                if functions == '*' or functions == ["*"]:
-                    functions = [func for func in namespace if callable(namespace[func])]
-
-                for function in functions:
-                    if function in namespace:
-                        namespace[function]() 
+                if filters:
+                    functions = List([func for func in namespace if callable(namespace[func])]).filter(*filters)
+                    for function in functions:
+                        if function in namespace:
+                            namespace[function]() 
         except Exception as e:
             raise Exception(e)
          

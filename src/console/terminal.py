@@ -1,69 +1,95 @@
-import os 
-import sys
-import time 
+import os  
 from .icons import Icon
 from .colors import Color 
-from .formats import Format 
+from .fonts import Font 
+from .animation import Animation 
 
-class Terminal:  
+class Terminal:   
     width = 100  
     color = Color
     icon = Icon
-    format = Format
-    
+    font = Font 
+
     # -----------------------------------------------------
-    @classmethod     
+    @classmethod    
+    def print(cls, *contents, **kwargs):
+        color: str = kwargs.get("color")
+        icon: str = kwargs.get("icon")
+        fonts: str = kwargs.get("font")
+        margin: str = kwargs.get("margin")
+        end: str = kwargs.get("end", "\n")
+        flush: bool = kwargs.get("flush", False)  
+        content = "".join(str(content) for content in contents)
+
+        styled = []
+        if fonts: 
+            for font in fonts.split(","): 
+                if getattr(Font, font.strip(), None):
+                    styled.append(getattr(Font, font.strip(), None))
+        if color and getattr(Color, color, None):
+            styled.append(getattr(Color, color, None))
+        if styled:
+            content = cls.style(content, *styled) 
+        if icon and getattr(Icon, icon, None):
+            content = f"{getattr(Icon, icon, None)()} {content}"
+
+        if margin:
+            content = cls.margin(content, margin) 
+        print(content, end=end, flush=flush)
+        return cls
+
+    @classmethod
     def success(cls, text):
-        cls.SUCCESS = f"{Icon.light_check()} {cls.style('[SUCCESS] : ', Format.bold)}"
+        cls.SUCCESS = f"{Icon.light_check()} {cls.style('[SUCCESS] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.SUCCESS, Color.green)}{cls.style(text, Color.green)}")
 
     @classmethod 
     def error(cls, text):
-        cls.ERROR = f"{Icon.light_error()} {cls.style('[ERROR] : ', Format.bold)}"
+        cls.ERROR = f"{Icon.light_error()} {cls.style('[ERROR] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.ERROR, Color.light_red)}{cls.style(text, Color.light_red)}")
     
     @classmethod 
     def info(cls, text):
-        cls.INFO = f"{Icon.info_circle()} {cls.style('[INFO] : ', Format.bold)}"
+        cls.INFO = f"{Icon.info_circle()}{cls.style('[INFO] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.INFO, Color.blue)}{cls.style(text, Color.light)}")
     
     @classmethod      
     def warning(cls, text):
-        cls.WARNING = f"{Icon.warning()}  {cls.style('[WARNING] : ', Format.bold)}"
+        cls.WARNING = f"{Icon.warning()}  {cls.style('[WARNING] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.WARNING, Color.yellow)}{cls.style(text, Color.yellow)}")
     
     @classmethod 
     def danger(cls, text):
-        cls.CRITICAL = f"{Icon.stop()} {cls.style('[CRITICAL] : ', Format.bold)}"
+        cls.CRITICAL = f"{Icon.stop()} {cls.style('[CRITICAL] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.CRITICAL, Color.red)}{cls.style(text, Color.red)}")
 
     @classmethod      
     def debug(cls, text):
-        cls.DEBUG = f"{Icon.lightbulb()} {cls.style('[DEBUG] : ', Format.bold)}"
+        cls.DEBUG = f"{Icon.lightbulb()} {cls.style('[DEBUG] : ', Font.bold)}"
         cls.print(f"{cls.style(cls.DEBUG, Color.black)}{cls.style(text, Color.light)}")
     
     @classmethod      
     def help(cls, text):
-        cls.HELP = f"{Icon.lightbulb()} {cls.style('[HELP] : ', Format.bold)}" 
+        cls.HELP = f"{Icon.lightbulb()} {cls.style('[HELP] : ', Font.bold)}" 
         cls.print(f"{cls.style(cls.HELP, Color.cyan)}{cls.style(text, Color.cyan)}")
             
     @classmethod      
     def comment(cls, text):
-        cls.COMMENT = f"{Icon.info()} "
+        cls.COMMENT = f"{Icon.info()}  "
         cls.print(f"{cls.style(cls.COMMENT, Color.light)}{cls.style(text, Color.black)}")
     
     @classmethod      
     def description(cls, text):
-        cls.print(f"{cls.style(text, Color.black, Format.italic)}")
+        cls.print(f"{cls.style(text, Color.black, Font.italic)}")
     
     @classmethod 
     def question(cls, text):
-        cls.QUESTION = f"{cls.style(': ', Format.bold)}{Icon.question()}" 
+        cls.QUESTION = f"{cls.style(': ', Font.bold)}{Icon.question()}" 
         cls.print(f"{cls.style(text, Color.light)} {cls.style(cls.QUESTION, Color.grey)}")
     
     @classmethod 
     def highlight(cls, text):
-        cls.print(f"{cls.style(text, Format.bold, Color.yellow)}")
+        cls.print(f"{cls.style(text, Font.bold, Color.yellow)}")
     
     @classmethod 
     def muted(cls, text):
@@ -71,22 +97,22 @@ class Terminal:
     
     @classmethod 
     def emphasize(cls, text):
-        cls.print(f"{cls.style(text, Format.italic, Color.green)}")
+        cls.print(f"{cls.style(text, Font.italic, Color.green)}")
     
     @classmethod 
     def title(cls, text: str, **kwargs):
         icon = kwargs.get('icon', Icon.border())
         width = kwargs.get('width', cls.width) 
         border = icon * width 
-        cls.print(f"{cls.style(border, Format.bold, Color.light)}")
-        cls.print(f"{cls.style(cls.uppercase(text).center(width), Format.bold, Color.light)}")
-        cls.print(f"{cls.style(border, Format.bold, Color.light)}")
+        cls.print(f"{cls.style(border, Font.bold, Color.light)}")
+        cls.print(f"{cls.style(cls.uppercase(text).center(width), Font.bold, Color.light)}")
+        cls.print(f"{cls.style(border, Font.bold, Color.light)}")
  
     @classmethod
     def subtitle(cls, text: str, **kwargs):
         icon = kwargs.get('icon', Icon.light_star())
         width = kwargs.get('width', cls.width)
-        cls.print(f"{cls.style(text.center(width, icon), Format.bold, Color.grey, Format.underline)}")
+        cls.print(f"{cls.style(text.center(width, icon), Font.bold, Color.grey, Font.underline)}")
     
     @classmethod      
     def label(cls, text):
@@ -94,29 +120,37 @@ class Terminal:
     
     @classmethod      
     def quote(cls, text, author="Unknown"):
-        cls.print(f"{cls.style('“', Color.magenta)}{cls.style(text,Color.grey, Format.italic)}{cls.style('”', Color.magenta)} - {cls.style(author, Color.light, Format.underline)}")
+        cls.print(f"{cls.style('“', Color.magenta)}{cls.style(text,Color.grey, Font.italic)}{cls.style('”', Color.magenta)} - {cls.style(author, Color.light, Font.underline)}")
 
     @classmethod
     def banner(cls, text:str,  **kwargs): 
         icon = kwargs.get('icon', Icon.light_star())
         width = kwargs.get('width', cls.width) 
         border = icon * width 
-        cls.print(cls.style(border, Format.bold, Color.light))
-        cls.print(cls.style(text.center(width), Format.bold, Color.light))
-        cls.print(cls.style(border, Format.bold, Color.light))
+        cls.print(cls.style(border, Font.bold, Color.light))
+        cls.print(cls.style(text.center(width), Font.bold, Color.light))
+        cls.print(cls.style(border, Font.bold, Color.light))
     
     @classmethod      
     def style(cls, text:str, *styles): 
         styles = [style() if callable(style) else str(style) for style in styles] 
-        return f"{''.join(styles)}{text}{Format.reset()}"
+        return f"{''.join(styles)}{text}{Font.reset()}"
     
-    @classmethod    
-    def print(cls, *contents, **kwargs):
-        margin = kwargs.get("margin", [0, 0, 0, 0])
-        end=kwargs.get("end", None)
-        flush=kwargs.get("flush", False) 
-        content = "".join(str(content) for content in contents)
-        print(content, end=end, flush=flush) 
+    @classmethod
+    def margin(cls, content: str, margin: str): 
+        if margin:
+            left = top = right = bottom = 0
+            parts = [int(part) for part in margin.split(",")] 
+            if len(parts) > 0: left = parts[0]
+            if len(parts) > 1: top = parts[1]
+            if len(parts) > 2: right = parts[2]
+            if len(parts) > 3: bottom = parts[3] 
+            content = "\n" * top + content 
+            lines = content.splitlines()
+            lines = [f"{' ' * left}{line}{' ' * right}" for line in lines]
+            content = "\n".join(lines) 
+            content += "\n" * bottom
+        return content
 
     @classmethod
     def clear(cls):
@@ -130,16 +164,9 @@ class Terminal:
     def lowercase(cls, text:str):
         return text.lower() 
     
-    @classmethod 
-    def animate(cls, text, speed=0.1):
-        for char in text:
-            cls.print(char, end='', flush=True)
-            time.sleep(speed)
-        cls.print()
-    
     @classmethod     
     def center(cls, text:str, width=width):
-        cls.print(f"{cls.style(text.center(width), Format.bold)}") 
+        cls.print(f"{cls.style(text.center(width), Font.bold)}") 
    
     @staticmethod
     def keyboard(attribute='name'):
@@ -163,63 +190,7 @@ class Terminal:
                 else:
                     raise ValueError(
                         "attribute doit être 'name', 'code', 'type' ou 'time'"
-                    )
-
-    @classmethod      
-    def progress(cls, step, total=100, **kwargs): 
-        color = kwargs.get('color', Color.green) 
-        spinner = kwargs.get('spinner', 'bars') 
-        message = kwargs.get('message', "") 
-        sleep = kwargs.get('sleep', 0.1)
-        spinners = { 
-            'bars': ['|', '/', '-', '\\'],
-            'bars_dots': ['⋮', '⋰', '⋯', '⋱'],
-            'dots': ['.', '..', '...'],
-            'circles': ['◐', '◓', '◑', '◒'],
-            'blocks': ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
-            'arcs': ['◜', '◝', '◞', '◟'],
-            'moon': ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'],
-            'earth': ['🌍', '🌎', '🌏'],
-            'weather': ['☀️', '🌤️', '⛅', '🌥️', '☁️', '🌧️', '⛈️'],
-            'arrows': ['←', '↑', '→', '↓'],
-            'triangle': ['◢', '◣', '◤', '◥'],
-            'clock': ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'],
-            'hearts': ['💛', '💚', '💙', '💜', '🖤', '❤️'],
-            'line_wave': ['⠁','⠂','⠄','⡀','⢀','⠠','⠐','⠈'],
-            'braille': ['⠋','⠙','⠚','⠞','⠖','⠦','⠴','⠲','⠳','⠓'],
-            'star': ['✶','✸','✹','✺','✹','✷'],
-            'grow_vertical': ['▁','▃','▄','▅','▆','▇','▆','▅','▄','▃'],
-            'flip': ['⠁','⠂','⠄','⠂'],
-            'pulse': ['∙','●','◌','●','∙'],
-            'toggle': ['◍','◎','◉','◎'],
-            'toggle_line': ['—', '–', '—', '–'],
-            'fading_block': ['█','▓','▒','░','▒','▓'],
-        }
-        spinner = spinners[spinner]
-        step = max(1, min(step, total))   
-        margin = max(len(symbol) for symbol in spinner) 
-        for progress in range(0, total + 1, step):
-            symbol:str = spinner[int(progress/step) % len(spinner)]
-            symbol = symbol.ljust(margin)
-            percent = (progress / total) * 100
-            print(f"\r{cls.style(symbol, color)} {percent:.0f}% {message}", end="")
-            time.sleep(sleep)
-        cls.print()
-
-    @classmethod
-    def progress_bar(cls, step, total=100, width=50, **kwargs):
-        color = kwargs.get('color', Color.green) 
-        progress = 0
-        step = max(1, min(step, total)) 
-        sleep = kwargs.get('sleep', 0.1)
-        for progress in range(0, total + 1, step):
-            progress = min(progress + step, total)  
-            percent = (progress / total) * 100
-            filled = int(width * progress / total)
-            bar = '█' * filled + '░' * (width - filled)
-            print(f"\r{cls.style(bar, color)} {percent:.0f}%", end="")
-            time.sleep(sleep)
-        cls.print() 
+                    )         
 
     @classmethod
     def box(cls, text, **kwargs): 
@@ -264,19 +235,6 @@ class Terminal:
             cls.print(cls.style(pad(line), color))
         cls.print(cls.style(bottom, color))
 
-    @classmethod
-    def margin(cls, text, top=0, right=0, bottom=0, left=0, **kwargs):
-        color = kwargs.get("color", None)
-        styles = kwargs.get("style", None)
-        content = ""
-        for _ in range(top):
-             content+="\n"
-
-        # for line in lines:
-        ms = " " * left
-        me = " " * right
-        content+=f"{ms}{text}{me}"
-
         for _ in range(bottom):
             content+="\n"
         return content
@@ -294,56 +252,10 @@ class Terminal:
         text = textwrap.fill(text, width)
         return text
 
-    # @classmethod
-    # def table(cls, data, **kwargs):
-    #     if not data:
-    #         return cls.warning("Empty")
-    #     if isinstance(data, dict):
-    #         keys = kwargs.get('keys', list(data.keys()))
-    #         data = [data]
-    #     else:
-    #         keys = kwargs.get('keys', None)
-
-    #     data = list(data)
-    #     margin = kwargs.get('margin', 3)
-    #     icon = kwargs.get('icon', "-")
-    #     color_header = kwargs.get('color_header', Color.grey)
-    #     color_rows = kwargs.get('color_rows', Color.light)
-    #     color_border = kwargs.get('color_border', Color.grey)
-    #     display = kwargs.get('display', False)
-
-    #     if keys:
-    #         head = keys
-    #     else:
-    #         head = data[0].keys()
-
-    #     width = {key: max(len(key), max(len(str(row[key])) if key in row else 0 for row in data)) + margin for key in head}
-
-    #     def border():
-    #         return cls.style(icon * (sum(width.values()) + len(width) - (1 + margin)), color_border)
-
-    #     header = cls.style(" ".join([f"{key:<{width[key]}}" for key in head]), color_header, Format.bold)
-    #     body = "\n".join(
-    #         cls.style(" ".join([f"{row.get(key, ''):<{width[key]}}" for key in head]), color_rows)
-    #         for row in data
-    #     )
-
-    #     table = f"{header}\n{border()}\n{body}\n{border()}"
-
-    #     if display:
-    #         cls.print(header)
-    #         cls.print(border())
-    #         for row in data:
-    #             cls.print(cls.style(" ".join([f"{row.get(key, ''):<{width[key]}}" for key in head]), color_rows))
-    #         cls.print(border())
-    #     else:
-    #         return table
     @classmethod
     def table(cls, data, **kwargs):
         if not data:
-            return cls.warning("Empty")
-
-        # Si data est un dict, on le transforme en liste de dicts
+            return cls.warning("Empty") 
         if isinstance(data, dict):
             keys = kwargs.get('keys', list(data.keys()))
             data = [data]
@@ -356,31 +268,22 @@ class Terminal:
         color_header = kwargs.get('color_header', Color.grey)
         color_rows = kwargs.get('color_rows', Color.light)
         color_border = kwargs.get('color_border', Color.grey)
-        display = kwargs.get('display', True)
-
-        # Définition de l'entête
-        head = keys if keys else data[0].keys()
-
-        # Fonction utilitaire pour éviter les erreurs avec None
+        display = kwargs.get('display', True) 
+        head = keys if keys else data[0].keys() 
         def safe(val):
-            return "" if val is None else str(val)
-
-        # Calcul des largeurs de colonnes
+            return "" if val is None else str(val) 
         width = {
             key: max(len(str(key)), max(len(safe(row.get(key))) for row in data)) + margin
             for key in head
         }
-
         def border():
             return cls.style(icon * (sum(width.values()) + len(width) - (1 + margin)), color_border)
-
         # Header
         header = cls.style(
             " ".join([f"{key:<{width[key]}}" for key in head]),
             color_header,
-            Format.bold
+            Font.bold
         )
-
         # Body
         body = "\n".join(
             cls.style(
@@ -389,9 +292,7 @@ class Terminal:
             )
             for row in data
         )
-
         table = f"{header}\n{border()}\n{body}\n{border()}"
-
         if display:
             cls.print(header)
             cls.print(border())
@@ -417,7 +318,7 @@ class Terminal:
         display = kwargs.get('display', False)
     
         if not data:
-            return cls.warning("Empty")  
+            return cls.warning("Empty...")  
         if isinstance(data, dict):
             items = []
             for key, value in data.items():
@@ -438,14 +339,14 @@ class Terminal:
                 lists.append(f"{icon:<{margin}}{item}")
 
         if inline:
-            formatted = cls.style(separator.join(lists), color)
+            Fontted = cls.style(separator.join(lists), color)
         else:
-            formatted = "\n".join([item + f"{cls.style(separator, Color.black)}" for item in lists])
+            Fontted = "\n".join([cls.style(item, color) + f"{cls.style(separator, Color.black)}" for item in lists])
         
         if display:
-            cls.print(formatted)
+            cls.print(Fontted)
         else:
-            return formatted 
+            return Fontted 
         
     @classmethod
     def textarea(cls, placeholder="textarea: ", end="\n"):
@@ -574,3 +475,7 @@ class Terminal:
                     reject_action()
                 return False
         return result
+    
+    @classmethod
+    def animation(cls, **kwargs): 
+        return Animation(**kwargs)

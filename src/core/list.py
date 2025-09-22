@@ -1,6 +1,6 @@
 import random  
 from itertools import chain
-
+import fnmatch
 
 class List(list):
      
@@ -49,8 +49,24 @@ class List(list):
     def map(self, func):
         return List([func(x) for x in self])
      
-    def filter(self, func):
-        return List([x for x in self if func(x)])
+    def filter(self, *args, ignore:str= None):
+        functions = []
+        patterns = []
+        ignores = ignore.split(",") if ignore else []
+        for arg in args:
+            if callable(arg):
+                functions.append(arg)
+            else:
+                patterns.append(arg)
+        def match(items): 
+            if functions and not all(function(items) for function in functions):
+                return False 
+            if ignores and any(fnmatch.fnmatch(str(items), ignore.strip()) for ignore in ignores):
+                return False
+            if patterns and not all(fnmatch.fnmatch(str(items), pattern) for pattern in patterns):
+                return False
+            return True
+        return List([items for items in self if match(items)])
      
     def index(self, item):
         try:
