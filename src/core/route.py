@@ -1,3 +1,4 @@
+from typing import Any
 from src.core import Path
 
 class Route:
@@ -7,7 +8,7 @@ class Route:
     current = ""
     
     @classmethod
-    def register(cls, uri: Path, action, **kwargs): 
+    def register(cls, uri:Path|str, action, **kwargs): 
         kwargs = {**cls.data, **kwargs}
         prefix = kwargs.get("prefix") or cls.data.get("prefix")
         uri = Path(uri, prefix=prefix)
@@ -108,20 +109,20 @@ class Route:
         return cls.routes
     
     @classmethod
-    def resolve(cls, name: str): 
-        for uri, meta in cls.routes.items():
-            if meta.get("name") == name:
+    def resolve(cls, value, key="name"): 
+        for _, meta in cls.routes.items():
+            if meta.get(key) == value:
                 return meta
-        return None
+        raise ValueError(f"Route '{value}' not found") 
 
     @classmethod
     def dispatch(cls, name: str, **kwargs):  
         cls.current = name
-        route:dict = cls.resolve(name)
-        if not route: 
-            raise ValueError(f"Route '{name}' not found")
+        route:dict = cls.resolve(name) 
         cls.log(name)
-        action = route.get("action")
+        # return route
+        from src.core import Middleware 
+        action:Any = route.get("action")
         controller = route.get("controller")
         middlewares = route.get("middleware", []) 
         # kwargs
@@ -132,9 +133,8 @@ class Route:
             elif controller and hasattr(controller, action):
                 return getattr(controller, action)
             else:
-                raise ValueError(f"invalide action for route '{name}'") 
-        from src.middlewares import Middleware 
-        return Middleware.run(middlewares, handler, kwargs) 
+                raise ValueError(f"invalide action for route '{name}'")  
+        return Middleware.run(middlewares, handler, kwargs)
         
     @classmethod
     def clear(cls):

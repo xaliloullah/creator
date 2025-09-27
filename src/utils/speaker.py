@@ -1,5 +1,8 @@
+from typing import Any
+
+
 class Speaker: 
-    VOICE_BY_LANG = {
+    langs = {
         "en": "English",
         "fr": "French",
         "es": "Spanish",
@@ -30,9 +33,9 @@ class Speaker:
 
     @classmethod
     def set_voice(cls, lang: str): 
-        voices = cls.engine.getProperty("voices")
+        voices:Any = cls.engine.getProperty("voices")
         for voice in voices:
-            if cls.VOICE_BY_LANG.get(lang, "").lower() in voice.name.lower():
+            if cls.langs.get(lang, "").lower() in voice.name.lower():
                 cls.engine.setProperty("voice", voice.id)
                 return voice.name 
         cls.engine.setProperty("voice", voices[0].id)

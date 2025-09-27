@@ -1,4 +1,4 @@
-from src.middlewares import Middleware
+from src.core import Middleware
 from app.middlewares.app import AppMiddleware 
 from app.middlewares.auth import AuthMiddleware 
 

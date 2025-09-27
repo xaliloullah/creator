@@ -1,17 +1,18 @@
+from typing import Any, Optional
 from src.core import Collection, Date
 from src.databases.query import Query
 
 class Model:
-    table: str= None 
+    table: Optional[str]=None 
     primary_key: str= "id"
-    attributes: dict | list = []
+    attributes: Any = []
     casts: dict = {}  
     use_uuid: bool= False 
     # connection: str= None
     provider = Query() 
     protected: list = ['table', 'primary_key', 'attributes', '_items_', 'casts', 'use_uuid', 'connection', 'provider', 'protected']
 
-    def __init__(self, attributes: dict | list):
+    def __init__(self, attributes: Any):
         self.attributes = attributes 
         if isinstance(attributes, list):
             self._items_ = [self.__class__(attribute) for attribute in attributes]
@@ -49,9 +50,8 @@ class Model:
     def update(self, **column):
         if self.primary_key not in self.attributes:
             raise ValueError(f"Cannot update model without {self.primary_key}") 
-        if not column:
-            column:dict = self.attributes
-        self.provider.update(self.table, **column).where(**{self.primary_key : self.attributes[self.primary_key]}).execute()
+        columns:dict = column or self.attributes
+        self.provider.update(self.table, **columns).where(**{self.primary_key : self.attributes[self.primary_key]}).execute()
         return self
 
     def delete(self): 
@@ -108,7 +108,7 @@ class Model:
      
     @classmethod
     def find(cls, id):  
-        return cls(cls.query().where(id=id).fetchone())  
+        return cls(cls.query().where(**{cls.primary_key : id}).fetchone())  
 
     @classmethod
     def like(cls, **kwargs):
@@ -152,15 +152,15 @@ class Model:
         cls.query().raw(sql, values)
         return cls
 
-    @classmethod
-    def union(cls, subquery):
-        cls.query().union(subquery.query())
-        return cls
+    # @classmethod
+    # def union(cls, subquery):
+    #     cls.query().union(subquery.query())
+    #     return cls
 
-    @classmethod
-    def union_all(cls, subquery):
-        cls.query().union_all(subquery.query())
-        return cls
+    # @classmethod
+    # def union_all(cls, subquery):
+    #     cls.query().union_all(subquery.query())
+    #     return cls
 
     @classmethod
     def between(cls, column, start, end):
@@ -227,7 +227,7 @@ class Model:
 
     @classmethod
     def exists(cls, **kwargs):
-        return cls.where(**kwargs).count() > 0
+        return cls.query().exists(**kwargs)
     
     def to_dict(self):
         from datetime import datetime
@@ -343,7 +343,7 @@ class Model:
         else: 
             self.attributes[key] = value
     
-    def __getattr__(self, key):
+    def __getattr__(self, key)->Any:
         if isinstance(self.attributes, dict):
             if key in self.attributes:
                 value = self.attributes[key] 

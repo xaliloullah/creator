@@ -1,4 +1,5 @@
-import os  
+import os
+import sys  
 from .icons import Icon
 from .colors import Color 
 from .fonts import Font 
@@ -13,29 +14,30 @@ class Terminal:
     # -----------------------------------------------------
     @classmethod    
     def print(cls, *contents, **kwargs):
-        color: str = kwargs.get("color")
-        icon: str = kwargs.get("icon")
-        fonts: str = kwargs.get("font")
-        margin: str = kwargs.get("margin")
-        end: str = kwargs.get("end", "\n")
-        flush: bool = kwargs.get("flush", False)  
+        color = str(kwargs.get("color", "")).lower()
+        icon = str(kwargs.get("icon", "")).lower()
+        fonts = str(kwargs.get("font", "")).lower()
+        margin:str = kwargs.get("margin", "")
+        end:str = kwargs.get("end", "\n")
+        sep:str = kwargs.get("sep", ' ')
+        file = kwargs.get("file", sys.stdout)
+        flush:bool = kwargs.get("flush", False)  
         content = "".join(str(content) for content in contents)
 
         styled = []
         if fonts: 
             for font in fonts.split(","): 
-                if getattr(Font, font.strip(), None):
-                    styled.append(getattr(Font, font.strip(), None))
-        if color and getattr(Color, color, None):
-            styled.append(getattr(Color, color, None))
+                if getattr(Font, font.strip()):
+                    styled.append(getattr(Font, font.strip()))
+        if color and getattr(Color, color):
+            styled.append(getattr(Color, color))
         if styled:
             content = cls.style(content, *styled) 
-        if icon and getattr(Icon, icon, None):
-            content = f"{getattr(Icon, icon, None)()} {content}"
-
+        if icon and getattr(Icon, icon):
+            content = f"{getattr(Icon, icon)()} {content}"
         if margin:
             content = cls.margin(content, margin) 
-        print(content, end=end, flush=flush)
+        print(content, sep=sep, end=end, file=file, flush=flush)
         return cls
 
     @classmethod
@@ -133,8 +135,8 @@ class Terminal:
     
     @classmethod      
     def style(cls, text:str, *styles): 
-        styles = [style() if callable(style) else str(style) for style in styles] 
-        return f"{''.join(styles)}{text}{Font.reset()}"
+        styled:list = [style() if callable(style) else str(style) for style in styles] 
+        return f"{''.join(styled)}{text}{Font.reset()}"
     
     @classmethod
     def margin(cls, content: str, margin: str): 
@@ -172,25 +174,25 @@ class Terminal:
     def keyboard(attribute='name'):
         try:
             import keyboard
+            while True:
+                event = keyboard.read_event()
+                if event.event_type == 'down':
+                    if attribute == 'name':
+                        return event.name
+                    elif attribute == 'code':
+                        return event.scan_code
+                    elif attribute == 'type':
+                        return event.event_type
+                    elif attribute == 'time':
+                        return event.time
+                    elif attribute == 'all':
+                        return event
+                    else:
+                        raise ValueError(
+                            "attribute doit être 'name', 'code', 'type' ou 'time'"
+                        )  
         except:
             keyboard=None
-        while True:
-            event = keyboard.read_event()
-            if event.event_type == 'down':
-                if attribute == 'name':
-                    return event.name
-                elif attribute == 'code':
-                    return event.scan_code
-                elif attribute == 'type':
-                    return event.event_type
-                elif attribute == 'time':
-                    return event.time
-                elif attribute == 'all':
-                    return event
-                else:
-                    raise ValueError(
-                        "attribute doit être 'name', 'code', 'type' ou 'time'"
-                    )         
 
     @classmethod
     def box(cls, text, **kwargs): 
@@ -234,8 +236,8 @@ class Terminal:
         for line in lines:
             cls.print(cls.style(pad(line), color))
         cls.print(cls.style(bottom, color))
-
-        for _ in range(bottom):
+        content=""
+        for _ in range(int(bottom)):
             content+="\n"
         return content
 

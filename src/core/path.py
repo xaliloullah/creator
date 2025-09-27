@@ -55,7 +55,7 @@ class Path:
                 path += ensure_endwith
         return path
     
-    def set(self, path:str):
+    def set(self, path):
         self.path = path
 
     def get(self, index=None) -> str:  
@@ -139,7 +139,7 @@ class Path:
         return os.remove(self.path)
     
     def parts(self, separator="/"):
-        return self.path.split(self.separator or separator)
+        return self.path.split(separator)
     
     @staticmethod
     def cd(path: str):
@@ -147,70 +147,70 @@ class Path:
     
     # shortcuts 
     @staticmethod
-    def app(path:str=None, **kwargs):
+    def app(path=None, **kwargs):
         return Path("app").join(path, **kwargs)
 
     @staticmethod
-    def config(path:str=None, **kwargs):
+    def config(path=None, **kwargs):
         return Path("config").join(path, **kwargs)
 
     @staticmethod
-    def databases(path:str=None, sqlite=False, **kwargs):
+    def databases(path=None, sqlite=False, **kwargs):
         if sqlite: 
             kwargs["ensure_endwith"] = ".db"
         from config import database
         return Path(database.path).join(path, **kwargs)  
 
     @staticmethod
-    def docs(path:str=None, **kwargs):
+    def docs(path=None, **kwargs):
         return Path("docs").join(path, **kwargs)
 
     @staticmethod
-    def lang(path:str=None, **kwargs):
+    def lang(path=None, **kwargs):
         return Path("lang").join(path, **kwargs)
 
     @staticmethod
-    def public(path:str=None, **kwargs):
+    def public(path=None, **kwargs):
         return Path("public").join(path, **kwargs)
 
     @staticmethod
-    def resources(path:str=None, **kwargs):
+    def resources(path=None, **kwargs):
         return Path("resources").join(path, **kwargs)
     
     @staticmethod
-    def interfaces(path:str=None, **kwargs):
+    def interfaces(path=None, **kwargs):
         return Path("interfaces").join(path, **kwargs)
     
     @staticmethod
-    def cli(path:str=None, **kwargs):
+    def cli(path=None, **kwargs):
         return Path.interfaces(path)
     
     @staticmethod
-    def ui(path:str=None, **kwargs):
+    def ui(path=None, **kwargs):
         return Path.interfaces(path)
 
     @staticmethod
-    def routes(path:str=None, **kwargs):
+    def routes(path=None, **kwargs):
         return Path("routes").join(path, **kwargs)
 
     @staticmethod
-    def storage(path:str=None, **kwargs):
+    def storage(path=None, **kwargs):
         return Path("storage").join(path, **kwargs)
 
     @staticmethod
-    def utils(path:str=None, **kwargs):
+    def utils(path=None, **kwargs):
         return Path("utils").join(path, **kwargs)
 
     @staticmethod
-    def builds(path:str=None, **kwargs):
+    def builds(path=None, **kwargs):
         return Path("builds").join(path, **kwargs)
 
     @staticmethod
-    def src(path:str=None, **kwargs):
+    def src(path=None, **kwargs):
         return Path("src").join(path, **kwargs)
 
     @staticmethod
-    def python(path:str=None, **kwargs):
+    def python(path=None, **kwargs):
         return Path("python").join(path, **kwargs)
 
     # Files shortcuts
@@ -236,38 +236,43 @@ class Path:
 
     # Nested
     @staticmethod
-    def controllers(path:str=None, **kwargs):
+    def controllers(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         return Path.app("controllers").join(path, **kwargs)
 
     @staticmethod
-    def models(path:str=None, **kwargs):
+    def models(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         return Path.app("models").join(path, **kwargs)
 
     @staticmethod
-    def middlewares(path:str=None, **kwargs):
+    def middlewares(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         return Path.app("middlewares").join(path, **kwargs)
+    
+    @staticmethod
+    def events(path=None, **kwargs):
+        kwargs["ensure_endwith"] = ".py"
+        return Path.app("events").join(path, **kwargs)
 
     @staticmethod
-    def commands(path:str=None, **kwargs):
+    def commands(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         return Path.app("commands").join(path, **kwargs)
 
     @staticmethod
-    def migrations(path:str=None, **kwargs):
+    def migrations(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         from config import database
         return Path.databases(database.migrations['name']).join(path, **kwargs)
 
     @staticmethod
-    def seeds(path:str=None, **kwargs):
+    def seeders(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
-        return Path.databases("seeds").join(path, **kwargs) 
+        return Path.databases("seeders").join(path, **kwargs) 
     
     @staticmethod
-    def tests(path:str=None, **kwargs):
+    def tests(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".py"
         return Path("tests").join(path, **kwargs) 
 
@@ -276,35 +281,35 @@ class Path:
         return Path.docs("ARCHITECTURE.md")
 
     @staticmethod
-    def asset(path:str=None, **kwargs):
+    def asset(path=None, **kwargs):
         return Path.public("assets").join(path, **kwargs)
 
     @staticmethod
-    def views(path:str=None, **kwargs):
+    def views(path=None, **kwargs):
         kwargs["ensure_endwith"] = ".cre"
         kwargs["replace"] = (".", "/")
         from config import app 
-        if app.mode == 'web':
-            if not path.endswith(".html"):
-                path += ".html" 
+        # if app.mode == 'web':
+        #     if not path.endswith(".html"):
+        #         path += ".html" 
         return Path.resources(f"views/{app.mode}").join(path, **kwargs)
 
     @staticmethod
-    def backups(path:str=None, **kwargs):
+    def backups(path=None, **kwargs):
         if path and not path.endswith(".zip"):
             path += ".zip" 
         return Path.storage("backups").join(path, **kwargs)
 
     @staticmethod
-    def session(path:str=None, **kwargs):
+    def session(path=None, **kwargs):
         return Path.storage("sessions").join(path, **kwargs)
 
     @staticmethod
-    def versions(path:str=None, **kwargs):
+    def versions(path=None, **kwargs):
         return Path.storage("versions").join(path, **kwargs)
 
     @staticmethod
-    def application(path:str=None, **kwargs):
+    def application(path=None, **kwargs):
         return Path.src("application").join(path, **kwargs)
 
     @staticmethod
@@ -312,7 +317,7 @@ class Path:
         return Path.src("environment").join(path, **kwargs)
 
     @staticmethod
-    def settings(path="settings.json", **kwargs):
+    def settings(path="creator.json", **kwargs):
         return Path(path, **kwargs) 
     
     @staticmethod
@@ -321,10 +326,10 @@ class Path:
 
     @staticmethod
     def logs():
-        return Path.src(Path.app(), "logs")
+        return Path.storage("logs")
 
     @staticmethod
-    def template(path:str=None, **kwargs):
+    def template(path=None, **kwargs):
         if path:
             path = path.replace(".", "/")
             if not path.endswith(".template"):

@@ -1,8 +1,9 @@
+from typing import Any
 from src.core import File, Path, Collection, String
 
 class Storage:
 
-    def __init__(self, path: str=None, **kwargs):  
+    def __init__(self, path: Path|str="", **kwargs):  
         self.path = path if isinstance(path, Path) else Path(path)
         self.format = kwargs.get("format", None)
         self.default = kwargs.get("default", None)
@@ -18,7 +19,7 @@ class Storage:
         
         self.file.set_extension(self.format) 
 
-        self.data = self.load()  
+        self.data:Any = self.load()  
 
     def load(self):
         try: 

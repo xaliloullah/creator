@@ -13,25 +13,6 @@ class Server:
         self.running = True
         self.queue = 10
 
-    # def connect(self):
-    #     self.server.connect((self.host, self.port))
-    #     receive_thread = threading.Thread(target=self.response)
-    #     receive_thread.start()
-    #     while True:
-    #         msg = input("✏️ Vous : ")
-    #         self.server.sendall(msg.encode("utf-8"))
-
-    # def response(self): 
-    #     while True:
-    #         try:
-    #             msg = self.server.recv(1024).decode("utf-8")
-    #             if msg:
-    #                 print("\n📩 Nouveau message :", msg)
-    #         except:
-    #             print("❌ Déconnecté du serveur")
-    #             self.server.close()
-    #             break
-
     def start(self):
         self.server.bind((self.host, self.port))
         self.server.listen(self.queue) 

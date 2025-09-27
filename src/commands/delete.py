@@ -15,6 +15,7 @@ class DeleteCommand(Command):
         parser.add_argument('--view', help="Delete a view")
         parser.add_argument('--seeder', help="Delete a seeder")
         parser.add_argument('--test', help="Delete a test")
+        parser.add_argument('--event', help="Delete a event")
         parser.add_argument('-r', '--resource', action='store_true', help="Create a resource for the controller")
         parser.add_argument('--backup', help="Delete a backup")
         parser.set_defaults(func=cls.handle)
@@ -59,9 +60,9 @@ class DeleteCommand(Command):
             except Exception as e:
                 Creator.terminal.error(f"{traceback.format_exc()}")
 
-        elif args.middleware: 
-            name = str(args.middleware).replace(" ", "_")
-            filename = Creator.path.middlewares(name)
+        elif args.middleware:  
+            name = Creator.string(args.middleware).pascalcase() 
+            filename = Creator.path.middlewares(name.snakecase())  
             if Creator.file(filename).exists():
                 Creator.file(filename).delete() 
                 Creator.terminal.success(Creator.lang.get("success.delete", resource=f"Middleware '{args.middleware}'"))
@@ -98,7 +99,7 @@ class DeleteCommand(Command):
 
         elif args.seeder: 
             name = Creator.string(args.seeder).pascalcase() 
-            filename = Creator.path.seeds(name.snakecase())   
+            filename = Creator.path.seeders(name.snakecase())   
             if Creator.file(filename).exists():
                 Creator.file(filename).delete() 
                 Creator.terminal.success(Creator.lang.get("success.delete", resource=f"seeder '{args.seeder}'"))
@@ -113,6 +114,15 @@ class DeleteCommand(Command):
                 Creator.terminal.success(Creator.lang.get("success.delete", resource=f"test '{args.test}'"))
             else:
                 Creator.terminal.error(Creator.lang.get("error.delete", resource=f"test '{args.test}'")) 
+
+        elif args.event: 
+            name = Creator.string(args.event).pascalcase() 
+            filename = Creator.path.events(name.snakecase())   
+            if Creator.file(filename).exists():
+                Creator.file(filename).delete() 
+                Creator.terminal.success(Creator.lang.get("success.delete", resource=f"event '{args.event}'"))
+            else:
+                Creator.terminal.error(Creator.lang.get("error.delete", resource=f"event '{args.event}'")) 
  
         else:
             Creator.terminal.warning(Creator.lang.get("warning.options", resource=f"model, controller, migration, backup, or view"))

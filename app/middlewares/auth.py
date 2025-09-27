@@ -1,5 +1,5 @@
 from typing import Callable
-from src.middlewares import Middleware 
+from src.core import Middleware 
 from src.core import Request
 from main import Creator
 
@@ -10,4 +10,4 @@ class AuthMiddleware(Middleware):
     def handle(request: Request, next: Callable):
         if not request.session.has("user_id") or request.session.is_expired():
             return Creator.route('login')  
-        return next()
+        return next(request)

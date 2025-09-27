@@ -45,6 +45,7 @@ class SettingCommand(Command):
             elif args.check: 
                 Creator.terminal.info(Creator.lang.check(args.check))
             elif args.generate:
+                
                 Creator.generate_lang(args.generate)
             else:
                 return Creator.terminal.error(Creator.lang.get("error.invalid", data=f"{args.set}"))

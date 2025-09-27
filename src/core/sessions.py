@@ -1,3 +1,4 @@
+from typing import Any
 from src.core import Structure
 from src.core import Path, Date
 from config import session 
@@ -5,7 +6,7 @@ from config import session
 class Session(Structure):
 
     def __init__(self):  
-        self.path = Path.session(session.name) 
+        self.path = Path.session(session.name)
         super().__init__(self.path)
 
     def put(self, key, value): 
@@ -69,7 +70,7 @@ class Session(Structure):
             self.put('_token',str(uuid.uuid4()))
         return self.get('_token')
  
-    def create(self, user_id: str=None, remember_me: bool=False): 
+    def create(self, user_id: str|Any=None, remember_me: bool=False): 
         return super().create(
             user_id= user_id, 
             expires_at = str(Date.now().add_minutes(int(session.lifetime)).timestamp()),

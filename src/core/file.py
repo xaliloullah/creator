@@ -2,6 +2,7 @@ import os
 import json
 import configparser
 import csv
+from typing import Any
 import zipfile
 import tarfile
 import xml.etree.ElementTree as ET
@@ -24,12 +25,12 @@ except ImportError:
 from src.core import Path, List
 
 class File:
-    def __init__(self, path=".", **kwargs):
+    def __init__(self, path:str|Path=".", **kwargs):
 
-        self.path = path if isinstance(path, Path) else Path(path) 
-        self.format = kwargs.get('format', "txt")
-        self.mode = kwargs.get("mode", "r")
-        self.content = kwargs.get("content", None) 
+        self.path:Path = path if isinstance(path, Path) else Path(path) 
+        self.format:str = kwargs.get('format', "txt")
+        self.mode:str = kwargs.get("mode", "r")
+        self.content:Any = kwargs.get("content") 
         self.encoding = kwargs.get("encoding", 'utf-8')
 
     @property
@@ -49,7 +50,7 @@ class File:
             self.content = file.read()
         return self.content
 
-    def load(self, **kwargs):
+    def load(self, **kwargs)->Any:
         try:
             mode = kwargs.get("mode", "r")
             format = kwargs.get('format', "txt")
@@ -87,11 +88,15 @@ class File:
                         reader = PyPDF2.PdfReader(file)
                         return ''.join(page.extract_text() for page in reader.pages)
                 elif format == 'env':
-                    env = {}
+                    import re
+                    pattern = re.compile(r'\{(\w+)\}')
+                    env:dict = {}
                     with open(self.path, mode) as file:
                         for line in file:
-                            if line and not line.startswith((';', '#')) and '=' in line:
+                            if line and '=' in line:
+                                # not line.startswith((';', '#')) and 
                                 key, value = line.strip().split('=', 1)
+                                value = pattern.sub(lambda m: env.get(m.group(1), m.group(0)), value)
                                 env[key] = value
                     return env
                 else:
@@ -99,7 +104,7 @@ class File:
         except Exception as e:
             raise Exception(f"Error loading file: {e}")
 
-    def save(self, content=None, **kwargs):
+    def save(self, content:Any, **kwargs):
         self.path.ensure_exists()
         mode = kwargs.get("mode", "w")
         format = kwargs.get('format', "txt")
@@ -150,7 +155,7 @@ class File:
             elif format == 'pdf' and PyPDF2:
                 with open(self.path, 'wb') as file:
                     writer = PyPDF2.PdfWriter()
-                    file.write(writer)
+                    file.write(writer) # type: ignore
             elif format == 'env':
                 groups = {}
                 for key in sorted(content):
@@ -234,11 +239,11 @@ class File:
                     path = Path(root).join(name).get()
                     File(path).delete()
 
-    def list(self, *args,**kwargs):
+    def list(self, *filter, **kwargs):
         endswith = kwargs.get("endswith", None)
         ignore = kwargs.get("ignore", [])
         files = os.listdir(self.path)
-        files = List(files).filter(*args)
+        files = List(files).filter(*filter)
         if endswith:
             files = [f for f in files if f.endswith(endswith)]
         return [f for f in files if f not in ignore]
@@ -251,7 +256,7 @@ class File:
         return self
 
     @staticmethod
-    def make_structure(path=".", level=0, prefix="", **kwargs):
+    def make_structure(path:str|Path=".", level=0, prefix="", **kwargs):
         try:
             ignore = kwargs.get("ignore", [])
             elements = File(path).list(ignore=ignore)
@@ -273,7 +278,7 @@ class File:
     def get_extension(self, **kwargs):
         return self.path.extension(**kwargs)
  
-    def set_extension(self, extension: str) -> str:  
+    def set_extension(self, extension: str):  
         if not extension.startswith("."):
             extension = "." + extension 
         dot_index = self.path.get().rfind(".")

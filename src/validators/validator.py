@@ -12,7 +12,7 @@ class Validator:
                         self.set_error(rule, field) 
                 
                 if rule == "nullable":
-                    pass
+                    continue
                     
                 if rule == "numeric":
                     if value and not isinstance(value, (int, float)):
@@ -32,7 +32,7 @@ class Validator:
                                                            
                 if rule == "password": 
                     from src.validators import Password
-                    password = Password(value, field).default()
+                    password = Password(value, field).default()     #type:ignore
                     if password.errors:
                         for error in password.errors:
                             self.errors.append(error) 
@@ -40,13 +40,13 @@ class Validator:
                 if rule.startswith("min") and "integer" in rules:
                     if value:
                         min_val = int(rule.split(":")[1]) 
-                        if int(value) < min_val:
+                        if int(value) < min_val:    #type:ignore
                             self.set_error("min", field, min=min_val) 
 
                 if rule.startswith("max") and "integer" in rules:
                     if value:
                         max_val = int(rule.split(":")[1])
-                        if int(value) > max_val:
+                        if int(value) > max_val:    #type:ignore
                             self.set_error("max", field, max=max_val) 
 
                 if rule.startswith("minlength"):
@@ -64,14 +64,14 @@ class Validator:
                 if rule == "integer":
                     if value:
                         try:
-                            int(value)
+                            int(value)      #type:ignore
                         except ValueError:
                             self.set_error(rule, field) 
                  
                 if rule == "decimal":
                     if value:
                         try:
-                            float(value)
+                            float(value)    #type:ignore
                         except ValueError: 
                             self.set_error(rule, field) 
                         
@@ -93,7 +93,7 @@ class Validator:
                     if value:
                         try:
                             from src.core import Date
-                            Date(value).to_string() 
+                            Date.parse(value) 
                         except ValueError:
                             self.set_error(rule, field) 
                             
@@ -151,7 +151,7 @@ class Validator:
                     if value:
                         try:
                             import uuid 
-                            uuid.UUID(value, version=4)
+                            uuid.UUID(value, version=4)     #type:ignore
                         except ValueError:
                             self.set_error(rule, field)
                             
@@ -159,17 +159,17 @@ class Validator:
                     if value:
                         try:
                             import json
-                            json.loads(value)
+                            json.loads(value)   #type:ignore
                             pass
                         except ValueError:
                             self.set_error(rule, field)
                              
                 if rule == "alpha":
-                    if value and not value.isalpha():
+                    if value and not value.isalpha():   #type:ignore
                         self.set_error(rule, field)
                 
                 if rule == "alphanumeric":
-                    if value and not value.isalnum():
+                    if value and not value.isalnum():   #type:ignore
                         self.set_error(rule, field)  
                        
                 if rule.startswith("unique"):

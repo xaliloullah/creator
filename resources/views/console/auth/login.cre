@@ -12,4 +12,4 @@ def view():
         password = Creator.terminal.input(placeholder='password', type="password") 
     )
 
-    Creator.route("login.store")
+    Creator.redirect.route("login.store")

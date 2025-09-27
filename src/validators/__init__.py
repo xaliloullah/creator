@@ -1,5 +1,5 @@
 from .rules import Rule
-from .validator import Validator
 from .password import Password
+from .validator import Validator
 
-__all__ = ['Rule', 'Validator', 'Password']
+__all__ = ['Rule', 'Password', 'Validator']

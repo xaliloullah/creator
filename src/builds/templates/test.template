@@ -1,6 +1,9 @@
 # Auto-generated test for {name}
 
 def test_{name}():
+
     # Test '{name}' functionality.
+    
     # TODO: Add assertions here
+
     pass

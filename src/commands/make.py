@@ -1,4 +1,5 @@
 # coding python
+from src.core import Path
 from src.commands import Command, Creator
 import traceback  
 
@@ -31,6 +32,7 @@ class MakeCommand(Command):
         parser.add_argument('--command', help="Create a new command")
         parser.add_argument('--seeder', help="Create a new seeder")
         parser.add_argument('--test', help="Create a new test")
+        parser.add_argument('--event', help="Create a new event")
         
         cache_parser = parser.add_argument_group("cache")
         cache_parser.add_argument('--cache', type=str, nargs='?', help="cache app") 
@@ -112,7 +114,7 @@ class MakeCommand(Command):
         elif args.seeder:
             name = Creator.string(args.seeder).pascalcase() 
             try: 
-                filename = Creator.path.seeds(name.snakecase())
+                filename = Creator.path.seeders(name.snakecase())
                 if Creator.file(filename).exists():
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"seed '{args.seeder}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.seed(Creator.file(name).name)) 
@@ -128,6 +130,17 @@ class MakeCommand(Command):
                     return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"test '{args.test}'"))
                 Creator.file(filename).ensure_exists().save(Creator.build.test(Creator.file(name).name)) 
                 Creator.terminal.success(Creator.lang.get("success.create", resource=f"test '{args.test}'"))
+            except Exception:
+                Creator.terminal.error(f"{traceback.format_exc()}") 
+
+        elif args.event: 
+            name = Creator.string(args.event).pascalcase() 
+            filename = Creator.path.events(name.snakecase())  
+            try:  
+                if Creator.file(filename).exists():
+                    return Creator.terminal.error(Creator.lang.get("error.exist", resource=f"event '{args.event}'"))
+                Creator.file(filename).ensure_exists().save(Creator.build.event(Creator.file(name).name)) 
+                Creator.terminal.success(Creator.lang.get("success.create", resource=f"event '{args.event}'"))
             except Exception:
                 Creator.terminal.error(f"{traceback.format_exc()}") 
 
@@ -147,7 +160,7 @@ class MakeCommand(Command):
                 
                 destination = args.destination
                 if not destination:
-                    destination = f"backup_{Creator.date.now().to_string('%Y%m%d_%H%M%S')}" 
+                    destination = f"backup_{Creator.date.now().format('%Y%m%d_%H%M%S')}" 
                 destination = Creator.path.backups(destination)
                 Creator.file(destination).ensure_exists()
                 all = args.all
@@ -203,7 +216,7 @@ class MakeCommand(Command):
                 Creator.file(destination).ensure_exists()
                 ignore = ["__pycache__", "python", "creator.db"]  
                 
-                only = ['app',  'config', 'databases', 'lang', 'resources', 'routes', 'src', 'creator', 'main.py', 'settings.json']
+                only = ['app',  'config', 'databases', 'lang', 'resources', 'routes', 'src', 'creator', 'main.py', Path.settings().get()]
                         
                 Creator.file(source).save(destination, format="zip", only=only, ignore=ignore)   
 
@@ -211,8 +224,6 @@ class MakeCommand(Command):
 
             elif args.project:
                 Creator.terminal.info(Creator.lang.get("info.create", resource=f"project {args.project}"))  
- 
-
             else: 
                 Creator.terminal.warning("Please specify either a version or ... .")
         except Exception:

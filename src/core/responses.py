@@ -6,11 +6,12 @@
 
 #     def alert(self, status, *messages):
 #         pass
+from typing import Any
 from wsgiref.headers import Headers
 import json as _json
 
 class Response:
-    def __init__(self, body=b"", status=200, headers=None):
+    def __init__(self, body:Any=b"", status=200, headers=None):
         self.body = body if isinstance(body, (bytes, bytearray)) else str(body).encode("utf-8")
         self.status = status
         self.headers = Headers(headers or [])

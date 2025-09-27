@@ -1,5 +1,5 @@
 from typing import Callable
-from src.middlewares import Middleware 
+from src.core import Middleware 
 from src.core import Request
 
 class {name}(Middleware):
@@ -9,4 +9,4 @@ class {name}(Middleware):
         #
         #
         #
-        return next()
+        return next(request)

@@ -32,7 +32,7 @@ class RegisterController:
         #     if Auth.regenerate(user):
         #         return Creator.route('dashboard')
         # return Creator.view.back()
-        return Creator.route('register')
+        return Creator.redirect.route('register')
     @staticmethod
     def edit(id):
         #
@@ -50,9 +50,8 @@ class RegisterController:
 
     @staticmethod
     def destroy(id):
-        user = User().find(id) 
+        user = User.find(id) 
         user.delete() 
-    
         Creator.request.session.success("Supprimer avec succees")
         return Creator.view.back() 
     

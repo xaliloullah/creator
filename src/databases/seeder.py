@@ -3,15 +3,15 @@ from src.console import Terminal
 from src.core import File, Path, Task
 
 class Seeder:
-    path = Path.seeds()
+    path = Path.seeders()
     file = File(path)  
 
-    def __init__(self, name=None):
+    def __init__(self, name):
         self.name = name
 
     def create(self):
         try: 
-            self.file.path.seeds(self.name)
+            self.file.path.seeders(self.name)
             self.file.save(Build.seed(self.name))
             Terminal.success(f"Seed {self.file.name} created successfully.")
         except Exception as e:
@@ -32,7 +32,7 @@ class Seeder:
     def run(cls, name, action='up'): 
         try:
             Terminal.info(f"Applying seed '{name}'.")
-            path = cls.file.path.seeds(name)
+            path = cls.file.path.seeders(name)
             Task.run(path, action) 
         except Exception as e:
             Terminal.error(f"{e}") 

@@ -1,16 +1,22 @@
-
 class Creator:
 
     @classmethod
     def setup(cls):
-        from src.console import Terminal  
-        from src.core import Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, String, Dict, Debug, Storage, Injector, Collection, Translator, Speaker, Http, Session, Response, Request # , Interface 
-        from src.builds import Build
-        from src.application.configs import Settings, Version
-        from src.validators.validator import Validator  
-        # from src.models.auth import Auth
-
         from config import app, database
+
+        from src.console import Terminal  
+        
+
+        from src.core import String, List, Dict, Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, Debug, Storage, Structure, Injector, Event, Collection, Translator, Http, Session, Response, Request, Middleware, Handle, Redirect
+        
+        from src.utils import Image, Audio, Speaker
+        from src.builds import Build
+
+        from src.application.configs import Settings, Version
+
+        from src.validators import Validator  
+        # from src.models.auth import Auth
+        
 
         cls.name = app.name
         cls.mode = app.mode
@@ -24,8 +30,13 @@ class Creator:
         cls.python = cls.settings.get("python")
         cls.packages = cls.settings.get("packages", {})
 
-        cls.injector = Injector
         cls.terminal = Terminal
+
+        if app.mode == 'desktop': 
+            from src.interfaces import Interface
+            cls.interface = Interface
+
+        cls.injector = Injector 
         cls.path = Path
         cls.file = File
         cls.data = Data
@@ -33,95 +44,107 @@ class Creator:
         cls.date = Date
         cls.hash = Hash
         cls.crypt = Crypt
+        cls.list = List  
         cls.string = String  
-        cls.build = Build  
         cls.dict = Dict  
+        cls.build = Build  
         cls.debug = Debug 
         cls.storage = Storage 
         cls.collection = Collection 
         cls.translator = Translator 
         cls.speaker = Speaker
+        cls.image = Image
+        cls.audio = Audio
         cls.http = Http 
         cls.view = View 
         cls.routes = Route  
-        # cls.interface = Interface
+        cls.structure = Structure
+        cls.event = Event
         # cls.auth = Auth
-        cls.request = Request 
-        cls.session = Session 
-        cls.validator = Validator
+        cls.request = Request() 
+        cls.session:Session = cls.request.session
+        cls.validator:Validator = cls.request.validator
+        cls.response=Response
+        cls.middleware=Middleware
+        cls.handle = Handle
+        cls.redirect = Redirect
 
     @classmethod
     def configure(cls, **kwargs):
         cls.setup()
+        cls.retry = kwargs.get("retry", True)
+        cls.running = kwargs.get("running", True)
+        cls.main = kwargs.get("main", "main") 
         try:
-            cls.retry = kwargs.get("retry", True)
-            cls.main = kwargs.get("main", "main")    
+            if not cls.key:
+                raise  KeyError("key is not set")
             cls.python = cls.settings.get("python", None)
-            cls.packages = cls.settings.get("packages", {})
-            cls.request = cls.request(session=cls.session(), validator=cls.validator())
-            cls.injector.register('request', cls.request)
-            cls.injector.register('session', cls.request.session)
-            cls.injector.register('validator', cls.request.validator) 
-            if cls.key: 
-                return cls
-            else:
+            cls.packages = cls.settings.get("packages", {}) 
+            cls.injector.register('request', cls.request) 
+        except Exception as e:    
+            if cls.retry:
                 cls.create()
-        except KeyError as e:    
-            if cls.retry:   
-                cls.settings.create()
                 return cls.configure(retry=False)
             else:
-                raise RuntimeError("") from e
+                raise RuntimeError("Configuration failed and retry is False") from e
 
-    @classmethod 
-    def stop(cls): 
-        exit(1)
-
-    @classmethod 
-    def run(cls, **kwargs): 
-        try:   
-            cls.route(cls.main)  
-             
-        except Exception as e:
-            cls.handle_exception(e) 
-        
     @classmethod
-    def create(cls):
-        cls.terminal.progress()
+    def start(cls): 
+        try:   
+            cls.running = True
+            while cls.running: 
+                cls.redirect.route(cls.main)   
+        except Exception as e:
+            cls.handle.exception(e) 
+
+    @classmethod
+    def stop(cls, code: int = 0): 
+        cls.running = False
+        raise SystemExit(code)
+
+
+    @classmethod
+    def create(cls): 
         cls.terminal.highlight(cls.build.creator())   
+        cls.settings.create()
         use_venv = cls.terminal.input("Do you want to create a virtual environment ?", type="checkbox", value="yes")
         if use_venv:
+            animation = cls.terminal.animation() 
+            thread = cls.task.do(animation.loader, spinner="blocks").start()
             cls.settings.create_venv()  
-            cls.terminal.success("Virtual environment created.")
-            cls.settings.activate_venv() 
-        else:
-            cls.terminal.info("Skipping virtual environment setup.")
+            cls.settings.activate_venv()  
+            animation.stop()
+            thread.stop()
+            cls.terminal.success(cls.lang.get("success.create", resource="virtual environment"))
 
         use_vscode = cls.terminal.input("Do you want to setup VSCode configs ?", type="checkbox", value="yes")
         if use_vscode:
             cls.settings.vscode()
 
-        cls.terminal.loader(spinner="dots")
         cls.terminal.info(cls.lang.get("info.install", resource="packages"))
-        cls.settings.install_packages()
-        cls.terminal.loader(step=2, spinner="blocks")
-        lang = cls.terminal.input(cls.lang.get("info.options", resource=f"lang"), type="select", options=cls.lang.languages, value="en", inline=False)
-        cls.generate_lang(lang) 
-        try: 
-            key = Creator.hash.generate_key()
-            cls.settings.set("key", key) 
-        except:
-            key = cls.settings.get("key")
+        animation = cls.terminal.animation() 
+        thread = cls.task.do(animation.loader, spinner="blocks", message=cls.lang.get("info.install", resource="packages")).start()
+        cls.settings.install_packages() 
+        animation.stop()
+        thread.stop()
+        lang = cls.terminal.input(cls.lang.get("info.options", resource=f"lang"), type="select", options=cls.lang.languages, value="en", inline=False) 
+        cls.generate_lang(lang)
+
+        try:
+            key = cls.hash.generate_key()
+        except Exception as e:
+            key = None
+            cls.terminal.error(f"Failed to generate key: {e}")
         
         name = cls.terminal.input("name", value="creator") 
         from config import database
-        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options= database.supported, value="sqlite", inline=False) 
+        database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=database.supported, value="sqlite", inline=False) 
         mode = cls.terminal.input(cls.lang.get("info.options", resource=f"mode"), type="select", options=['console', 'web', 'desktop'], value="console", inline=False) 
-        debug = cls.terminal.input("Activate debug app", type="checkbox", value="no")
-        env = cls.build.Env.app(name=name, lang=lang, key=key, mode=mode, debug=debug)
-        env +="\n"+ cls.build.Env.database(driver=database, name=name, path=cls.path.databases())
-        env +="\n"+cls.build.Env.session(name=f"{name}_session") 
-        cls.file('.env').save(env) 
+        debug = cls.terminal.input("Activate debug app", type="checkbox", value="no") 
+        env = cls.build.Env.app(name=name, lang=lang, key=key, mode=mode, debug=debug) + cls.build.Env.database(driver=database, name=name, path=cls.path.databases()) + cls.build.Env.session(name=f"{name}_session")
+        for key, value in cls.data(env, format='env').get().items():
+            cls.settings.env().set(key, value)  
+        
         do_migrate = cls.terminal.input("Do you want to run migrations now ?", type="checkbox", value="no")
         if do_migrate:
             cls.terminal.info("Running database migrations...")
@@ -133,38 +156,31 @@ class Creator:
         cls.settings.make_architecture(all=True) 
 
     @classmethod
-    def clean(cls): 
-        cls.terminal.progress(10, 100) 
-        cls.terminal.highlight(cls.build.creator())  
+    def clean(cls):
         cls.file(".").clean() 
         
     @classmethod
-    def generate_lang(cls, lang):
-        if lang in cls.lang.languages:
-            langs:list = cls.settings.get("langs")
+    def generate_lang(cls, lang): 
+        cls.terminal.info(cls.lang.get("info.create", resource=f"lang {lang}"))
+        if lang in cls.settings.get("i18n.supported"):
+            langs:list = cls.settings.get("i18n.available")
             if lang not in langs:
-                cls.terminal.info(cls.lang.get("info.create", resource=f"lang {lang}"))
+                animation = cls.terminal.animation() 
+                thread = cls.task.do(animation.loader, spinner="blocks", message=cls.lang.get("info.create", resource=f"lang {lang}")).start()
                 cls.lang.generate(lang)
                 langs.append(lang)
-                cls.settings.set("langs", langs)
-                cls.lang.setup(lang)
+                cls.settings.set("i18n.available", langs) 
+                animation.stop()
+                thread.stop()
                 cls.terminal.success(cls.lang.get("success.create", resource=f"lang {lang}")) 
+            else:
+                cls.terminal.info(cls.lang.get("error.exist", resource=f"lang '{lang}'"))
         else:
             cls.terminal.error(cls.lang.get("error.invalid", data=f"lang '{lang}'"))
-    
-    @classmethod
-    def handle_exception(cls, e): 
-        raise Exception(cls.terminal.error(f"{str(e)}"))
-    
-    @classmethod
-    def url(cls, uri, **kwargs): 
-        return uri
-    
-    @classmethod
-    def route(cls, name, intended=None, **kwargs):  
-        from routes.route import Route 
-        Route.dispatch(name, **kwargs) 
+        
+        
+        
 
     @classmethod
     def form(cls, **kwargs):
-        cls.request.update(kwargs)
+        cls.request.update(kwargs)  

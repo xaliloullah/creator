@@ -8,36 +8,36 @@ class Test:
     results = []
 
 
-    def __init__(self, name: str = None):
+    def __init__(self, name:str):
         self.name = name
 
     def run(self):
         path = Path(self.path).join(self.name)
         Terminal.title(f"Running test: {self.name.replace('.py', '')}")
         start_time = time.time()
-        success = False
-        animation = Terminal.animation()
-        animation.start()
-        thread = Task.thread(target=animation.progress, message=f"Running test: {self.name.replace('.py', '')}")
+        success = False 
+        error = ""
+        animation = Terminal.animation() 
+        thread = Task.do(animation.progress, message=f"Running test: {self.name.replace('.py', '')}").start()
         try:
             Task.run(path, 'test_*') 
             success = True
         except Exception as e:
-            success = False
-        finally:
-            elapsed = time.time() - start_time
+            success = False 
+            error = e 
+        finally: 
             animation.stop()
-            thread.join() 
+            thread.stop() 
             if success:
                 Terminal.success(f"Test succeeded: {path}")
             else:
-                Terminal.error(f"Error running test: {path} - {e}")
 
-            Terminal.info(f"Duration: {elapsed:.2f}s") 
+                Terminal.error(f"Error running test: {path} - {error}")
+            Terminal.info(f"Duration: {thread.elapsed:.2f}s") 
             self.results.append({
                 "name": self.name,
                 "success": success,
-                "duration": elapsed
+                "duration": thread.elapsed
             })
 
     @classmethod

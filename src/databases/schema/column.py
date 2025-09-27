@@ -1,3 +1,4 @@
+from typing import Any, Optional
 from src.databases.connections import Connector
 from src.core import String
 syntax = Connector.database().syntax 
@@ -9,7 +10,7 @@ class Column:
         self.constraints = [] 
         self.indexes = []
         self.table = table
-        self.name = None
+        self.name:str|Any = None
         
 
     # --- Column Types ---
@@ -35,9 +36,9 @@ class Column:
         self.charset()
         return self
 
-    def integer(self, name:str, size:int=None):
-        size = f"({size})" if size else ""
-        self.add_definition(f"{name} {syntax['INT']}{size}")
+    def integer(self, name:str, size:Optional[int]=None):
+        bits = f"({size})" if size else ""
+        self.add_definition(f"{name} {syntax['INT']}{bits}")
         return self
     
     def bigint(self, name,size=20):

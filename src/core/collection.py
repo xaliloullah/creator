@@ -2,7 +2,7 @@ import random
 
 class Collection:
     def __init__(self, items=None):
-        self.items = list(items) if items else []
+        self.items:list = list(items) if items else []
 
     def all(self):
         return self.items
@@ -76,11 +76,8 @@ class Collection:
         return {k: Collection(v) for k, v in grouped.items()}
 
     def sort(self, key=None, reverse=False):
-        return Collection(sorted(self.items, key=key, reverse=reverse))
-
-    def sort_by(self, key, reverse=False):
-        return Collection(sorted(self.items, key=lambda x: x.get(key) if isinstance(x, dict) else getattr(x, key, None), reverse=reverse))
-
+        return Collection(sorted(self.items, key=key, reverse=reverse)) 
+    
     def flatten(self):
         flat = []
         for item in self.items:

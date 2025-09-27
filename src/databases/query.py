@@ -137,10 +137,10 @@ class Query:
         
         return self
 
-    def union(self, subquery):
-        self.script = f"{self.script} UNION {subquery.script}"
-        self.values += subquery.values
-        return self
+    # def union(self, subquery):
+    #     self.script = f"{self.script} UNION {subquery.script}"
+    #     self.values += subquery.values
+    #     return self
 
     # def union_all(self): 
     #     self.script = f"{self.script} UNION ALL {subquery.script}"

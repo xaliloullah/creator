@@ -4,6 +4,8 @@ import csv
 import io
 import base64
 import pickle
+import re
+from typing import Any
 import xml.etree.ElementTree as ET
 from html import escape, unescape
 
@@ -29,9 +31,10 @@ except ImportError:
 
 
 class Data:
-    def __init__(self, content="", format="txt"):
+    def __init__(self, content:Any, format="txt"):
         self.content = content
         self.format = format 
+        self.data:Any = None
         try:
             if self.format == 'json':
                 self.data = json.loads(self.content)
@@ -137,6 +140,10 @@ class Data:
                 return str(self.data)
         except Exception as e:
             raise Exception(f"Error data ({self.format}): {e}")
+         
+    def is_html(self) -> bool:
+        return bool(re.search(r"<[^>]+>", self.data))
+
 
     def __str__(self):
         return str(self.data)

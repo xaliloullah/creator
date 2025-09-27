@@ -6,10 +6,10 @@ def test_terminal():
     # Test 'task' functionality.
     # TODO: Add assertions here
     # Terminal.animation = True 
-    # thread = Task.thread(target=Terminal.progress, spinner="blocks")
+    Task.do(Terminal.animation().loader, spinner="blocks")
     # time.sleep(5)
     # Terminal.animation = False
     # thread.join()  
-    Terminal.print("Salut ceci est un test : ", color="red", icon="plus", font="underline, bold", margin="1, 5")
+    Terminal.print("Salut ceci est un test : ", color="red", icon="plus", font="underline, bold", margin="1, 1")
     import time 
     time.sleep(1)

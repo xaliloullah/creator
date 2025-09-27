@@ -1,0 +1,7 @@
+from src.core import Event  
+
+class {name}(Event):
+
+    # Custom Event: {name}
+
+    pass

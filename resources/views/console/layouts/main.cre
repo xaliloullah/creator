@@ -6,12 +6,12 @@ from main import Creator
 def view(): 
     Creator.terminal.subtitle(Creator.lang.get("messages.welcome", app="Creator"))
     
-    option = Creator.terminal.input("option", options={"1":Creator.lang.get("actions.login"), "2":Creator.lang.get("actions.signup"),  "0":Creator.lang.get("actions.exit")})
+    option = Creator.terminal.input("option", options={"1": Creator.lang.get("actions.login"), "2":Creator.lang.get("actions.signup"),  "0":Creator.lang.get("actions.exit")})
 
-    if option == "1":
-        Creator.route("login") 
+    if option == "1": 
+        Creator.redirect.route("login")
     elif option == "2":
-        Creator.route("register")   
+        Creator.redirect.route("register")   
     elif option == "0":
         Creator.terminal.clear()
         if Creator.terminal.input(Creator.lang.get("confirm.exit"), type="confirm", value="yes"):

@@ -1,3 +1,4 @@
+from typing import Any
 from config import database
 from src.core import File, Path, Date, Task
 from src.builds import Build
@@ -9,7 +10,7 @@ class Migration:
     table = database.migrations['name']
     file = File(path) 
 
-    def __init__(self, name=None):
+    def __init__(self, name:Any=None):
         self.name = name
 
     def create(self):

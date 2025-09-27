@@ -7,21 +7,20 @@ class Animation:
         from .terminal import Terminal
         self.output = Terminal.print
         self.color = kwargs.get('color', "cyan")
-        self.animate = False
+        self.running = False
      
     def start(self):
-        self.animate = True
-        return self
+        self.running = True 
      
     def stop(self):
-        self.animate = False
-        return self
+        self.running = False 
     
     def toggle(self):
-        self.animate = not self.animate
+        self.running = not self.running
         return self
  
     def writer(self, text, **kwargs):
+        self.start()
         speed = kwargs.get('speed', 0.05)
         cursor = kwargs.get('cursor')
         for char in text:
@@ -32,12 +31,13 @@ class Animation:
 
         
     def loader(self, **kwargs): 
+        self.start()
         step = kwargs.get('step', 1) 
         color = kwargs.get('color', self.color) 
         spinner = kwargs.get('spinner', 'bars') 
         message = kwargs.get('message', "") 
         delay = kwargs.get('delay', 0.1)
-        spinners = { 
+        frames = { 
             'dots': ['.', '..', '...'],
             'flip': ['⠁','⠂','⠄','⠂'],
             'line': ['—', '–', '—', '–'],
@@ -63,17 +63,18 @@ class Animation:
             'moon': ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'],
             'clock': ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
         }
-        spinner = spinners.get(spinner, spinners['bars'])
+        spinner = frames.get(spinner, frames['bars'])
         margin = max(len(symbol) for symbol in spinner)  
         progress = 0
-        while self.animate:
+        while self.running:
             symbol = spinner[int(progress / step) % len(spinner)].ljust(margin) 
-            self.output(f"\r{symbol} {message}", color=color, end="")
+            self.output(f"\r{symbol} {message}", color=color, end="", flush=True)
             time.sleep(delay)
             progress += step
         self.output()
  
     def progress(self, **kwargs): 
+        self.start()
         step = kwargs.get('step', 10)
         color = kwargs.get('color', "cyan") 
         total = kwargs.get('total', 100)
@@ -86,11 +87,11 @@ class Animation:
             percent = (progress / total) * 100
             filled = int(width * progress / total)
             bar = '█' * filled + '░' * (width - filled)
-            self.output(f"\r{bar} {percent:.0f}% {message}", color=color, end="") 
+            self.output(f"\r{bar} {percent:.0f}% {message}", color=color, end="", flush=True) 
 
         progress = 0
         while progress < total:
-            if self.animate:
+            if self.running:
                 progress = min(progress + random.randint(1, step), total)
                 time.sleep(random.uniform(0.1, delay))
             else:

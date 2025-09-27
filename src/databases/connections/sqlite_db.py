@@ -7,7 +7,7 @@ class Sqlite(RDBMS):
     syntax = {
         # Customs
         'ID': 'INTEGER',  
-        'UUID': 'TEXT',     
+        'UUID': 'TEXT',
 
         # Types
         'BIGINT': 'INTEGER',

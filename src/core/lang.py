@@ -1,15 +1,17 @@
-from src.core import File 
+from typing import Any
+from src.core import File
 
 class Lang:
     def __init__(self, lang):
-        self.setup(lang) 
-
-    def setup(self, lang):
-        self.lang = lang
-        self.path = f"lang/{self.lang}/"
-        self.translations = self.load()
-        self.languages = self.translations["languages"]
-
+        try:
+            self.lang = lang 
+            self.path = f"lang/{self.lang}/" 
+            self.default = "en"
+            self.data = self.load()
+            self.languages = self.data["languages"]
+        except (KeyError, FileNotFoundError) as e:
+            raise ValueError(f"Invalid language or missing data: {lang}") from e
+        
     def check(self, lang):
         if lang in self.languages:
             return True 
@@ -26,7 +28,7 @@ class Lang:
         except Exception as e:
             
             if retry: 
-                self.path = f"lang/en/" 
+                self.path = f"lang/{self.default}/"
                 return self.load(retry=False)
             else:
                 raise FileNotFoundError from e 
@@ -43,16 +45,16 @@ class Lang:
         import re 
         return re.findall(r'\{(.*?)\}', text)
     
-    def resolve(self, arg:str, **kwargs):  
-        placeholders = self.get_placeholders(arg)
+    def resolve(self, args:Any|str, **kwargs):  
+        placeholders = self.get_placeholders(args)
         for placeholder in placeholders:
             if placeholder in kwargs:
-                arg = arg.replace(f"{{{placeholder}}}", str(kwargs[placeholder]))
-        return arg  
+                args = args.replace(f"{{{placeholder}}}", str(kwargs[placeholder]))
+        return args  
     
     def collect(self, *keys, **kwargs):
         default = kwargs.get("default", "")
-        text = self.translations.copy()
+        text = self.data.copy() 
         for key in keys:
             if key in text:
                 text = text[key]
@@ -61,15 +63,14 @@ class Lang:
         return self.resolve(text, **kwargs)
     
     def get(self, key:str, **kwargs):
-        key = key.split(".")
-        
-        result = self.collect(*key, **kwargs)
+        keys = key.split(".")
+        result = self.collect(*keys, **kwargs)
         return result
     
     def set(self, **kwargs):
         for key, value in kwargs.items():
-            self.translations[key] = value
-        self.save(self.translations)
+            self.data[key] = value
+        self.save(self.data)
     
     def translate(self, text:str, target=None, source="auto"):      
         from src.core import Translator
@@ -93,22 +94,22 @@ class Lang:
             target_path = f"{targetination}{file}" 
             content = File(src_path).load(format="json")
             
-            def translate_content(content, lang):
+            def deep_translate(content, lang):
                 for text in content: 
                     if isinstance(content[text], dict):
-                        content[text] = translate_content(content[text], lang)
+                        content[text] = deep_translate(content[text], lang)
                     elif isinstance(content[text], str):
                         content[text] = self.translate(content[text], target=lang) 
                 return content
             
-            content = translate_content(content, lang)
+            content = deep_translate(content, lang)
             File(target_path).save(content, format="json", indent=2) 
     
     def __setitem__(self, key, value):
-        self.translations[key] = value
+        self.data[key] = value
     
     def __getitem__(self, key):
-        return self.translations[key]
+        return self.data[key]
     
     def __str__(self):
         return f"{self.lang}"

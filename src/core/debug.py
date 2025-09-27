@@ -23,9 +23,8 @@ class Debug:
     def search(cls, target, path=".", display=True):
         results:list[dict] = []
         file = File(path)
-        animation = Terminal.animation()
-        animation.start()
-        thread = Task.thread(target=animation.loader, spinner="blocks", message=f"search {target} ...")
+        animation = Terminal.animation() 
+        thread = Task.do(animation.loader, spinner="blocks", message=f"search {target} ...").start()
         for root, dirs, files in file.walk_path(endswith=".py", ignore=["python", "__pycache__"]):
             for file in files: 
                 full_path = Path(root).join(file)
@@ -68,7 +67,7 @@ class Debug:
                         if isinstance(node.target, ast.Name) and node.target.id == target:
                             kind = "ForLoop" 
                     elif isinstance(node, ast.If): 
-                        if hasattr(node.test, 'id') and node.test.id == target:
+                        if hasattr(node.test, 'id') and node.test.id == target: # type: ignore
                             kind = "If" 
                     elif isinstance(node, ast.Import):
                         for alias in node.names:
@@ -81,11 +80,11 @@ class Debug:
 
 
                     if kind:
-                        line = lines[node.lineno - 1].strip() 
-                        results.append({"file": str(full_path), "line": node.lineno, "col": node.col_offset, "kind": kind, "code": line
+                        line = lines[node.lineno - 1].strip() # type: ignore
+                        results.append({"file": str(full_path), "line": node.lineno, "col": node.col_offset, "kind": kind, "code": line # type: ignore
                         })
         animation.stop()
-        thread.join() 
+        thread.stop() 
         if results:
             if display:
                 for result in results:

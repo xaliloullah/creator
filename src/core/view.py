@@ -6,11 +6,10 @@ class View:
     history = [] 
     current = ""
     
-    def __init__(self, path:str=None, *args):
+    def __init__(self, path:Path|str, **kwargs):
         try: 
-            view = self.path(path)
-            if args:
-                args
+            view = self.path(path) 
+            self.share(**kwargs)
             self.set_history(view)
             self.show(view)
         except Exception as e:
@@ -22,11 +21,7 @@ class View:
         return View.show(View.path(view))  
     
     @staticmethod
-    def show(view:str): 
-        # from config import app 
-        # if app.mode == 'web':
-        #     from flask import render_template
-        #     return render_template(View.path(view), **View.data)
+    def show(view:Path|str):  
         return Task.run(View.path(view), "view")
     
     @staticmethod
@@ -39,12 +34,8 @@ class View:
 
     @classmethod
     def set(cls, key, value):
-        cls.data[key] = value
-        
-    @classmethod
-    def share(cls, data):
-        cls.data.update(data)
-        
+        cls.data[key] = value 
+
     @classmethod   
     def get_history(cls):
         return cls.history
@@ -55,7 +46,7 @@ class View:
         cls.history.append(arg)
 
     @classmethod
-    def compact(cls, **kwargs):
+    def share(cls, **kwargs):
         for key, value in kwargs.items():
             cls.set(key, value)
             
@@ -97,37 +88,5 @@ class View:
         elif result:   
             return result
         else:
-            return "" 
-        
-    def render(path, context={}):
-        import re
-        with open(path, "r", encoding="utf-8") as f:
-            content = f.read()
+            return ""  
 
-        # Injection des variables
-        for key, value in context.items():
-            content = content.replace(f"{{{{ {key} }}}}", str(value))
-
-        # Exécuter les blocs @py ... @endpy
-        py_blocks = re.findall(r"@py(.*?)@endpy", content, flags=re.DOTALL)
-        for block in py_blocks:
-            exec(block.strip(), context)
-        content = re.sub(r"@py.*?@endpy", "", content, flags=re.DOTALL)
-
-        # Boucles simples @for ... @endfor
-        def for_repl(match):
-            code = match.group(1).strip()
-            lines = code.split("\n")
-            first = lines[0]  # ex: for item in items
-            body = "\n".join(lines[1:])
-            result = ""
-            exec(f"for {first[4:]}:\n    _body_result = '''{body}'''\n    print(_body_result)", context)
-            return ""  # temporaire, on peut améliorer
-
-        content = re.sub(r"@for(.*?)@endfor", for_repl, content, flags=re.DOTALL)
-
-        # Conditions simples (à compléter)
-        content = re.sub(r"@if(.*?)\n", "", content)
-        content = re.sub(r"@endif", "", content)
-
-        return content

@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Database:
     from config import database 
     def __init__(self, engine=database.driver):
@@ -17,12 +20,12 @@ class Database:
 
     def fetchall(self, query, params=None):
         self.execute(query, params)
-        rows = self.connection.fetchall() 
+        rows:list = self.connection.fetchall() 
         return [dict(row) for row in rows] if rows else []
 
     def fetchone(self, query, params=None):
         self.execute(query, params)
-        row = self.connection.fetchone()
+        row:Any = self.connection.fetchone()
         return dict(row) if row else None
 
     def close(self):

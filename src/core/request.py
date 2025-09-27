@@ -1,5 +1,6 @@
-class Request:
-    params = {}  
+from typing import Any
+
+class Request: 
     protected = ['params', 'session', 'validator', 'user', 'response']
 
     def __init__(self, params:dict={}, **kwargs):
@@ -7,8 +8,8 @@ class Request:
         from src.validators import Validator
 
         self.params = params 
-        self.session:Session = kwargs.get("session", None)
-        self.validator:Validator = kwargs.get("validator", None)  
+        self.session = Session()
+        self.validator = Validator()
         self.response = Response(self.params)
         self.user = None
 
@@ -48,22 +49,39 @@ class Request:
     def new(self, params):   
         return Request(params)
     
-    def __getattr__(self, key):  
-        return self.params.get(key)
-    
-    def __setattr__(self, key, value): 
-        if key in self.protected:
-            self.__dict__[key] = value
-        else:
-            self.params[key] = value
-
+    # -----------------------
+    # Magic methods
+    # -----------------------
     def __getitem__(self, key):
         return self.params[key]   
 
     def __setitem__(self, key, value):
         self.params[key] = value     
 
-    def __delattr__(self, key):
+    def __getattr__(self, key: str) -> Any:  
+        if key in self.params:
+            return self.params.get(key)
+        raise AttributeError(f"'Request' object has no attribute '{key}'")
+    
+    def __setattr__(self, key: str, value: Any): 
         if key in self.protected:
-            raise AttributeError(name=key)
-        self.params.pop(key, None) 
+            self.__dict__[key] = value
+        else:
+            self.params[key] = value
+
+    def __delattr__(self, key: str) -> None:
+        if key in self.protected:
+            raise AttributeError(f"Cannot delete protected attribute '{key}'")
+        self.params.pop(key, None)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.params.keys()
+
+    def __iter__(self):
+        return iter(self.params.keys())
+
+    def __len__(self) -> int:
+        return len(self.params.keys())
+
+    def __repr__(self) -> str:
+        return f"<Request {dict(self)} user={self.user}>"

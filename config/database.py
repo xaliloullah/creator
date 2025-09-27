@@ -2,9 +2,9 @@ from src.environment import env
 
 
 path = env('DB_PATH', 'databases')
-driver =  env('DB_CONNECTION', 'sqlite')  #driver
+driver = env('DB_CONNECTION', 'sqlite')  #driver
 
-connections =  {
+connections = {
     # SQLite Config 
     'sqlite': {
         'driver': 'sqlite',
