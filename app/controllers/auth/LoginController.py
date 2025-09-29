@@ -8,7 +8,7 @@ class LoginController:
  
     @staticmethod
     def create():
-        #
+        # 
         return Creator.view("auth.login")
 
     @staticmethod

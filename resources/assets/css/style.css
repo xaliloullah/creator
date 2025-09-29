@@ -1,0 +1,129 @@
+/* ---------- Body ---------- */
+QWidget[class="body"] {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+    color: #212529;
+}
+
+/* ---------- Labels ---------- */
+QLabel[class="label"] {
+    font-size: 14px;
+    color: #495057;
+}
+
+/* ---------- Buttons ---------- */
+QPushButton[class="button"] {
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+}
+
+QPushButton[class="button"]:hover {
+    background-color: #0b5ed7;
+}
+
+QPushButton[class="button"]:pressed {
+    background-color: #0a58ca;
+}
+
+/* ---------- Input / Textarea ---------- */
+QLineEdit[class="input"], QTextEdit[class="textarea"] {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 6px;
+    background-color: white;
+    selection-background-color: #0d6efd;
+    selection-color: white;
+    font-size: 14px;
+}
+
+QLineEdit[class="input"]:focus, QTextEdit[class="textarea"]:focus {
+    border: 1px solid #0d6efd;
+    outline: none;
+}
+
+/* ---------- Checkboxes / Radios ---------- */
+QCheckBox[class="checkbox"], QRadioButton[class="radio"] {
+    font-size: 14px;
+    padding: 4px;
+}
+
+/* ---------- Sliders ---------- */
+QSlider[class="slider"]::handle {
+    background-color: #0d6efd;
+    border-radius: 6px;
+}
+
+/* ---------- SpinBoxes ---------- */
+QSpinBox[class="spinbox"], QDoubleSpinBox[class="doublespinbox"] {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 14px;
+}
+
+/* ---------- Progress Bars ---------- */
+QProgressBar[class="progress"] {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+
+QProgressBar[class="progress"]::chunk {
+    background-color: #0d6efd;
+    border-radius: 6px;
+}
+
+/* ---------- Tables ---------- */
+QTableWidget[class="table"] {
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+}
+
+QHeaderView::section {
+    background-color: #e9ecef;
+    padding: 4px;
+    border: none;
+    font-weight: 600;
+}
+
+/* ---------- Tabs ---------- */
+QTabWidget[class="tab"]::pane {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+QTabBar::tab {
+    background-color: #e9ecef;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+QTabBar::tab:selected {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* ---------- Scroll Areas ---------- */
+QScrollArea[class="scroll_area"] {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+/* ---------- Splitters ---------- */
+QSplitter[class="splitter"] {
+    background-color: #f1f3f5;
+}
+
+/* ---------- Cards / Frames ---------- */
+QFrame[class="card"] {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+}

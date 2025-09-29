@@ -1,0 +1,75 @@
+from main import Creator
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "REGISTER") 
+@Creator.view.section("content")
+def view():
+    # ---- Carte principale ----
+    card = Creator.interface.card(width=400, height=350, position="center")
+
+    # ---- Champ Email ----
+    email = Creator.interface.input(
+        placeholder="Email", 
+        position=[120, 20], 
+        width=160, 
+        height=30, 
+        style="input",
+        parent=card
+    )
+
+    # ---- Champ Username ----
+    username = Creator.interface.input(
+        placeholder="Nom d'utilisateur", 
+        position=[120, 70], 
+        width=160, 
+        height=30, 
+        style="input",
+        parent=card
+    )
+
+    # ---- Champ Password ----
+    password = Creator.interface.input(
+        placeholder="Mot de passe",
+        position=[120, 120],
+        type="password",
+        width=160,
+        height=30,
+        style="input",
+        parent=card
+    ) 
+
+    # ---- Champ Confirm Password ----
+    confirm_password = Creator.interface.input(
+        placeholder="Confirmer le mot de passe",
+        position=[120, 170],
+        type="password",
+        width=160,
+        height=30,
+        style="input",
+        parent=card
+    ) 
+
+    # ---- Bouton S'inscrire ----
+    Creator.interface.button(
+        "S'inscrire",
+        lambda: Creator.redirect.route("register.store"),  # Exemple : route d'inscription
+        position=[120, 220],
+        width=160,
+        height=35,
+        style="btn btn-dark",
+        parent=card
+    )
+
+    # ---- Bouton Retour ----
+    Creator.interface.button(
+        "Retour",
+        lambda: Creator.redirect.route("main"),  # Retour au menu principal
+        position=[120, 270],
+        width=160,
+        height=35,
+        style="btn btn-outline-dark",
+        parent=card
+    )
+
+    # ---- Ajout à la page ----
+    Creator.interface.page("register", card)

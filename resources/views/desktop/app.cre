@@ -1,0 +1,15 @@
+from main import Creator  
+
+def view():  
+    
+    Creator.interface.setup(title=Creator.view.generate("title"), min_width=900, min_height=450, style="body")
+    Creator.interface.styles("resources/assets/css/creator.css")
+ 
+    Creator.view.include('includes.header') 
+
+    Creator.view.include('includes.alert') 
+    
+    Creator.view.generate("content") 
+
+    Creator.view.include('includes.footer') 
+    Creator.interface.start()

@@ -1,0 +1,54 @@
+from main import Creator
+
+@Creator.view.extend("app")
+@Creator.view.section("title", "Menu Principal")
+@Creator.view.section("content")
+def view():
+    # ---- Conteneur principal (carte) ---- 
+    card = Creator.interface.card(width=300, height=330, style="card bg-warning", position="center")
+    modal = Creator.interface.modal(width=600, height=300, style="modal", fixed=True) 
+
+
+    # ---- Boutons du menu ----
+    Creator.interface.button(
+        "Login",
+        lambda: Creator.redirect.route("login"),
+        position=["x-auto", 40],
+        width=150,
+        height=40,
+        style="btn btn-outline-dark", 
+        parent=card
+    )
+
+    Creator.interface.button(
+        "Register",
+        lambda: Creator.redirect.route("register"),
+        position=["x-auto", 100],
+        width=150,
+        height=40,
+        style="btn btn-outline-dark", 
+        parent=card
+    )
+
+    Creator.interface.button(
+        "Settings",
+        lambda: modal.open(),
+        position=["x-auto", 160],
+        width=150,
+        height=40,
+        style="btn btn-outline-dark", 
+        parent=card
+    )
+
+    Creator.interface.button(
+        "Quitter",
+        lambda: Creator.stop(),
+        position=["x-auto", 220],
+        width=150,
+        height=40,
+        style="btn btn-outline-danger", 
+        parent=card
+    )
+
+    # ---- On place la carte dans la page 'content' ----
+    Creator.interface.page("content", card)

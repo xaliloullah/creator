@@ -1,3 +1,4 @@
+from typing import Any
 from src.core import Path, Task 
 
 
@@ -58,7 +59,7 @@ class View:
             cls.show(previous)
 
     @classmethod
-    def section(cls, key, value=None):  
+    def section(cls, key, value=None)->Any:  
         def decorator(function):
             def wrapper(*args, **kwargs):
                 if value: 

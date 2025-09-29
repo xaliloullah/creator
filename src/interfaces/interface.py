@@ -1,5 +1,5 @@
 import sys
-from typing import Any
+from typing import Any, Callable
 try:
     from PyQt6.QtWidgets import (
         QApplication, QMainWindow, QWidget, QFrame, QLabel,
@@ -7,163 +7,362 @@ try:
         QDialog, QProgressBar, QComboBox, QTableWidget, QTableWidgetItem,
         QTreeWidget, QTreeWidgetItem, QTextEdit, QListWidget, QListWidgetItem,
         QSpinBox, QDoubleSpinBox, QScrollBar, QFileDialog, QColorDialog,
-        QMessageBox, QToolBar, QStatusBar, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTabWidget, QScrollArea, QSplitter
-
+        QMessageBox, QToolBar, QStatusBar, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTabWidget, QScrollArea, QSplitter, QStackedWidget
     )
-    from PyQt6.QtCore import Qt
-    from PyQt6.QtGui import QIcon, QPixmap, QAction
+
+    from PyQt6.QtCore import Qt, QPointF
+    from PyQt6.QtGui import QIcon, QPixmap, QAction, QIntValidator, QDoubleValidator, QFontDatabase, QFont, QPainter, QPen, QColor, QMouseEvent
 except ImportError:
     pass
 
-
 class Interface:
+    running = False
 
-    def __init__(self, **kwargs):
-        self.app = QApplication(sys.argv)
-        self.window = QMainWindow()
-        self.widgets = []
-        self.window.resizeEvent = self.resize_event  # type: ignore
-
-        title = kwargs.get('title', 'Creator')
-        self.width = kwargs.get('width', 1200)
-        self.height = kwargs.get('height', self.width // 2)
-        style = kwargs.get('style', None)
-        icon = kwargs.get('icon', None)
-
-        self.window.setWindowTitle(title)
-        self.window.resize(self.width, self.height)
-
-        self.body = QWidget()
-        self.body.setProperty("class", style)
-        self.window.setCentralWidget(self.body)
+    @classmethod
+    def setup(cls, title='Creator', width=900, height=None, icon=None, style=None, **kwargs): 
+        if cls.running:
+            return cls
+        cls.app = QApplication(sys.argv)
+        cls.window = QMainWindow()
+        cls.widgets = [] 
+        cls._sections = {}
+        cls.width = width
+        cls.height = height if height else width // 2 
+        cls.window.resizeEvent = cls._resize_event  # type: ignore 
+        cls.window.setWindowTitle(title)
+        cls.window.resize(cls.width, cls.height)
         if icon:
-            self.window.setWindowIcon(QIcon(icon))
+            cls.window.setWindowIcon(QIcon(icon))
+        cls.window.setStatusBar(QStatusBar()) 
 
-        # Status bar par défaut
-        self.window.setStatusBar(QStatusBar())
+        cls.body = QStackedWidget(cls.window)
+        cls.body.resize(cls.width, cls.height)
+        cls.body.setProperty("class", style)
+        cls.window.setCentralWidget(cls.body)
 
-    def styles(self, src) -> None:
+        min_width = kwargs.get("min_width")
+        min_height = kwargs.get("min_height")
+        max_width = kwargs.get("max_width")
+        max_height = kwargs.get("max_height")
+
+        if min_width: cls.window.setMinimumWidth(min_width)
+        if min_height: cls.window.setMinimumHeight(min_height)
+        if max_width: cls.window.setMaximumWidth(max_width)
+        if max_height: cls.window.setMaximumHeight(max_height) 
+        return cls
+    
+    @classmethod
+    def title(cls, title:str):
+        cls.window.setWindowTitle(title)
+
+    @classmethod
+    def font(cls, src:str, size:int=16): 
+        font_id = QFontDatabase.addApplicationFont(src)
+        family = QFontDatabase.applicationFontFamilies(font_id)[0] 
+        font = QFont(family, size)
+        cls.window.setFont(font)
+
+
+    @classmethod
+    def styles(cls, src:str):
         from src.core import File
-        self.window.setStyleSheet(File(src).load())
+        cls.window.setStyleSheet(File(src).load())
+        return cls  
+    
+    @classmethod
+    def clear(cls):
+        for item in cls.widgets:
+            widget: QWidget = item["widget"]
+            widget.setParent(None)
+        cls.widgets = []
+        cls._sections = {}
+        cls.body = QStackedWidget(cls.window)
+        cls.body.resize(cls.width, cls.height)
+        cls.window.setCentralWidget(cls.body)
 
-    def responsive(self, width, height):
-        scalewidth = self.window.width() / self.width
-        scaleheight = self.window.height() / self.height
+
+    @classmethod
+    def format_size(cls, size, parent: QWidget)-> tuple: 
+        pw, ph = parent.width(), parent.height() 
+        if isinstance(size, (int, float, str)):
+            size = (size, size)
+        elif isinstance(size, (list, tuple)):
+            size = tuple(size[:2])
+        else:
+            raise ValueError("size must be an int, str, or a tuple/list of two elements")
+        w, h = size
+        if isinstance(w, str) and w.endswith("%"): 
+            w = pw * int(w.strip("%")) // 100
+        if isinstance(h, str) and h.endswith("%"):
+            h = ph * int(h.strip("%")) // 100
+
+        return w, h
+
+    @classmethod
+    def format_position(cls, position, size, parent: QWidget): 
+        pw, ph = parent.width(), parent.height()
+        w, h = size 
+
+        if isinstance(position, (int, float, str)): position = (position, position)
+        elif isinstance(position, (list, tuple)): position = tuple(position[:2])
+        else: raise ValueError("position must be an int, str, or a tuple/list")
+
+        x, y = position
+
+        # Horizontal
+        if isinstance(x, str):
+            if "left" in x: x = 0
+            elif "right" in x:x = pw - w
+            elif "center" in x or "x-auto" in x: x = (pw - w) // 2
+            else:x = 0
+        else: x = int(x)
+
+        # Vertical
+        if isinstance(y, str):
+            if "top" in y: y = 0
+            elif "bottom" in y: 
+                y = ph - h
+            elif "center" in y or "y-auto" in y: y = (ph - h) // 2
+            else: y = 0
+        else: y = int(y)
+
+        return x, y 
+    
+    @classmethod
+    def responsive(cls, width, height):
+        scalewidth = cls.window.width() / cls.width
+        scaleheight = cls.window.height() / cls.height
         return int(width * scalewidth), int(height * scaleheight)
 
-    def resize_event(self, event):
-        for item in self.widgets:
+    @classmethod
+    def update(cls):
+        cls.widgets.sort(key=lambda w: w.get("index", 0))
+        # ratio de redimensionnement de la fenêtre
+        scale_w = cls.window.width() / cls.width
+        scale_h = cls.window.height() / cls.height
+
+        for item in cls.widgets:
             widget: QWidget = item["widget"]
-            x, y = item["position"]
-            width, height = item["size"]
-            if width and height:
-                widget.resize(*self.responsive(width, height))
-            widget.move(*self.responsive(x, y))
-        event.accept()
+            parent = item.get("parent", cls.body)
+            original_size = item["original_size"]
+            original_position = item["original_position"]
 
-    def add(self, widget: 'QWidget', **kwargs):
-        parent: QWidget = kwargs.get("parent", self.body)
-        position = kwargs.get("position", (0, 0))
-        size = kwargs.get("size", (parent.width(), parent.height()))
-        style = kwargs.get("style", None)
+            # ----------------
+            # 1. Taille responsive
+            # ----------------
+            w, h = cls.format_size(original_size, parent)
+            w = int(w * scale_w)
+            h = int(h * scale_h)
+            widget.resize(w, h)
 
-        widget.setParent(parent)
+            # ----------------
+            # 2. Position responsive
+            # ----------------
+            # normaliser original_position en tuple (x, y)
+            if isinstance(original_position, (int, float, str)):
+                pos = (original_position, original_position)
+            elif isinstance(original_position, (list, tuple)):
+                pos = tuple(original_position[:2])
+            else:
+                raise ValueError("original_position must be int, float, str, or tuple/list")
+
+            x, y = pos 
+ 
+            x = int(x * scale_w) if isinstance(x, (int, float)) else x
+            y = int(y * scale_h) if isinstance(y, (int, float)) else y 
+            x, y = cls.format_position((x, y), (w, h), parent)
+            widget.move(x, y)
+
+            widget.raise_()
+
+
+    
+    @classmethod
+    def _resize_event(cls, event):
+        cls.update()
+        event.accept() 
+    
+    @classmethod
+    def widget(cls, widget: 'QWidget', **kwargs):
+        parent:QWidget = kwargs.get("parent", cls.body)
+        width       = kwargs.get("width", parent.width()) 
+        height      = kwargs.get("height", parent.height())
+        original_size        = kwargs.get("size", (width, height))
+        size        = cls.format_size(original_size, parent)
+        x           = kwargs.get("x", 0)
+        y           = kwargs.get("y", 0)
+        original_position    = kwargs.get("position", (x, y))
+        position    = cls.format_position(original_position, size, parent)
+        min_width   = kwargs.get("min_width", None)
+        max_width   = kwargs.get("max_width", None)
+        min_height  = kwargs.get("min_height", None)
+        max_height  = kwargs.get("max_height", None)
+        style       = kwargs.get("style", None) 
+        tooltip     = kwargs.get("tooltip", None)
+        font        = kwargs.get("font", None)
+        cursor      = kwargs.get("cursor", None)
+        hidden      = kwargs.get("hidden", False)
+        disabled    = kwargs.get("disabled", False)
+        fixed       = kwargs.get("fixed", False) 
+        scrollable  = kwargs.get("scrollable", False)
+        index = kwargs.get("index", 0)
+
+        if scrollable: 
+            widget = cls.scroll(widget)  
+
+        widget.setParent(parent) 
+
+        w, h = size
+        
+        if fixed: widget.setFixedSize(w, h) 
+        else: widget.resize(w, h)
+        # Contraintes
+        if min_width: widget.setMinimumWidth(min_width)
+        if max_width: widget.setMaximumWidth(max_width)
+        if min_height: widget.setMinimumHeight(min_height)
+        if max_height: widget.setMaximumHeight(max_height)
+
+        # position
         widget.move(*position)
-        widget.resize(*size)
-        widget.setProperty("class", style)
 
-        minwidth = kwargs.get("minwidth", False)
-        min_heigth = kwargs.get("min_heigth", False)
-        maxwidth = kwargs.get("maxwidth", False)
-        max_heigth = kwargs.get("max_heigth", False)
+        if style:  widget.setProperty("class", style) 
+        if tooltip: widget.setToolTip(tooltip) 
+        if font: widget.setFont(font) 
+        if cursor: widget.setCursor(cursor) 
+        if hidden: widget.setVisible(False)
+        if disabled: widget.setEnabled(False)  
 
-        if minwidth:
-            widget.setMinimumWidth(minwidth)
-        if min_heigth:
-            widget.setMinimumHeight(min_heigth)
-        if maxwidth:
-            widget.setMaximumWidth(maxwidth)
-        if max_heigth:
-            widget.setMaximumHeight(max_heigth)
-
-        self.widgets.append({
-            "widget": widget,
-            "position": position,
-            "size": size,
+        cls.widgets.append({
+            "widget": widget, 
+            "original_size": original_size,
+            "original_position": original_position,  
+            "parent": parent,
+            "index": index,
         })
-        return widget
 
+        if index > 0: widget.raise_()
+
+        cls.update()
+        return widget
+    
     # ---------- Widgets ----------
-    def modal(self, title="Modal", **kwargs):
-        modal = QDialog()
+    
+    @classmethod
+    def page(cls, name: str, widget: QWidget): 
+        if name not in cls._sections: 
+            container = QWidget() 
+            widget.setParent(container)  
+            cls.body.addWidget(container)
+            cls._sections[name] = container
+        else:
+            container = cls._sections[name]
+        cls.body.setCurrentWidget(container)
+        return widget
+    
+    @classmethod
+    def modal(cls, title="Modal", **kwargs):
+        parent:QWidget = kwargs.get("parent", cls.body)
+        modal = QDialog(parent)
         modal.setWindowTitle(title)
-        modal.setModal(True)
+        modal.setModal(True) 
+        w = kwargs.get("width", parent.width() // 2)
+        h = kwargs.get("height", parent.height() // 2)
         style = kwargs.get("style", None)
-        modal.setProperty("class", style)
-        modal.setFixedSize(*kwargs.get("size", [900, 500]))
+        if style: modal.setProperty("class", style)
+        fixed = kwargs.get("fixed", False)
+        if fixed:
+            modal.setFixedSize(w, h)
+        else:
+            modal.resize(w, h) 
         return modal
 
-    def select(self, options=None, **kwargs):
-        combo = QComboBox(self.body)
+    @classmethod
+    def select(cls, options=None, **kwargs):
+        combo = QComboBox(cls.body)
         if options:
             combo.addItems(options)
-        return self.add(combo, **kwargs)
+        return cls.widget(combo, **kwargs)
 
-    def label(self, title, **kwargs):
-        return self.add(QLabel(title), **kwargs)
+    @classmethod
+    def label(cls, title, **kwargs):
+        return cls.widget(QLabel(title), **kwargs)
 
-    def card(self, **kwargs):
-        return self.add(QFrame(), **kwargs)
+    @classmethod
+    def card(cls, **kwargs):
+        return cls.widget(QFrame(), **kwargs)
 
-    def button(self, title, action=None, **kwargs):
+    @classmethod
+    def button(cls, title:str, action:Callable|None=None, shortcut=None, **kwargs):
         button = QPushButton(title)
-        if action:
-            button.clicked.connect(action)
-        return self.add(button, **kwargs)
+        button.setCursor(Qt.CursorShape.PointingHandCursor) 
+        if action: button.clicked.connect(action)
+        if shortcut: button.setShortcut(shortcut)
+        return cls.widget(button, **kwargs)
 
-    def input(self, placeholder="", **kwargs):
-        widget = QLineEdit()
+    @classmethod
+    def input(cls, placeholder="", type="text", **kwargs):
+        if type == "number":
+            widget = QLineEdit()
+            widget.setValidator(QIntValidator())
+        elif type == "float":
+            widget = QLineEdit()
+            widget.setValidator(QDoubleValidator())
+        elif type == "password":
+            widget = QLineEdit()
+            widget.setEchoMode(QLineEdit.EchoMode.Password)
+        else:  # text par défaut
+            widget = QLineEdit()
+        
         widget.setPlaceholderText(placeholder)
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def textarea(self, placeholder="", **kwargs):
+    @classmethod
+    def textarea(cls, placeholder="", **kwargs):
         widget = QTextEdit()
         widget.setPlaceholderText(placeholder)
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def radio(self, title, **kwargs):
-        return self.add(QRadioButton(title), **kwargs)
+    @classmethod
+    def radio(cls, title, **kwargs):
+        return cls.widget(QRadioButton(title), **kwargs)
 
-    def checkbox(self, title, **kwargs):
-        return self.add(QCheckBox(title), **kwargs)
+    @classmethod
+    def checkbox(cls, title, **kwargs):
+        return cls.widget(QCheckBox(title), **kwargs)
 
-    def slider(self, orientation=Qt.Orientation.Horizontal, **kwargs):
+    @classmethod
+    def slider(cls, orientation=Qt.Orientation.Horizontal, **kwargs):
         widget = QSlider(orientation)
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def spinbox(self, **kwargs):
+    @classmethod
+    def spinbox(cls, **kwargs):
         widget = QSpinBox()
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def doublespinbox(self, **kwargs):
+    @classmethod
+    def doublespinbox(cls, **kwargs):
         widget = QDoubleSpinBox()
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def progress(self, **kwargs):
-        widget = QProgressBar(kwargs.get("parent", self.body))
+    @classmethod
+    def progress(cls, **kwargs):
+        widget = QProgressBar(kwargs.get("parent", cls.body))
         widget.setMinimum(kwargs.get("min", 0))
         widget.setMaximum(kwargs.get("max", 100))
         widget.setValue(kwargs.get("value", 0))
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def image(self, path, **kwargs):
+    @classmethod
+    def image(cls, path, **kwargs):
         image = QLabel()
         pixmap = QPixmap(path)
         image.setPixmap(pixmap)
         image.setScaledContents(True)
-        return self.add(image, **kwargs)
+        return cls.widget(image, **kwargs)
 
-    def table(self, data: list, **kwargs):
+    @classmethod
+    def table(cls, data: list, **kwargs):
         if not data:
             return None
         headers = list(data[0].keys())
@@ -172,9 +371,10 @@ class Interface:
         for row_idx, row_data in enumerate(data):
             for col_idx, key in enumerate(headers):
                 table.setItem(row_idx, col_idx, QTableWidgetItem(str(row_data[key])))
-        return self.add(table, **kwargs)
+        return cls.widget(table, **kwargs)
 
-    def tree(self, data: dict, **kwargs):
+    @classmethod
+    def tree(cls, data: dict, **kwargs):
         tree = QTreeWidget()
         tree.setHeaderLabels(["Name", "Value"])
         for key, value in data.items():
@@ -185,30 +385,35 @@ class Interface:
             else:
                 QTreeWidgetItem(parent, ["", str(value)])
             tree.addTopLevelItem(parent)
-        return self.add(tree, **kwargs)
+        return cls.widget(tree, **kwargs)
 
-    def list(self, items: list, **kwargs):
+    @classmethod
+    def list(cls, items: list, **kwargs):
         lst = QListWidget()
         for i in items:
             QListWidgetItem(str(i), lst)
-        return self.add(lst, **kwargs)
+        return cls.widget(lst, **kwargs)
 
-    def scrollbar(self, orientation=Qt.Orientation.Vertical, **kwargs):
+    @classmethod
+    def scrollbar(cls, orientation=Qt.Orientation.Vertical, **kwargs):
         bar = QScrollBar(orientation)
-        return self.add(bar, **kwargs)
+        return cls.widget(bar, **kwargs)
 
     # ---------- Boîtes de dialogue ----------
-    def file_dialog(self, mode="open"):
+    @classmethod
+    def file_dialog(cls, mode="open"):
         if mode == "open":
-            return QFileDialog.getOpenFileName(self.window, "Open File")[0]
+            return QFileDialog.getOpenFileName(cls.window, "Open File")[0]
         elif mode == "save":
-            return QFileDialog.getSaveFileName(self.window, "Save File")[0]
+            return QFileDialog.getSaveFileName(cls.window, "Save File")[0]
         return None
 
-    def color_dialog(self):
+    @classmethod
+    def color_dialog(cls):
         return QColorDialog.getColor()
 
-    def message(self, text, title="Info"):
+    @classmethod
+    def message(cls, text, title="Info"):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setWindowTitle(title)
@@ -216,39 +421,52 @@ class Interface:
         msg.exec()
 
     # ---------- Menus / Toolbars ----------
-    def menu(self, title):
-        return self.window.menuBar().addMenu(title)  #type:ignore
+    @classmethod
+    def menu(cls, title):
+        return cls.window.menuBar().addMenu(title)  #type:ignore
 
-    def action(self, title, parent=None, trigger=None, icon=None):
-        act = QAction(title, parent or self.window)
+    @classmethod
+    def action(cls, title, parent=None, trigger=None, icon=None):
+        act = QAction(title, parent or cls.window)
         if icon:
             act.setIcon(QIcon(icon))
         if trigger:
             act.triggered.connect(trigger)
         return act
 
-    def toolbar(self, title="Toolbar"):
+    @classmethod
+    def toolbar(cls, title="Toolbar"):
         bar = QToolBar(title)
-        self.window.addToolBar(bar)
+        cls.window.addToolBar(bar)
         return bar
 
-    def status(self, message):
-        self.window.statusBar().showMessage(message) #type:ignore 
+    @classmethod
+    def status(cls, message):
+        cls.window.statusBar().showMessage(message) #type:ignore 
 
      # ---------- Widgets avancés ----------
-    def tab(self, tabs: dict, **kwargs): 
+    @classmethod
+    def tab(cls, tabs: dict, **kwargs): 
         widget = QTabWidget()
         for title, content in tabs.items():
             widget.addTab(content, title)
-        return self.add(widget, **kwargs)
+        return cls.widget(widget, **kwargs)
 
-    def scroll_area(self, widget: QWidget, **kwargs): 
+    @classmethod
+    def scroll(cls, widget: QWidget, **kwargs): 
         scroll = QScrollArea()
         scroll.setWidget(widget)
         scroll.setWidgetResizable(True)
-        return self.add(scroll, **kwargs)
+        return scroll 
 
-    def graphics_view(self, pixmap_path=None, scene: QGraphicsScene=None, **kwargs): 
+    @classmethod
+    def scene(cls):
+        scene = QGraphicsScene()
+        return scene
+
+
+    @classmethod
+    def canvas(cls, pixmap_path=None, scene: QGraphicsScene=None, **kwargs): 
         if scene is None:
             scene = QGraphicsScene()
             if pixmap_path:
@@ -259,15 +477,20 @@ class Interface:
         view = QGraphicsView(scene)
         view.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)  # déplacement
         view.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
-        return self.add(view, **kwargs)
+        return cls.widget(view, **kwargs)
 
-    def splitter(self, widgets, orientation=Qt.Orientation.Horizontal, **kwargs): 
+    @classmethod
+    def splitter(cls, widgets, orientation=Qt.Orientation.Horizontal, **kwargs): 
         split = QSplitter(orientation)
         for w in widgets:
             split.addWidget(w)
-        return self.add(split, **kwargs)
+        return cls.widget(split, **kwargs)
 
     # ---------- Start ----------
-    def start(self):
-        self.window.show()
-        sys.exit(self.app.exec())
+    @classmethod
+    def start(cls): 
+        if cls.running:
+            return cls
+        cls.running = True
+        cls.window.show()
+        sys.exit(cls.app.exec())

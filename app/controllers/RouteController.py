@@ -2,12 +2,13 @@ from main import Creator
 
 
 class RouteController:
-    from src.core import Request
+    # from src.core import Request
+
     @staticmethod
     def main():
         # if Creator.request.session.has('last_route'):
         #     return Creator.route(Creator.request.session.get('last_route'))
-        return Creator.view("layouts.main")
+        return Creator.view("main")
     
     
     @staticmethod
