@@ -2,4 +2,4 @@ from main import Creator
 
 Creator.interface.title(Creator.view.generate("title"))
 Creator.interface.card(height=50, style="card bg-danger") 
-Creator.interface.card(width="20%", style="card bg-info", index=1) 
+# Creator.interface.card(width="20%", style="card bg-info", index=1)

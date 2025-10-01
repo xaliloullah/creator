@@ -158,6 +158,7 @@ class Task:
         
 
 class Scheduler:
+
     def __init__(self, func, *args, **kwargs):
         self.func = func 
         self.args = args 
@@ -172,6 +173,11 @@ class Scheduler:
         self.executions = 0 
         self.paused = threading.Event()
         self.stoped = threading.Event() 
+        # Callbacks
+        self.on_start: Optional[Callable] = None
+        self.on_update: Optional[Callable] = None
+        self.on_pause: Optional[Callable] = None
+        self.on_stop: Optional[Callable] = None
 
     def every(self, interval: float = 1): 
         self.interval = interval
@@ -214,7 +220,8 @@ class Scheduler:
         return self
     
     def run(self):
-        return self.func(*self.args, **self.kwargs)
+        self.func(*self.args, **self.kwargs)
+        if self.on_update:self.on_update()
     
     def handler(self):
         start = time.time() 
@@ -242,10 +249,12 @@ class Scheduler:
         if not self.is_running:
             self.thread = threading.Thread(target=self.handler, daemon=True)
             self.thread.start()
+        if self.on_start:self.on_start()
         return self
     
     def pause(self):
         self.paused.set() 
+        if self.on_pause: self.on_pause()
 
     def resume(self):
         self.paused.clear()
@@ -255,8 +264,8 @@ class Scheduler:
         if self.thread and self.thread.is_alive():
             self.thread.join()
         self.thread = None
-
-    
+        if self.on_stop:self.on_stop()
+  
     def cancel(self): 
         self.stop()
         self.thread = None 

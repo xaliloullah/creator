@@ -31,8 +31,7 @@ class Interface:
         cls.window.resizeEvent = cls._resize_event  # type: ignore 
         cls.window.setWindowTitle(title)
         cls.window.resize(cls.width, cls.height)
-        if icon:
-            cls.window.setWindowIcon(QIcon(icon))
+        if icon: cls.window.setWindowIcon(QIcon(icon))
         cls.window.setStatusBar(QStatusBar()) 
 
         cls.body = QStackedWidget(cls.window)
@@ -40,10 +39,11 @@ class Interface:
         cls.body.setProperty("class", style)
         cls.window.setCentralWidget(cls.body)
 
-        min_width = kwargs.get("min_width")
-        min_height = kwargs.get("min_height")
-        max_width = kwargs.get("max_width")
-        max_height = kwargs.get("max_height")
+        fixed = kwargs.get("fixed", False)
+        min_width = kwargs.get("min_width", cls.width if fixed else None) 
+        min_height = kwargs.get("min_height", cls.height if fixed else None)
+        max_width = kwargs.get("max_width", cls.width if fixed else None)
+        max_height = kwargs.get("max_height", cls.height if fixed else None)
 
         if min_width: cls.window.setMinimumWidth(min_width)
         if min_height: cls.window.setMinimumHeight(min_height)
@@ -99,35 +99,63 @@ class Interface:
         return w, h
 
     @classmethod
-    def format_position(cls, position, size, parent: QWidget): 
+    def format_position(cls, position, size, parent: QWidget):
+        import re
         pw, ph = parent.width(), parent.height()
-        w, h = size 
+        w, h = size
 
-        if isinstance(position, (int, float, str)): position = (position, position)
-        elif isinstance(position, (list, tuple)): position = tuple(position[:2])
-        else: raise ValueError("position must be an int, str, or a tuple/list")
+        # si position est un seul nombre, on fait tuple (x, y)
+        if isinstance(position, (int, float)):
+            position = (position, position)
+        elif isinstance(position, str):
+            # on garde la string telle quelle pour parsing
+            pass
+        elif isinstance(position, (list, tuple)):
+            position = tuple(position[:2])
+        else:
+            raise ValueError("position must be int, str, list or tuple")
 
-        x, y = position
+        # fonction simple pour parser une valeur
+        def parse(val, parent_size, own_size, is_horizontal=True):
+            if isinstance(val, (int, float)):
+                return int(val)
+            x, y = 0, 0
+            tokens = re.findall(r"(left|right|top|bottom|center|x-auto|y-auto|[-+]?\d+)", val.lower())
+            pos = 0
+            for token in tokens:
+                if token in {"left"} and is_horizontal:
+                    pos = 0
+                elif token in {"right"} and is_horizontal:
+                    pos = parent_size - own_size
+                elif token in {"center", "x-auto"} and is_horizontal:
+                    pos = (parent_size - own_size) // 2
+                elif token in {"top"} and not is_horizontal:
+                    pos = 0
+                elif token in {"bottom"} and not is_horizontal:
+                    pos = parent_size - own_size
+                elif token in {"center", "y-auto"} and not is_horizontal:
+                    pos = (parent_size - own_size) // 2
+                else:
+                    try:
+                        pos += int(token)
+                    except ValueError:
+                        pass
+            return pos
 
-        # Horizontal
-        if isinstance(x, str):
-            if "left" in x: x = 0
-            elif "right" in x:x = pw - w
-            elif "center" in x or "x-auto" in x: x = (pw - w) // 2
-            else:x = 0
-        else: x = int(x)
+        if isinstance(position, str):
+            # on sépare horizontal et vertical si possible
+            parts = position.split()
+            if len(parts) == 1:
+                x = parse(parts[0], pw, w, True)
+                y = parse(parts[0], ph, h, False)
+            else:
+                x = parse(parts[0], pw, w, True)
+                y = parse(parts[1], ph, h, False)
+        else:
+            x = parse(position[0], pw, w, True)
+            y = parse(position[1], ph, h, False)
 
-        # Vertical
-        if isinstance(y, str):
-            if "top" in y: y = 0
-            elif "bottom" in y: 
-                y = ph - h
-            elif "center" in y or "y-auto" in y: y = (ph - h) // 2
-            else: y = 0
-        else: y = int(y)
-
-        return x, y 
-    
+        return x, y
     @classmethod
     def responsive(cls, width, height):
         scalewidth = cls.window.width() / cls.width
@@ -248,7 +276,12 @@ class Interface:
     # ---------- Widgets ----------
     
     @classmethod
-    def page(cls, name: str, widget: QWidget): 
+    def page(cls, name: str, widget: QWidget=None): 
+        if not widget:
+            if name in cls._sections:
+                container = cls._sections[name]
+                cls.body.setCurrentWidget(container)
+            return
         if name not in cls._sections: 
             container = QWidget() 
             widget.setParent(container)  
@@ -284,7 +317,7 @@ class Interface:
         return cls.widget(combo, **kwargs)
 
     @classmethod
-    def label(cls, title, **kwargs):
+    def label(cls, title, **kwargs)->QLabel:
         return cls.widget(QLabel(title), **kwargs)
 
     @classmethod
@@ -300,7 +333,7 @@ class Interface:
         return cls.widget(button, **kwargs)
 
     @classmethod
-    def input(cls, placeholder="", type="text", **kwargs):
+    def input(cls, placeholder="", type="text", **kwargs)->QLineEdit:
         if type == "number":
             widget = QLineEdit()
             widget.setValidator(QIntValidator())
@@ -401,24 +434,12 @@ class Interface:
 
     # ---------- Boîtes de dialogue ----------
     @classmethod
-    def file_dialog(cls, mode="open"):
+    def file(cls, mode="open"):
         if mode == "open":
             return QFileDialog.getOpenFileName(cls.window, "Open File")[0]
         elif mode == "save":
             return QFileDialog.getSaveFileName(cls.window, "Save File")[0]
-        return None
-
-    @classmethod
-    def color_dialog(cls):
-        return QColorDialog.getColor()
-
-    @classmethod
-    def message(cls, text, title="Info"):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.setWindowTitle(title)
-        msg.setText(text)
-        msg.exec()
+        return None 
 
     # ---------- Menus / Toolbars ----------
     @classmethod
@@ -485,6 +506,31 @@ class Interface:
         for w in widgets:
             split.addWidget(w)
         return cls.widget(split, **kwargs)
+    
+    @classmethod
+    def alert(cls, text, type="info", title=None): 
+        msg = QMessageBox()
+        
+        type = type.lower()
+        if type == "info":
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle(title or "Information")
+        elif type == "warning":
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle(title or "Warning")
+        elif type == "error":
+            msg.setIcon(QMessageBox.Icon.Critical)
+            msg.setWindowTitle(title or "Error")
+        elif type == "success": 
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle(title or "Success")
+        else:
+            msg.setIcon(QMessageBox.Icon.NoIcon)
+            msg.setWindowTitle(title or "Alert")
+        
+        msg.setText(text)
+        msg.exec()
+
 
     # ---------- Start ----------
     @classmethod

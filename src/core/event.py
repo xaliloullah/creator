@@ -1,6 +1,5 @@
-from typing import Any, Callable, Dict, List
-# import threading
- 
+from typing import Any, Callable, Dict, List 
+from src.core import Task
 class Event:
     data: Dict[Any, List] = {}
  
@@ -20,7 +19,7 @@ class Event:
     def emit(cls, name:str, *args, **kwargs):
         if name in cls.data:
             for callback in cls.data[name][:]:
-                callback(*args, **kwargs)
+                Task.do(callback, *args, **kwargs).start()
 
 
     @classmethod
@@ -31,11 +30,10 @@ class Event:
             except ValueError:
                 pass
 
-    # @classmethod
-    # def dispatch(cls, name, *args, async_mode=False, **kwargs): 
-    #     if name in cls.data: 
-    #         for callback in cls.data[name]:
-    #             if async_mode:
-    #                 threading.Thread(target=callback, args=args, kwargs=kwargs, daemon=True).start()
-    #             else:
-    #                 callback(*args, **kwargs)
+    @classmethod
+    def clear(cls, name=None):
+        if name:
+            if name in cls.data:
+                del cls.data[name]
+        else:
+            cls.data.clear()

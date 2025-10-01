@@ -1,4 +1,5 @@
 class Password:
+    
     def __init__(self, password: str, field="password") -> None:
         from src.application import Creator
         self.password = password

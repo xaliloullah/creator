@@ -9,13 +9,12 @@ class Creator:
 
         from src.core import String, List, Dict, Path, Data, File, Task, Date, View, Route, Lang, Hash, Crypt, Debug, Storage, Structure, Injector, Event, Collection, Translator, Http, Session, Response, Request, Middleware, Handle, Redirect
         
-        from src.utils import Image, Audio, Speaker
+        from src.utils import Image, Audio, Speaker, Animation, Keyboard
         from src.builds import Build
 
         from src.application.configs import Settings, Version
 
-        from src.validators import Validator  
-        # from src.models.auth import Auth
+        from src.validators import Validator
         
 
         cls.name = app.name
@@ -53,6 +52,7 @@ class Creator:
         cls.collection = Collection 
         cls.translator = Translator 
         cls.speaker = Speaker
+        cls.keyboard = Keyboard
         cls.image = Image
         cls.audio = Audio
         cls.http = Http 
@@ -61,13 +61,13 @@ class Creator:
         cls.structure = Structure
         cls.event = Event
         # cls.auth = Auth
-        cls.request = Request() 
-        cls.session:Session = cls.request.session
-        cls.validator:Validator = cls.request.validator
-        cls.response=Response
+        cls.request: Request
+        cls.session: Session
+        cls.validator: Validator
+        cls.response:Response
         cls.middleware=Middleware
         cls.handle = Handle
-        cls.redirect = Redirect
+        cls.redirect = Redirect 
 
     @classmethod
     def configure(cls, **kwargs):
@@ -80,7 +80,10 @@ class Creator:
                 raise  KeyError("key is not set")
             cls.python = cls.settings.get("python", None)
             cls.packages = cls.settings.get("packages", {}) 
-            cls.injector.register('request', cls.request) 
+            cls.handle.setup(cls.injector)
+            cls.keyboard.init()
+            
+            # cls.injector.register('request', cls.request) 
         except Exception as e:    
             if cls.retry:
                 cls.create()
@@ -139,7 +142,7 @@ class Creator:
         name = cls.terminal.input("name", value="creator") 
         from config import database
         database = cls.terminal.input(cls.lang.get("info.options", resource=f"database"), type="select", options=database.supported, value="sqlite", inline=False) 
-        mode = cls.terminal.input(cls.lang.get("info.options", resource=f"mode"), type="select", options=['console', 'web', 'desktop'], value="console", inline=False) 
+        mode = cls.terminal.input(cls.lang.get("info.options", resource=f"mode"), type="select", options=['console', 'desktop'], value="console", inline=False) 
         debug = cls.terminal.input("Activate debug app", type="checkbox", value="no") 
         env = cls.build.Env.app(name=name, lang=lang, key=key, mode=mode, debug=debug) + cls.build.Env.database(driver=database, name=name, path=cls.path.databases()) + cls.build.Env.session(name=f"{name}_session")
         for key, value in cls.data(env, format='env').get().items():
@@ -150,7 +153,7 @@ class Creator:
             cls.terminal.info("Running database migrations...")
             from src.databases.migration import Migration
             Migration.migrate()
-        starter_kit = cls.terminal.input("Do you want to install a starter kit ?", type="select", options=["none", "api", "web", "auth"], value="none")
+        starter_kit = cls.terminal.input("Do you want to install a starter kit ?", type="select", options=["none", "api", "auth"], value="none")
         if starter_kit != "none":
             cls.terminal.info(f"Installing starter kit: {starter_kit}...")
         cls.settings.make_architecture(all=True) 
@@ -177,10 +180,3 @@ class Creator:
                 cls.terminal.info(cls.lang.get("error.exist", resource=f"lang '{lang}'"))
         else:
             cls.terminal.error(cls.lang.get("error.invalid", data=f"lang '{lang}'"))
-        
-        
-        
-
-    @classmethod
-    def form(cls, **kwargs):
-        cls.request.update(kwargs)  

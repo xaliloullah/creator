@@ -1,11 +1,10 @@
 from main import Creator 
 
+if Creator.session.has_errors():
+     Creator.interface.alert("\n".join(Creator.session.get_errors()), type="error")
+if Creator.session.has_success():
+    Creator.interface.alert("\n".join(Creator.session.get_success()), type="success")
 
-if Creator.request.session.has_errors():
-    for error in Creator.request.session.get_errors(): 
-        Creator.terminal.error(error)
-if Creator.request.session.has_success():
-    for msg in Creator.request.session.get_success(): 
-        Creator.terminal.success(msg) 
-        
-        
+
+# Creator.interface.alert("Ceci est une info", type="info")
+# Creator.interface.alert("Ceci est un warning", type="warning")

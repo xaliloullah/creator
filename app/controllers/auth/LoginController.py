@@ -30,6 +30,7 @@ class LoginController:
              
             request.session.error(Creator.lang.get('auth.failed'))  
             return Creator.redirect.route('login')
+        return Creator.redirect.back()
 
     @staticmethod
     def destroy(request: Request):

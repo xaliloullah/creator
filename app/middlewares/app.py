@@ -8,8 +8,11 @@ from main import Creator
 class AppMiddleware(Middleware):
 
     @staticmethod
-    def handle(request: Request, next: Callable):
+    def handle(request: Request, next: Callable): 
         session = request.session
+        Creator.request = request
+        Creator.session = session
+        Creator.response = request.response
         # if session.has('user_id'):
         #     user = User.where(id=session.get('user_id')).first()
         #     if user:

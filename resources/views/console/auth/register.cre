@@ -5,10 +5,9 @@ from main import Creator
 @Creator.view.section("content")
 def view():
     Creator.terminal.input(Creator.lang.get("confirm.continue"), type="confirm", value="yes", reject_action=Creator.view.back)
-    Creator.form(
+     
+    Creator.request(
         name = Creator.terminal.input(placeholder ='name', type="text"),
         email = Creator.terminal.input(placeholder ='email', type="email"),
         password = Creator.terminal.input(placeholder='password', type="password") 
-        )
-
-    Creator.redirect.route("register.store")
+    ).send("register.store")

@@ -5,7 +5,7 @@ class Route:
     data = {}
     routes = {} 
     history = []
-    current = ""
+    active = ()
     
     @classmethod
     def register(cls, uri:Path|str, action, **kwargs): 
@@ -81,10 +81,10 @@ class Route:
         }
         for action, meta in actions.items():
             cls.register(
+                name=f"{name}.{action}",
                 uri=meta["uri"],
                 action=action,
                 controller=controller,
-                name=f"{name}.{action}",
                 method=meta["method"],
                 **kwargs
             )
@@ -109,38 +109,29 @@ class Route:
         return cls.routes
     
     @classmethod
-    def resolve(cls, value, key="name"): 
+    def resolve(cls, value, key="name", **kwargs): 
         for _, meta in cls.routes.items():
             if meta.get(key) == value:
+                cls.active = value, kwargs
+                cls.log(cls.active)
                 return meta
-        raise ValueError(f"Route '{value}' not found") 
-
-    @classmethod
-    def dispatch(cls, name: str, **kwargs):  
-        cls.current = name
-        route:dict = cls.resolve(name) 
-        cls.log(name)
-        # return route
-        from src.core import Middleware 
-        action:Any = route.get("action")
-        controller = route.get("controller")
-        middlewares = route.get("middleware", []) 
-        # kwargs
-        def handler():
-            if callable(action):
-                return action
-            
-            elif controller and hasattr(controller, action):
-                return getattr(controller, action)
-            else:
-                raise ValueError(f"invalide action for route '{name}'")  
-        return Middleware.run(middlewares, handler, kwargs)
-        
+        raise ValueError(f"Route '{value}' not found")  
+     
     @classmethod
     def clear(cls):
         cls.routes.clear()
         cls.history.clear() 
 
     @classmethod
-    def log(cls, name: str):
-        cls.history.append(name)
+    def log(cls, route: tuple):
+        cls.history.append(route)
+
+    @classmethod
+    def current(cls) -> Any:
+        return cls.active
+    
+    @classmethod
+    def previous(cls) -> Any:
+        if len(cls.history) > 1:
+            return cls.history[-2]
+        return None

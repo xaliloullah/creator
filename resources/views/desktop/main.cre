@@ -43,7 +43,7 @@ def view():
     Creator.interface.button(
         "Quitter",
         lambda: Creator.stop(),
-        position=["x-auto", 220],
+        position=["x-auto", "bottom-30"],
         width=150,
         height=40,
         style="btn btn-outline-danger", 

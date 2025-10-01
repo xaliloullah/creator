@@ -3,8 +3,7 @@ from src.core import Request
 
 
 class Middleware:
-    data: dict[str, 'Middleware'] = {}
-    cache = None
+    data: dict[str, 'Middleware'] = {} 
 
     @staticmethod
     def handle(request:Request, next: Callable, params:Any=None) -> Any:
@@ -12,18 +11,14 @@ class Middleware:
     
     @classmethod
     def setup(cls):
-        if cls.cache is None:
+        if not cls.data:
             try:
-                from config import middleware
-                cls.cache = middleware
+                from app.provider import Provider
+                cls.data = Provider.middlewares
             except ImportError:
                 raise ImportError("middleware module not found. Please ensure that the middleware are properly defined and imported.")
-        return cls.cache
-        
-    @classmethod
-    def register(cls, name: str, middleware: 'Middleware') -> None: 
-        cls.data[name] = middleware
-        
+        return cls.data 
+    
     @classmethod
     def get(cls, name:str) -> Any:
         return cls.data.get(name)  
@@ -33,12 +28,12 @@ class Middleware:
         return list(cls.data.keys())
 
     @classmethod
-    def run(cls, middlewares, handler, kwargs={}):   
+    def run(cls, middlewares, handler, kwargs={}, requests=None):   
         from main import Creator
         cls.setup()
         def execute(index:int, request): 
             if index >= len(middlewares): 
-                return Creator.injector.resolve(handler(), **kwargs)
+                return Creator.handle.injector.resolve(handler(), **kwargs)
             name:str = middlewares[index]
             params:str|Any = None
             if ":" in name:
@@ -51,4 +46,4 @@ class Middleware:
                 return middleware.handle(request, next, params)
             else:
                 return middleware.handle(request, next)
-        return execute(0, Creator.request)
+        return execute(0, requests)

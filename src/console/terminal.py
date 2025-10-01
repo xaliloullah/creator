@@ -169,30 +169,6 @@ class Terminal:
     @classmethod     
     def center(cls, text:str, width=width):
         cls.print(f"{cls.style(text.center(width), Font.bold)}") 
-   
-    @staticmethod
-    def keyboard(attribute='name'):
-        try:
-            import keyboard
-            while True:
-                event = keyboard.read_event()
-                if event.event_type == 'down':
-                    if attribute == 'name':
-                        return event.name
-                    elif attribute == 'code':
-                        return event.scan_code
-                    elif attribute == 'type':
-                        return event.event_type
-                    elif attribute == 'time':
-                        return event.time
-                    elif attribute == 'all':
-                        return event
-                    else:
-                        raise ValueError(
-                            "attribute doit être 'name', 'code', 'type' ou 'time'"
-                        )  
-        except:
-            keyboard=None
 
     @classmethod
     def box(cls, text, **kwargs): 

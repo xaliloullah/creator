@@ -2,19 +2,18 @@ import argparse
 from main import Creator
 
 class Command(argparse.ArgumentParser):
-
     commands = []
-
     @classmethod
     def setup(cls):
         try:
-            from config import command
+            from app.provider import Provider
+            cls.commands = Provider.commands
         except ImportError:
             raise ImportError("Commands module not found. Please ensure that the commands are properly defined and imported.")
 
-    @classmethod
-    def add(cls, *command):
-        cls.commands.extend(command)
+    # @classmethod
+    # def add(cls, *command):
+    #     cls.commands.extend(command)
 
     @classmethod
     def config(cls, subparsers: argparse._SubParsersAction) -> None:

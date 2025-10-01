@@ -32,7 +32,8 @@ class RegisterController:
         #     if Auth.regenerate(user):
         #         return Creator.route('dashboard')
         # return Creator.view.back()
-        return Creator.redirect.route('register')
+        return Creator.redirect.back()
+    
     @staticmethod
     def edit(id):
         #

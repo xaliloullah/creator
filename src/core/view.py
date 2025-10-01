@@ -59,6 +59,16 @@ class View:
             cls.show(previous)
 
     @classmethod
+    def current_view(cls):
+        return cls.current
+    
+    @classmethod
+    def previous(cls):
+        if len(cls.history) > 1:
+            return cls.history[-2]
+        return None
+
+    @classmethod
     def section(cls, key, value=None)->Any:  
         def decorator(function):
             def wrapper(*args, **kwargs):

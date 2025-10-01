@@ -1,87 +1,100 @@
 from typing import Any
 
-class Request: 
-    protected = ['params', 'session', 'validator', 'user', 'response']
+from regex import R
 
-    def __init__(self, params:dict={}, **kwargs):
+class Request: 
+    protected = ['data', 'session', 'response', 'validator', 'user']
+
+    def __init__(self, **kwargs):
         from src.core import Session, Response
         from src.validators import Validator
 
-        self.params = params 
-        self.session = Session()
-        self.validator = Validator()
-        self.response = Response(self.params)
+        self.data = kwargs 
+        self.session = Session() 
+        self.response:Response = Response()
+        self.validator = Validator() 
         self.user = None
 
     def all(self):
-        return self.params
+        return self.data
     
-    def send(self):
+    def send(self, action, **kwargs):
+        self.action = action
+        self.params = kwargs 
+        from main import Creator
+        from src.core import Response
+        self.response:Response = Response(Creator.handle.request(self))
+
+
         return self.response
 
     def get(self, key):
-        return self.params.get(key)
+        return self.data.get(key)
 
     def set(self, key, value):
-        self.params[key] = value
+        self.data[key] = value
     
     def validate(self, validation: dict) -> bool:
-        if self.validator.validate(validation, self.params):
+        if self.validator.validate(validation, self.data):
             return True
         self.session.error(*self.validator.get_errors())   
         return False
     
     def has(self, key: str) -> bool:
-        return key in self.params
+        return key in self.data
     
     def only(self, *keys) -> dict:
-        return {key: self.params[key] for key in keys if key in self.params}
+        return {key: self.data[key] for key in keys if key in self.data}
     
     def ignore(self, *keys) -> dict:
-        return {key: value for key, value in self.params.items() if key not in keys}
+        return {key: value for key, value in self.data.items() if key not in keys}
 
-    def update(self, params: dict):
-        self.params.update(params)
+    def update(self, data: dict):
+        self.data.update(data)
 
     def pop(self, key, default=None):
-        return self.params.pop(key, default)
+        return self.data.pop(key, default)
 
-    def new(self, params):   
-        return Request(params)
+    def new(self, **data):  
+        Request(**data) 
+        return self
     
     # -----------------------
     # Magic methods
     # -----------------------
     def __getitem__(self, key):
-        return self.params[key]   
+        return self.data[key]   
 
     def __setitem__(self, key, value):
-        self.params[key] = value     
+        self.data[key] = value     
 
     def __getattr__(self, key: str) -> Any:  
-        if key in self.params:
-            return self.params.get(key)
+        if key in self.data:
+            return self.data.get(key)
         raise AttributeError(f"'Request' object has no attribute '{key}'")
     
     def __setattr__(self, key: str, value: Any): 
         if key in self.protected:
             self.__dict__[key] = value
         else:
-            self.params[key] = value
+            self.data[key] = value
 
     def __delattr__(self, key: str) -> None:
         if key in self.protected:
             raise AttributeError(f"Cannot delete protected attribute '{key}'")
-        self.params.pop(key, None)
+        self.data.pop(key, None)
 
     def __contains__(self, key: str) -> bool:
-        return key in self.params.keys()
+        return key in self.data.keys()
 
     def __iter__(self):
-        return iter(self.params.keys())
+        return iter(self.data.keys())
 
     def __len__(self) -> int:
-        return len(self.params.keys())
-
+        return len(self.data.keys()) 
+    
     def __repr__(self) -> str:
-        return f"<Request {dict(self)} user={self.user}>"
+        return f"<Request {self.data}>"
+    
+    def __call__(self, **kwargs: Any) -> 'Request':
+        return Request(**kwargs)

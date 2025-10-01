@@ -76,10 +76,11 @@ Copyright (c) 2024 Creator's Friend Studio
   padding: 12px 16px;
 }
 /* Cards */
-.card { 
+.card {
   border: 1px solid #dee2e6;
-  border-radius: 6px; 
+  border-radius: 6px;
   margin: 6px;
+  padding: 50px;
 }
 
 /* Card header */
@@ -494,7 +495,6 @@ Copyright (c) 2024 Creator's Friend Studio
   background-image: var(--bs-gradient) !important;
 }
 
-
 /* Input / LineEdit */
 .input {
   background-color: #fff;
@@ -515,14 +515,84 @@ Copyright (c) 2024 Creator's Friend Studio
   border: 1px solid #ced4da;
   border-radius: 4px;
   padding: 6px 8px;
-  font-size: 16px;
-  color: #212529;
+  font-size: 16px; 
 }
 
-/* Labels */
-.label {
+/* Titres */
+.h1 {
+  font-size: 32px;
+  font-weight:bold; 
+  margin: 12px 8px;
+}
+
+.h2 {
+  font-size: 28px;
+  font-weight: bold; 
+  margin: 10px 8px;
+}
+
+.h3 {
+  font-size: 24px;
+  font-weight: bold; 
+  margin: 8px 8px;
+}
+
+.h4 {
+  font-size: 20px;
+  font-weight: bold; 
+  margin: 6px 8px;
+}
+
+.h5 {
+  font-size: 18px;
+  font-weight: bold; 
+  margin: 4px 8px;
+}
+
+.h6 {
   font-size: 16px;
+  font-weight: bold; 
+  margin: 2px 8px;
+}
+
+/* Paragraphes */
+.p {
+  font-size: 16px; 
+  line-height: 1.5;
+  margin: 0 8px;
+}
+
+/* Horizontal rules */
+.hr {
+  border: none;
+  border-top: 1px solid #dee2e6;
+  margin: 12px 0;
+}
+
+/* Small text */
+.small {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Blockquote */
+.blockquote {
+  border-left: 4px solid #0d6efd;
+  padding-left: 12px;
+  margin: 8px 0;
   color: #212529;
+  font-style: italic;
+}
+
+/* Links inside text */
+.a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.a:hover {
+  color: #0b5ed7;
+  text-decoration: underline;
 }
 
 /* Tabs */
@@ -730,54 +800,53 @@ Copyright (c) 2024 Creator's Friend Studio
   border: 1px solid #0d6efd;
   border-radius: 4px;
   padding: 6px;
-} 
+}
 
 .modal {
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 20px; 
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Header de la modal */
 .modal-header {
-    font-size: 20px;
-    font-weight: bold; 
-    margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 /* Corps de la modal */
 .modal-body {
-    font-size: 16px; 
-    padding: 10px 0;
+  font-size: 16px;
+  padding: 10px 0;
 }
 
 /* Footer de la modal */
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 /* Boutons à l’intérieur de la modal */
 .modal-footer .btn {
-    min-width: 80px;
+  min-width: 80px;
 }
 
 /* Styles pour boutons de fermeture */
 .modal-close {
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-    color: #6c757d;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  color: #6c757d;
 }
 
 .modal-close:hover {
-    color: #212529;
+  color: #212529;
 }
-
 
 /* Linear gradients */
 .bg-gradient {
