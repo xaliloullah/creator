@@ -1,54 +1,24 @@
 from main import Creator
 
 @Creator.view.extend("app")
-@Creator.view.section("title", "Menu Principal")
+@Creator.view.section("title", "MENU PRINCIPAL")
 @Creator.view.section("content")
 def view():
-    # ---- Conteneur principal (carte) ---- 
+    # ---- Carte principale ---- 
     card = Creator.interface.card(width=300, height=330, style="card bg-warning", position="center")
-    modal = Creator.interface.modal(width=600, height=300, style="modal", fixed=True) 
 
+    # ---- Modal settings ----
+    modal = Creator.interface.modal(width=600, height=300, style="modal", fixed=True)
 
     # ---- Boutons du menu ----
-    Creator.interface.button(
-        "Login",
-        lambda: Creator.redirect.route("login"),
-        position=["x-auto", 40],
-        width=150,
-        height=40,
-        style="btn btn-outline-dark", 
-        parent=card
-    )
+    # after login or register 
+    # Creator.interface.button("dashboard", lambda: Creator.redirect.route("dashboard"), position=["x-auto", 200], width=150, height=40, style="btn btn-outline-dark", parent=card)
+    # else :
+    Creator.interface.button("Login", lambda: Creator.redirect.route("login"), position=["x-auto", 40], width=150, height=40, style="btn btn-outline-dark", parent=card)
+    Creator.interface.button("Register", lambda: Creator.redirect.route("register"), position=["x-auto", 100], width=150, height=40, style="btn btn-outline-dark", parent=card)
+    Creator.interface.button("Settings", lambda: modal.open(), position=["x-auto", 160], width=150, height=40, style="btn btn-outline-dark", parent=card)
+    
+    Creator.interface.button("Quitter", lambda: Creator.stop(), position=["x-auto", "bottom-30"], width=150, height=40, style="btn btn-outline-danger", parent=card)
 
-    Creator.interface.button(
-        "Register",
-        lambda: Creator.redirect.route("register"),
-        position=["x-auto", 100],
-        width=150,
-        height=40,
-        style="btn btn-outline-dark", 
-        parent=card
-    )
-
-    Creator.interface.button(
-        "Settings",
-        lambda: modal.open(),
-        position=["x-auto", 160],
-        width=150,
-        height=40,
-        style="btn btn-outline-dark", 
-        parent=card
-    )
-
-    Creator.interface.button(
-        "Quitter",
-        lambda: Creator.stop(),
-        position=["x-auto", "bottom-30"],
-        width=150,
-        height=40,
-        style="btn btn-outline-danger", 
-        parent=card
-    )
-
-    # ---- On place la carte dans la page 'content' ----
-    Creator.interface.page("content", card)
+    # ---- Ajout à la page ----
+    Creator.interface.page("main", card)

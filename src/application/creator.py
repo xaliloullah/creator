@@ -76,8 +76,8 @@ class Creator:
         cls.running = kwargs.get("running", True)
         cls.main = kwargs.get("main", "main") 
         try:
-            if not cls.key:
-                raise  KeyError("key is not set")
+            # if not cls.key:
+            #     raise  KeyError("key is not set")
             cls.python = cls.settings.get("python", None)
             cls.packages = cls.settings.get("packages", {}) 
             cls.handle.setup(cls.injector)

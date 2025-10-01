@@ -1,6 +1,6 @@
 from main import Creator  
 
-Creator.interface.status(Creator.view.generate("title"))
+# Creator.interface.status(Creator.view.generate("title"))
 
-footer = Creator.interface.card(height=30, style="footer bg-secondary", position="bottom")
-Creator.interface.label("Footer", parent=footer, position="center", style="text-white")
+footer = Creator.interface.card(width="100%", height=30, style="footer bg-secondary", position="bottom") 
+Creator.interface.label("© 2025 Creator - All rights reserved.", width="auto", height="auto", parent=footer, position="center", style="text-white")

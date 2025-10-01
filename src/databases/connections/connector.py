@@ -34,3 +34,10 @@ class Connector:
         # Return an instance of the database class
         db = Connector.database(driver)
         return db(config)
+    
+ 
+    @classmethod
+    def syntax(cls, key, default=None):
+        return cls.database().syntax.get(key, default)
+
+

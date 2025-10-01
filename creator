@@ -4,9 +4,4 @@ from src.commands import Command
 
 Command.setup()
 
-Command.listen()  
-
-
-# from app.events.request import Request
-# Request.emit("request")
-# print("Event emitted from app/events/request.py") 
+Command.listen()

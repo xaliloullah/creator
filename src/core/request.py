@@ -1,6 +1,4 @@
-from typing import Any
-
-from regex import R
+from typing import Any 
 
 class Request: 
     protected = ['data', 'session', 'response', 'validator', 'user']

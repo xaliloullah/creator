@@ -1,12 +1,56 @@
 from main import Creator
 
 @Creator.view.extend("app")
-@Creator.view.section("title", Creator.lang.get("sections.dashboard"))
+@Creator.view.section("title", "DASHBOARD") 
 @Creator.view.section("content")
 def view():
-    Creator.terminal.print(Creator.lang.get("sections.dashboard")) 
-    Creator.terminal.input("option", options={"1":Creator.lang.get("sections.settings"), "2":"Calculator", "0":Creator.lang.get("actions.logout")}) 
-    
-   
-     
-         
+    # ---- Carte principale ----
+    card = Creator.interface.card(width="100%", height=500, position="top+60 y-center")
+
+    # ---- Titre ----
+    Creator.interface.label("Tableau de bord", parent=card, position=[20, 10], width=300, height=30, style="h1")
+
+    # ---- Boutons Header ----
+    Creator.interface.button("Nouveau", lambda: Creator.interface.alert("Créer une nouvelle entrée"), parent=card, position=[720, 10], width=80, height=30, style="btn btn-dark")
+    Creator.interface.button("Rafraîchir", lambda: Creator.interface.update(), parent=card, position=[810, 10], width=80, height=30, style="btn btn-outline-dark")
+
+    # ---- Statistiques ----
+    Creator.interface.card(parent=card, position=[20, 60], width=200, height=80, style="card bg-info")
+    Creator.interface.label("Utilisateurs", parent=card, position=[30, 70], width=180, height=20)
+    Creator.interface.label("1248", parent=card, position=[30, 95], width=180, height=25, style="h5")
+
+    Creator.interface.card(parent=card, position=[240, 60], width=200, height=80, style="card bg-danger")
+    Creator.interface.label("Sessions", parent=card, position=[250, 70], width=180, height=20)
+    Creator.interface.label("3912", parent=card, position=[250, 95], width=180, height=25, style="h5")
+
+    Creator.interface.card(parent=card, position=[460, 60], width=200, height=80, style="card bg-warning")
+    Creator.interface.label("Revenus", parent=card, position=[470, 70], width=180, height=20)
+    Creator.interface.label("€12 430", parent=card, position=[470, 95], width=180, height=25, style="h5")
+
+    # ---- Tableau ----
+    data = [
+        {"ID": 1, "Nom": "Alice", "Statut": "Actif", "Date": "2025-09-30"},
+        {"ID": 2, "Nom": "Bob", "Statut": "Inactif", "Date": "2025-09-29"},
+        {"ID": 3, "Nom": "Charlie", "Statut": "Actif", "Date": "2025-09-28"},
+        {"ID": 4, "Nom": "Diane", "Statut": "Actif", "Date": "2025-09-27"},
+    ]
+    Creator.interface.table(data, parent=card, position=[20, 160], width=520, height=250, style="table")
+
+    # ---- Activité récente ----
+    Creator.interface.card(parent=card, position=[560, 160], width=300, height=160, style="card bg-info")
+    Creator.interface.label("Activité récente", parent=card, position=[570, 170], width=260, height=20)
+    Creator.interface.canvas(parent=card, position=[570, 200], width=260, height=110, style="canvas-placeholder")
+
+    # ---- Liste tâches ----
+    Creator.interface.card(parent=card, position=[560, 330], width=300, height=140, style="card bg-danger")
+    Creator.interface.label("Tâches", parent=card, position=[570, 340], width=260, height=20)
+    Creator.interface.list(["Faire un backup", "Analyser logs", "Envoyer rapport"], parent=card, position=[570, 365], width=260, height=90)
+
+    # ---- Progression ----
+    Creator.interface.progress(parent=card, position=[20, 420], width=520, height=25, min=0, max=100, value=72)
+
+    # ---- Footer ----
+    Creator.interface.label("Dernière synchronisation : 2025-10-01 11:00", parent=card, position=[20, 460], width=400, height=20, style="text-muted")
+
+    # ---- Ajout à la page ----
+    Creator.interface.page("dashboard", card)

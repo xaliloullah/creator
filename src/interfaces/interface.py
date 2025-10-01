@@ -23,7 +23,7 @@ class Interface:
         if cls.running:
             return cls
         cls.app = QApplication(sys.argv)
-        cls.window = QMainWindow()
+        cls.window:QMainWindow = QMainWindow()
         cls.widgets = [] 
         cls._sections = {}
         cls.width = width
@@ -32,7 +32,7 @@ class Interface:
         cls.window.setWindowTitle(title)
         cls.window.resize(cls.width, cls.height)
         if icon: cls.window.setWindowIcon(QIcon(icon))
-        cls.window.setStatusBar(QStatusBar()) 
+        # cls.window.setStatusBar(QStatusBar()) 
 
         cls.body = QStackedWidget(cls.window)
         cls.body.resize(cls.width, cls.height)
@@ -82,19 +82,34 @@ class Interface:
 
 
     @classmethod
-    def format_size(cls, size, parent: QWidget)-> tuple: 
-        pw, ph = parent.width(), parent.height() 
+    def format_size(cls, size, parent: QWidget) -> tuple:
+        pw, ph = parent.width(), parent.height()
+ 
         if isinstance(size, (int, float, str)):
             size = (size, size)
         elif isinstance(size, (list, tuple)):
-            size = tuple(size[:2])
+            if len(size) == 1:
+                size = (size[0], size[0])
+            else:
+                size = tuple(size[:2])
         else:
-            raise ValueError("size must be an int, str, or a tuple/list of two elements")
+            raise ValueError("size must be an int, str, or a tuple/list of one or two elements")
+
         w, h = size
-        if isinstance(w, str) and w.endswith("%"): 
-            w = pw * int(w.strip("%")) // 100
-        if isinstance(h, str) and h.endswith("%"):
-            h = ph * int(h.strip("%")) // 100
+ 
+        def parse(_size, parent_size):
+            if isinstance(_size, str):
+                _size = _size.strip()
+                if _size.endswith("%"):
+                    return parent_size * int(_size.rstrip("%")) // 100
+                elif _size.lower() == "auto":
+                    return parent_size
+                else:
+                    return int(_size)
+            return int(_size)
+
+        w = parse(w, pw)
+        h = parse(h, ph)
 
         return w, h
 
@@ -102,20 +117,15 @@ class Interface:
     def format_position(cls, position, size, parent: QWidget):
         import re
         pw, ph = parent.width(), parent.height()
-        w, h = size
-
-        # si position est un seul nombre, on fait tuple (x, y)
+        w, h = size 
         if isinstance(position, (int, float)):
             position = (position, position)
-        elif isinstance(position, str):
-            # on garde la string telle quelle pour parsing
+        elif isinstance(position, str): 
             pass
         elif isinstance(position, (list, tuple)):
             position = tuple(position[:2])
         else:
-            raise ValueError("position must be int, str, list or tuple")
-
-        # fonction simple pour parser une valeur
+            raise ValueError("position must be int, str, list or tuple") 
         def parse(val, parent_size, own_size, is_horizontal=True):
             if isinstance(val, (int, float)):
                 return int(val)
@@ -156,6 +166,7 @@ class Interface:
             y = parse(position[1], ph, h, False)
 
         return x, y
+    
     @classmethod
     def responsive(cls, width, height):
         scalewidth = cls.window.width() / cls.width
@@ -213,8 +224,8 @@ class Interface:
     @classmethod
     def widget(cls, widget: 'QWidget', **kwargs):
         parent:QWidget = kwargs.get("parent", cls.body)
-        width       = kwargs.get("width", parent.width()) 
-        height      = kwargs.get("height", parent.height())
+        width       = kwargs.get("width", 0) 
+        height      = kwargs.get("height", 0)
         original_size        = kwargs.get("size", (width, height))
         size        = cls.format_size(original_size, parent)
         x           = kwargs.get("x", 0)

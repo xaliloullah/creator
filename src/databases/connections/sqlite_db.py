@@ -20,8 +20,7 @@ class Sqlite(RDBMS):
         'DECIMAL': 'NUMERIC',
         'NUMERIC': 'NUMERIC',
         'BIT': 'INTEGER',       # No BIT type, use INTEGER 0/1
-        'BOOLEAN': 'INTEGER',   # No BOOLEAN type, use 0/1
-        'UNSIGNED': 'NOT SUPPORTED',  # SQLite does not support UNSIGNED
+        'BOOLEAN': 'INTEGER',   # No BOOLEAN type, use 0/1 
         'CHAR': 'TEXT',
         'VARCHAR': 'TEXT',
         'TINYTEXT': 'TEXT',
@@ -52,21 +51,15 @@ class Sqlite(RDBMS):
         'UNIQUE': 'UNIQUE',
         'CHECK': 'CHECK',
         'DEFAULT': 'DEFAULT',
-        'SET_NULL': 'SET NULL',
-        'ON_UPDATE': 'NOT SUPPORTED',  # SQLite does not support ON UPDATE in the same way
+        'SET_NULL': 'SET NULL', 
         'ON_DELETE': 'ON DELETE',
         'INDEX': 'CREATE INDEX',       # Indexes created separately
-        'AUTO_INCREMENT': 'AUTOINCREMENT', # Works only with INTEGER PRIMARY KEY
-        'COMMENT': 'NOT SUPPORTED',    # SQLite does not support column comments
-        'CHARACTER_SET': 'NOT SUPPORTED',
+        'AUTO_INCREMENT': 'AUTOINCREMENT', 
         'COLLATE': 'COLLATE',
 
         # Operations
         'ADD': 'ADD',
-        'ADD_COLUMN': 'ADD COLUMN',
-        'MODIFY_COLUMN': 'NOT SUPPORTED',   # ALTER COLUMN not supported
-        'CHANGE': 'NOT SUPPORTED',          # ALTER COLUMN not supported
-        'DROP_COLUMN': 'NOT SUPPORTED',     # Cannot drop column directly
+        'ADD_COLUMN': 'ADD COLUMN', 
         'RENAME_COLUMN': 'RENAME COLUMN',
         'ADD_INDEX': 'CREATE INDEX',
         'DROP_INDEX': 'DROP INDEX',

@@ -8,50 +8,16 @@ def view():
     card = Creator.interface.card(width=400, height=250, position="center")
 
     # ---- Champ Username ----
-    username = Creator.interface.input(
-        placeholder="Nom d'utilisateur", 
-        position=["center", 40], 
-        width=160, 
-        height=30, 
-        style="input",
-        parent=card
-    )
+    username = Creator.interface.input(placeholder="Nom d'utilisateur", position=["center", 40], width=160, height=30, style="input", parent=card)
 
     # ---- Champ Password ----
-    password = Creator.interface.input(
-        placeholder="Mot de passe",
-        position=["center", 90],
-        type="password",
-        width=160,
-        height=30,
-        style="input",
-        parent=card
-    )
+    password = Creator.interface.input(placeholder="Mot de passe", position=["center", 90], type="password", width=160, height=30, style="input", parent=card)
     
     # ---- Bouton Se connecter ----
-    Creator.interface.button(
-        "Se connecter",
-        lambda: Creator.request(
-            name=username.text(),
-            password=password.text()
-        ).send("login.store"),
-        position=["center", 140], 
-        width=160,
-        height=35,
-        style="btn btn-dark",
-        parent=card
-    )
+    Creator.interface.button("Se connecter", lambda: Creator.request(name=username.text(), password=password.text()).send("login.store"), position=["center", 140], width=160, height=35, style="btn btn-dark", parent=card)
 
     # ---- Bouton Retour ----
-    Creator.interface.button(
-        "Retour",
-        lambda: Creator.redirect.route("main"),
-        position=["center", 190],
-        width=160,
-        height=35,
-        style="btn btn-outline-dark",
-        parent=card
-    )
+    Creator.interface.button("Retour", lambda: Creator.redirect.route("main"), position=["center", 190], width=160, height=35, style="btn btn-outline-dark", parent=card)
 
     # ---- Ajout à la page ----
     Creator.interface.page("login", card)

@@ -24,8 +24,7 @@ class PostgreSQL(RDBMS):
         'DECIMAL': 'DECIMAL',
         'NUMERIC': 'NUMERIC',
         'BIT': 'BIT',
-        'BOOLEAN': 'BOOLEAN',
-        'UNSIGNED': 'NOT SUPPORTED',  # PostgreSQL does not have UNSIGNED
+        'BOOLEAN': 'BOOLEAN', 
         'CHAR': 'CHAR',
         'VARCHAR': 'VARCHAR',
         'TINYTEXT': 'TEXT',          # No TINYTEXT, use TEXT
@@ -56,8 +55,7 @@ class PostgreSQL(RDBMS):
         'UNIQUE': 'UNIQUE',
         'CHECK': 'CHECK',
         'DEFAULT': 'DEFAULT',
-        'SET_NULL': 'SET NULL',
-        'ON_UPDATE': 'NOT SUPPORTED',  # PostgreSQL only supports ON UPDATE for foreign keys
+        'SET_NULL': 'SET NULL', 
         'ON_DELETE': 'ON DELETE',
         'INDEX': 'CREATE INDEX',
         'AUTO_INCREMENT': 'SERIAL / BIGSERIAL', # Use SERIAL/BIGSERIAL type instead
